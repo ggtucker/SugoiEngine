@@ -12,9 +12,14 @@ public:
 	GLuint Program;
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
 	void Use();
+private:
+	void loadShaderFile(const GLchar* filePath, std::string& shaderSource);
+	GLuint compileShader(GLenum shaderType, const GLchar* shaderSource);
+	GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
+	GLuint loadAndCompileShader(GLenum shaderType, const GLchar* filePath);
 };
 
-void loadShaderFile(const GLchar* filePath, std::string& shaderSource) {
+void Shader::loadShaderFile(const GLchar* filePath, std::string& shaderSource) {
 	// Stream for loading shader file
 	std::ifstream shaderFile;
 	// Ensures ifstream object can throw exceptions
@@ -35,7 +40,7 @@ void loadShaderFile(const GLchar* filePath, std::string& shaderSource) {
 	}
 }
 
-GLuint compileShader(GLenum shaderType, const GLchar* shaderSource) {
+GLuint Shader::compileShader(GLenum shaderType, const GLchar* shaderSource) {
 	if (shaderType != GL_VERTEX_SHADER && shaderType != GL_FRAGMENT_SHADER) {
 		std::cout << "ERROR::SHADER::UNKNOWN_SHADER_TYPE" << std::endl;
 	}
@@ -55,7 +60,7 @@ GLuint compileShader(GLenum shaderType, const GLchar* shaderSource) {
 	return shader;
 }
 
-GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
+GLuint Shader::createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
 	// Create shader program and link shaders
 	GLuint shaderProgram;
 	shaderProgram = glCreateProgram();
@@ -73,7 +78,7 @@ GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
 	return shaderProgram;
 }
 
-GLuint loadAndCompileShader(GLenum shaderType, const GLchar* filePath) {
+GLuint Shader::loadAndCompileShader(GLenum shaderType, const GLchar* filePath) {
 	std::string shaderString;
 	loadShaderFile(filePath, shaderString);
 	const GLchar* shaderSource = shaderString.c_str();
