@@ -26,63 +26,63 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode);
 
 GLuint generateDefaultVBO() {
-	GLuint VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-	// Color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(1);
-	// Texture attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
+    // Position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    // Color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+    // Texture attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	return VBO;
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    return VBO;
 }
 
 GLuint generateDefaultEBO() {
-	GLuint EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	return EBO;
+    GLuint EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    return EBO;
 }
 
 GLuint generateTexture(const char* imagePath) {
-	// First load the image into memory using SOIL
-	int width, height;
-	unsigned char* image = SOIL_load_image(imagePath, &width, &height, 0, SOIL_LOAD_RGB);
-	if(image == '\0') {
-		std::cout << "Unable to load image for texture: " << imagePath << std::endl;
-	}
+    // First load the image into memory using SOIL
+    int width, height;
+    unsigned char* image = SOIL_load_image(imagePath, &width, &height, 0, SOIL_LOAD_RGB);
+    if(image == '\0') {
+        std::cout << "Unable to load image for texture: " << imagePath << std::endl;
+    }
 
-	// Bind our new OpenGL texture
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+    // Bind our new OpenGL texture
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
-	// Set texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Set texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	// Set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	// Load image data into our OpenGL texture
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-	glGenerateMipmap(GL_TEXTURE_2D);
+    // Set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    
+    // Load image data into our OpenGL texture
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
-	// Free image data from memory and unbind OpenGL texture
-	SOIL_free_image_data(image);
-	glBindTexture(GL_TEXTURE_2D, 0);
+    // Free image data from memory and unbind OpenGL texture
+    SOIL_free_image_data(image);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
-	return texture;
+    return texture;
 }
 
 int main() {
@@ -94,11 +94,11 @@ int main() {
 
     // Create a GLFWwindow object that we can use for GLFW's functions
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "SugoiRender", nullptr, nullptr);
-	if(window == nullptr) {
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
+    if(window == nullptr) {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
     glfwMakeContextCurrent(window);
 
     // Set the required callback functions
@@ -109,9 +109,9 @@ int main() {
 
     // Initialize GLEW to setup the OpenGL Function pointers
     if(glewInit() != GLEW_OK) {
-		std::cout << "Failed to initialize GLEW" << std::endl;
-		return -1;
-	}
+        std::cout << "Failed to initialize GLEW" << std::endl;
+        return -1;
+    }
 
     // Define the viewport dimensions
     glViewport(0, 0, WIDTH, HEIGHT);
@@ -122,15 +122,15 @@ int main() {
     GLuint VAO;
     glGenVertexArrays(1, &VAO);
 
-	// Generate default vertex buffer object
+    // Generate default vertex buffer object
     glBindVertexArray(VAO);
-	GLuint VBO = generateDefaultVBO();
-	GLuint EBO = generateDefaultEBO();
+    GLuint VBO = generateDefaultVBO();
+    GLuint EBO = generateDefaultEBO();
     glBindVertexArray(0);
 
     // Load and create a texture 
     GLuint texture1 = generateTexture("wood_container.jpg");
-	GLuint texture2 = generateTexture("awesome_face.png");
+    GLuint texture2 = generateTexture("awesome_face.png");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window)) {
@@ -142,13 +142,13 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Bind textures
-		glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-		glUniform1i(glGetUniformLocation(shader.Program, "Texture1"), 0);
+        glUniform1i(glGetUniformLocation(shader.Program, "Texture1"), 0);
 
-		glActiveTexture(GL_TEXTURE1);
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
-		glUniform1i(glGetUniformLocation(shader.Program, "Texture2"), 1);
+        glUniform1i(glGetUniformLocation(shader.Program, "Texture2"), 1);
 
         // Activate shader
         shader.Use();       
@@ -176,5 +176,5 @@ void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mod
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GL_TRUE);
-	}
+    }
 }
