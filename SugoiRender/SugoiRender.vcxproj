@@ -41,8 +41,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\dependencies\includes;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\dependencies\libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\dependencies\includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\dependencies\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
