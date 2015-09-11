@@ -3,6 +3,9 @@
 #include <GLFW/glfw3.h>
 #include <SOIL2/SOIL2.h>
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
 
 // Set up vertex data (and buffer(s)) and attribute pointers
@@ -149,6 +152,15 @@ int main() {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
         glUniform1i(glGetUniformLocation(shader.Program, "Texture2"), 1);
+        
+        // Recalculate transformation matrix
+        glm::mat4 trans;
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, glm::radians((GLfloat)glfwGetTime() * 50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        // Bind transformation matrix
+        GLuint transformLoc = glGetUniformLocation(shader.Program, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
         // Activate shader
         shader.Use();       
