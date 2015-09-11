@@ -1,12 +1,12 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <SOIL2/SOIL2.h>
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
+#include "Texture.h"
 
 // Set up vertex data (and buffer(s)) and attribute pointers
 GLfloat vertices[] = {
@@ -56,38 +56,6 @@ GLuint generateDefaultEBO() {
     return EBO;
 }
 
-GLuint generateTexture(const char* imagePath) {
-    // First load the image into memory using SOIL
-    int width, height;
-    unsigned char* image = SOIL_load_image(imagePath, &width, &height, 0, SOIL_LOAD_RGB);
-    if(image == '\0') {
-        std::cout << "Unable to load image for texture: " << imagePath << std::endl;
-    }
-
-    // Bind our new OpenGL texture
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    // Set texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
-    // Load image data into our OpenGL texture
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    // Free image data from memory and unbind OpenGL texture
-    SOIL_free_image_data(image);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    return texture;
-}
-
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -132,8 +100,8 @@ int main() {
     glBindVertexArray(0);
 
     // Load and create a texture 
-    GLuint texture1 = generateTexture("wood_container.jpg");
-    GLuint texture2 = generateTexture("awesome_face.png");
+    Texture texture1("wood_container.jpg");
+    Texture texture2("awesome_face.png");
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     while (!glfwWindowShouldClose(window)) {
@@ -145,13 +113,8 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Bind textures
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glUniform1i(glGetUniformLocation(shader.Program, "Texture1"), 0);
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        glUniform1i(glGetUniformLocation(shader.Program, "Texture2"), 1);
+        texture1.BindTexture("Texture1", shader.Program, 0);
+        texture2.BindTexture("Texture2", shader.Program, 1);
         
         // Recalculate transformation matrix
         glm::mat4 trans;

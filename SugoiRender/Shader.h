@@ -4,7 +4,6 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
 #include <GL/glew.h>
 
 class Shader {
@@ -18,6 +17,18 @@ private:
 	GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
 	GLuint loadAndCompileShader(GLenum shaderType, const GLchar* filePath);
 };
+
+Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
+	GLuint vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, vertexPath);
+	GLuint fragmentShader = loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentPath);
+	this->Program = createShaderProgram(vertexShader, fragmentShader);
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
+void Shader::Use() {
+	glUseProgram(this->Program);
+}
 
 void Shader::loadShaderFile(const GLchar* filePath, std::string& shaderSource) {
 	// Stream for loading shader file
@@ -83,16 +94,4 @@ GLuint Shader::loadAndCompileShader(GLenum shaderType, const GLchar* filePath) {
 	loadShaderFile(filePath, shaderString);
 	const GLchar* shaderSource = shaderString.c_str();
 	return compileShader(shaderType, shaderSource);
-}
-
-Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
-	GLuint vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, vertexPath);
-	GLuint fragmentShader = loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentPath);
-	this->Program = createShaderProgram(vertexShader, fragmentShader);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-}
-
-void Shader::Use() {
-	glUseProgram(this->Program);
 }
