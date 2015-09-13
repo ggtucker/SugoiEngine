@@ -8,10 +8,12 @@
 
 class Shader {
 public:
-	GLuint Program;
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+	GLuint GetProgram();
 	void Use();
 private:
+    GLuint program;
+
 	void loadShaderFile(const GLchar* filePath, std::string& shaderSource);
 	GLuint compileShader(GLenum shaderType, const GLchar* shaderSource);
 	GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
@@ -21,13 +23,17 @@ private:
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
 	GLuint vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, vertexPath);
 	GLuint fragmentShader = loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentPath);
-	this->Program = createShaderProgram(vertexShader, fragmentShader);
+	this->program = createShaderProgram(vertexShader, fragmentShader);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 }
 
+GLuint Shader::GetProgram() {
+    return this->program;
+}
+
 void Shader::Use() {
-	glUseProgram(this->Program);
+	glUseProgram(this->program);
 }
 
 void Shader::loadShaderFile(const GLchar* filePath, std::string& shaderSource) {
