@@ -1,4 +1,5 @@
 #define GLEW_STATIC
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -8,7 +9,8 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Camera.h"
-#include "InputHandler.h"
+#include "Window.h"
+#include "Keyboard.h"
 
 GLfloat vertices[] = {
     // Positions          // Texture Coords
@@ -75,10 +77,8 @@ Camera camera;
 const GLuint WIDTH = 800, HEIGHT = 600;
 
 // Function prototypes
-void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void do_movement();
+void mouse_moved(GLfloat xpos, GLfloat ypos);
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
@@ -113,40 +113,9 @@ GLuint generateDefaultVBO() {
 }*/
 
 int main() {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    // Create a GLFWwindow object that we can use for GLFW's functions
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "SugoiRender", nullptr, nullptr);
-    if(window == nullptr) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-
-    // Configure mouse input mode
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // Set the required callback functions
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-
-    // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
-    glewExperimental = GL_TRUE;
-
-    // Initialize GLEW to setup the OpenGL Function pointers
-    if(glewInit() != GLEW_OK) {
-        std::cout << "Failed to initialize GLEW" << std::endl;
-        return -1;
-    }
-
-    // Define the viewport dimensions
-    glViewport(0, 0, WIDTH, HEIGHT);
+    // Create our window for drawing
+    sr::Window window(800, 600, "bagina", true);
+    window.SetMouseCursorVisible(false);
 
     // Build and compile our shader program
     Shader shader("shader.vert", "shader.frag");
@@ -160,7 +129,7 @@ int main() {
     //GLuint EBO = generateDefaultEBO();
     glBindVertexArray(0);
 
-    // Load and create a texture 
+    // Load and create a texture
     Texture texture1("wood_container.jpg");
     Texture texture2("awesome_face.png");
 
@@ -169,9 +138,23 @@ int main() {
     lastFrame = glfwGetTime();
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    while (!glfwWindowShouldClose(window)) {
-        // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
-        glfwPollEvents();
+    while (window.isOpen()) {
+
+        sr::Event event;
+        while(window.pollEvent(event)) {
+            switch(event.type) {
+            case sr::Event::WINDOW_CLOSED:
+                window.close();
+                break;
+            case sr::Event::KEY_PRESSED:
+                std::cout << "Key pressed: " << event.key.keyCode << std::endl;
+                break;
+            case sr::Event::MOUSE_MOVED:
+                mouse_moved(event.mouseMoved.x, event.mouseMoved.y);
+                break;
+            }
+        }
+
         do_movement();
 
         GLfloat currentFrame = glfwGetTime();
@@ -194,7 +177,7 @@ int main() {
         projection = glm::perspective(glm::radians(camera.GetZoom()), (GLfloat) WIDTH / HEIGHT, 0.1f, 100.0f);
 
         // Activate shader
-        shader.Use();  
+        shader.Use();
 
         // Bind model/view/projection matrices
         GLuint modelLoc = glGetUniformLocation(shader.GetProgram(), "model");
@@ -202,7 +185,7 @@ int main() {
         GLuint projectionLoc = glGetUniformLocation(shader.GetProgram(), "projection");
 
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));     
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
         
         // Draw container
         glBindVertexArray(VAO);
@@ -218,7 +201,7 @@ int main() {
         glBindVertexArray(0);
 
         // Swap the screen buffers
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window.getWindow());
     }
     // Properly de-allocate all resources once they've outlived their purpose
     glDeleteVertexArrays(1, &VAO);
@@ -232,34 +215,21 @@ int main() {
 
 void do_movement() {
     GLfloat cameraSpeed = camera.GetMovementSpeed() * deltaTime;
-    if(InputHandler::IsKeyPressed(GLFW_KEY_W)) {
+    if(sr::Keyboard::IsKeyPressed(GLFW_KEY_W)) {
         camera += cameraSpeed * camera.GetFront();
     }
-    if(InputHandler::IsKeyPressed(GLFW_KEY_S)) {
+    if(sr::Keyboard::IsKeyPressed(GLFW_KEY_S)) {
         camera -= cameraSpeed * camera.GetFront();
     }
-    if(InputHandler::IsKeyPressed(GLFW_KEY_A)) {
+    if(sr::Keyboard::IsKeyPressed(GLFW_KEY_A)) {
         camera -= cameraSpeed * camera.GetRight();
     }
-    if(InputHandler::IsKeyPressed(GLFW_KEY_D)) {
+    if(sr::Keyboard::IsKeyPressed(GLFW_KEY_D)) {
         camera += cameraSpeed * camera.GetRight();
     }
 }
 
-// Is called whenever a key is pressed/released via GLFW
-void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode) {
-    if(action == GLFW_PRESS) {
-        InputHandler::KeyDown(key);
-    } else if(action == GLFW_RELEASE) {
-        InputHandler::KeyUp(key);
-    }
-    if (InputHandler::IsKeyPressed(GLFW_KEY_ESCAPE)) {
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    }
-}
-
-// Is called whenever the mouse is moved
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+void mouse_moved(GLfloat xpos, GLfloat ypos) {
     if(firstMouse) {
         lastX = xpos;
         lastY = ypos;
@@ -276,9 +246,4 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
     camera.SetYaw(camera.GetYaw() + xoffset);
     camera.SetPitch(camera.GetPitch() + yoffset);
-}
-
-// Is called whenever the mouse is scrolled
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    camera.SetZoom(camera.GetZoom() - yoffset);
 }
