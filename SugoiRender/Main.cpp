@@ -114,7 +114,7 @@ GLuint generateDefaultVBO() {
 
 int main() {
     // Create our window for drawing
-    sr::Window window(800, 600, "bagina", true);
+    sr::Window window(800, 600, "SugoiRender", true);
     window.SetMouseCursorVisible(false);
 
     // Build and compile our shader program
