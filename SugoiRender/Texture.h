@@ -5,6 +5,7 @@
 #include <SOIL2/SOIL2.h>
 #include <GL/glew.h>
 
+namespace sr {
 class Texture {
 public:
     Texture(const GLchar* imagePath);
@@ -12,5 +13,6 @@ public:
 private:
     GLuint textureId;
 };
+}
 
 #endif

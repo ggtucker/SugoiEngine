@@ -7,6 +7,7 @@
 #include <iostream>
 #include <GL/glew.h>
 
+namespace sr {
 class Shader {
 public:
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
@@ -20,5 +21,6 @@ private:
 	GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);
 	GLuint loadAndCompileShader(GLenum shaderType, const GLchar* filePath);
 };
+}
 
 #endif

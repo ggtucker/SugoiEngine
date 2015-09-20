@@ -12,6 +12,7 @@ const static GLfloat SPEED       =  3.0f;
 const static GLfloat SENSITIVITY =  0.05f;
 const static GLfloat ZOOM        =  45.0f;
 
+namespace sr {
 class Camera {
 public:
     Camera(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f));
@@ -54,5 +55,6 @@ private:
 
     void updateVectors();
 };
+}
 
 #endif

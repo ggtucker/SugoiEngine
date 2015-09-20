@@ -1,5 +1,6 @@
 #include "Texture.h"
 
+namespace sr {
 Texture::Texture(const GLchar* imagePath) {
     // First load the image into memory using SOIL
     int width, height;
@@ -36,4 +37,5 @@ void Texture::BindTexture(const GLchar* uniformName, GLuint program, GLint textu
     glActiveTexture(GL_TEXTURE0 + textureNum);
     glBindTexture(GL_TEXTURE_2D, textureId);
     glUniform1i(glGetUniformLocation(program, uniformName), textureNum);
+}
 }

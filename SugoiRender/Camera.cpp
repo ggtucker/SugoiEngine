@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+namespace sr {
 Camera::Camera(glm::vec3 pos) : 
     pos(pos),
     up(),
@@ -118,4 +119,5 @@ void Camera::updateVectors() {
     // Recalculate right and up vectors
     this->right = glm::normalize(glm::cross(this->front, this->worldUp));
     this->up = glm::normalize(glm::cross(this->right, this->front));
+}
 }

@@ -1,5 +1,6 @@
 #include "Shader.h"
 
+namespace sr {
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
 	GLuint vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, vertexPath);
 	GLuint fragmentShader = loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentPath);
@@ -80,4 +81,5 @@ GLuint Shader::loadAndCompileShader(GLenum shaderType, const GLchar* filePath) {
 	loadShaderFile(filePath, shaderString);
 	const GLchar* shaderSource = shaderString.c_str();
 	return compileShader(shaderType, shaderSource);
+}
 }

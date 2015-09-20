@@ -71,7 +71,7 @@ glm::vec3 cubePositions[] = {
 };
 
 // Define our camera
-Camera camera;
+sr::Camera camera;
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -118,7 +118,7 @@ int main() {
     window.SetMouseCursorVisible(false);
 
     // Build and compile our shader program
-    Shader shader("shader.vert", "shader.frag");
+    sr::Shader shader("shader.vert", "shader.frag");
 
     GLuint VAO;
     glGenVertexArrays(1, &VAO);
@@ -130,8 +130,8 @@ int main() {
     glBindVertexArray(0);
 
     // Load and create a texture
-    Texture texture1("wood_container.jpg");
-    Texture texture2("awesome_face.png");
+    sr::Texture texture1("wood_container.jpg");
+    sr::Texture texture2("awesome_face.png");
 
     glEnable(GL_DEPTH_TEST);
 
@@ -148,6 +148,9 @@ int main() {
                 break;
             case sr::Event::KEY_PRESSED:
                 std::cout << "Key pressed: " << event.key.keyCode << std::endl;
+                if(event.key.keyCode == GLFW_KEY_ESCAPE) {
+                    window.close();
+                }
                 break;
             case sr::Event::MOUSE_MOVED:
                 mouse_moved(event.mouseMoved.x, event.mouseMoved.y);
