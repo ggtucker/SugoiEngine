@@ -1,11 +1,14 @@
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 
+#include <array>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Keyboard.h"
 #include "Event.h"
+
+#define MAX_PENDING 16
 
 namespace sr {
 class Window {
@@ -24,12 +27,10 @@ private:
     GLuint width;
     GLuint height;
 
-    static const GLuint MAX_PENDING = 16;
-    static Event eventQueue[MAX_PENDING];
+    static std::array<Event, MAX_PENDING> eventQueue;
     static GLuint queueHead;
     static GLuint queueTail;
 
-    static GLuint queue_size();
     static void push_event(Event event);
     static GLboolean pop_event(Event& event);
 

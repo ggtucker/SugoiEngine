@@ -148,12 +148,18 @@ int main() {
                 break;
             case sr::Event::KEY_PRESSED:
                 std::cout << "Key pressed: " << event.key.keyCode << std::endl;
+                break;
+            case sr::Event::KEY_RELEASED:
+                std::cout << "Key released: " << event.key.keyCode << std::endl;
                 if(event.key.keyCode == GLFW_KEY_ESCAPE) {
                     window.close();
                 }
                 break;
             case sr::Event::MOUSE_MOVED:
                 mouse_moved(event.mouseMoved.x, event.mouseMoved.y);
+                break;
+            case sr::Event::MOUSE_SCROLLED:
+                camera.SetZoom(camera.GetZoom() - event.mouseScrolled.yoffset);
                 break;
             }
         }

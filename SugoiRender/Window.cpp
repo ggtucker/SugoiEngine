@@ -3,7 +3,7 @@
 namespace sr {
 GLuint Window::queueHead = 0;
 GLuint Window::queueTail = 0;
-Event Window::eventQueue[MAX_PENDING];
+std::array<Event, MAX_PENDING> Window::eventQueue;
 
 Window::Window() {
 }
@@ -24,7 +24,8 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
     glfwWindowHint(GLFW_RESIZABLE, resizable);
 
     // Create a GLFWwindow object that we can use for GLFW's functions
-    this->window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    GLFWwindow* sharedContext = glfwGetCurrentContext();
+    this->window = glfwCreateWindow(width, height, title, nullptr, sharedContext);
     if(window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -103,7 +104,11 @@ void Window::mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-        
+    Event mouseEvent;
+    mouseEvent.type = Event::MOUSE_SCROLLED;
+    mouseEvent.mouseScrolled.xoffset = xoffset;
+    mouseEvent.mouseScrolled.yoffset = yoffset;
+    push_event(mouseEvent);
 }
 
 void Window::close_callback(GLFWwindow* window) {
@@ -111,14 +116,6 @@ void Window::close_callback(GLFWwindow* window) {
         Event windowClosedEvent;
         windowClosedEvent.type = Event::WINDOW_CLOSED;
         push_event(windowClosedEvent);
-    }
-}
-
-GLuint Window::queue_size() {
-    if(queueHead > queueTail) {
-        return MAX_PENDING - queueHead - queueTail;
-    } else {
-        return queueTail - queueHead;
     }
 }
 
