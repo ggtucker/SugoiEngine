@@ -35,8 +35,11 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
 
     // Set the required callback functions
     glfwSetKeyCallback(window, key_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, mouse_move_callback);
+    glfwSetCursorEnterCallback(window, mouse_enter_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    glfwSetWindowSizeCallback(window, resize_callback);
     glfwSetWindowCloseCallback(window, close_callback);
 
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
@@ -95,11 +98,34 @@ void Window::key_callback(GLFWwindow* window, int key, int scanCode, int action,
     }
 }
 
-void Window::mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+void Window::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    Event mouseEvent;
+    mouseEvent.mouseClicked.mouseCode = button;
+
+    if(action == GLFW_PRESS) {
+        mouseEvent.type = Event::MOUSE_PRESSED;
+        push_event(mouseEvent);
+    } else if(action == GLFW_RELEASE) {
+        mouseEvent.type = Event::MOUSE_RELEASED;
+        push_event(mouseEvent);
+    }
+}
+
+void Window::mouse_move_callback(GLFWwindow* window, double xpos, double ypos) {
     Event mouseEvent;
     mouseEvent.type = Event::MOUSE_MOVED;
     mouseEvent.mouseMoved.x = xpos;
     mouseEvent.mouseMoved.y = ypos;
+    push_event(mouseEvent);
+}
+
+void Window::mouse_enter_callback(GLFWwindow* window, int entered) {
+    Event mouseEvent;
+    if(entered) {
+        mouseEvent.type = Event::MOUSE_ENTERED;
+    } else {
+        mouseEvent.type = Event::MOUSE_EXITED;
+    }
     push_event(mouseEvent);
 }
 
@@ -109,6 +135,14 @@ void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     mouseEvent.mouseScrolled.xoffset = xoffset;
     mouseEvent.mouseScrolled.yoffset = yoffset;
     push_event(mouseEvent);
+}
+
+void Window::resize_callback(GLFWwindow* window, int width, int height) {
+    Event resizeEvent;
+    resizeEvent.type = Event::WINDOW_RESIZED;
+    resizeEvent.resized.width = width;
+    resizeEvent.resized.height = height;
+    push_event(resizeEvent);
 }
 
 void Window::close_callback(GLFWwindow* window) {

@@ -35,8 +35,11 @@ private:
     static GLboolean pop_event(Event& event);
 
     static void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode);
-    static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+    static void mouse_move_callback(GLFWwindow* window, double xpos, double ypos);
+    static void mouse_enter_callback(GLFWwindow* window, int entered);
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+    static void resize_callback(GLFWwindow* window, int width, int height);
     static void close_callback(GLFWwindow* window);
 };
 }

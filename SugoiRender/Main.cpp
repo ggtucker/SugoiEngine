@@ -146,6 +146,9 @@ int main() {
             case sr::Event::WINDOW_CLOSED:
                 window.close();
                 break;
+            case sr::Event::WINDOW_RESIZED:
+                std::cout << "Window resized: " << event.resized.width << " " << event.resized.height << std::endl;
+                break;
             case sr::Event::KEY_PRESSED:
                 std::cout << "Key pressed: " << event.key.keyCode << std::endl;
                 break;
@@ -155,11 +158,23 @@ int main() {
                     window.close();
                 }
                 break;
+            case sr::Event::MOUSE_PRESSED:
+                std::cout << "Mouse pressed: " << event.mouseClicked.mouseCode << std::endl;
+                break;
+            case sr::Event::MOUSE_RELEASED:
+                std::cout << "Mouse released: " << event.mouseClicked.mouseCode << std::endl;
+                break;
             case sr::Event::MOUSE_MOVED:
                 mouse_moved(event.mouseMoved.x, event.mouseMoved.y);
                 break;
             case sr::Event::MOUSE_SCROLLED:
                 camera.SetZoom(camera.GetZoom() - event.mouseScrolled.yoffset);
+                break;
+            case sr::Event::MOUSE_ENTERED:
+                std::cout << "Mouse entered" << std::endl;
+                break;
+            case sr::Event::MOUSE_EXITED:
+                std::cout << "Mouse exited" << std::endl;
                 break;
             }
         }
