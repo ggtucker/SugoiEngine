@@ -1,18 +1,20 @@
-#ifndef _TEXTURE_H_
-#define _TEXTURE_H_
+#pragma once
 
+#include <GL/glew.h>
 #include <iostream>
 #include <SOIL2/SOIL2.h>
-#include <GL/glew.h>
 
 namespace sr {
 class Texture {
 public:
-    Texture(const GLchar* imagePath);
-    void BindTexture(const GLchar* uniformName, GLuint program, GLint textureNum);
+    Texture(const GLchar* imagePath, const std::string& name);
+	GLuint GetId() const;
+	std::string& GetName();
+	const std::string& GetName() const;
 private:
-    GLuint textureId;
+    GLuint id;
+	std::string name;
+
+	void init(const GLchar* imagePath);
 };
 }
-
-#endif

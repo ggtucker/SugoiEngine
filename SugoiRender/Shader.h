@@ -1,18 +1,24 @@
-#ifndef _SHADER_H_
-#define _SHADER_H_
+#pragma once
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <GL/glew.h>
+#include "Texture.h"
 
 namespace sr {
 class Shader {
 public:
+	Shader();
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
-	GLuint GetProgram();
-	void Use();
+	void LoadShaderFiles(const GLchar* vertexPath, const GLchar* fragmentPath);
+
+	GLuint GetProgram() const;
+	void Use() const;
+
+	void BindTexture(const Texture& texture, GLuint textureNum) const;
+	void UnbindTexture(GLuint num) const;
+	
 private:
     GLuint program;
 
@@ -22,5 +28,3 @@ private:
 	GLuint loadAndCompileShader(GLenum shaderType, const GLchar* filePath);
 };
 }
-
-#endif

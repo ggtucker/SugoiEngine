@@ -1,5 +1,4 @@
-#ifndef _EVENT_H_
-#define _EVENT_H_
+#pragma once
 
 #include <GL/glew.h>
 
@@ -58,5 +57,3 @@ public:
     };
 };
 }
-
-#endif

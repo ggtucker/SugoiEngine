@@ -1,7 +1,16 @@
 #include "Shader.h"
 
+#include <stdexcept>
+
 namespace sr {
+
+Shader::Shader() {}
+
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
+	LoadShaderFiles(vertexPath, fragmentPath);
+}
+
+void Shader::LoadShaderFiles(const GLchar* vertexPath, const GLchar* fragmentPath) {
 	GLuint vertexShader = loadAndCompileShader(GL_VERTEX_SHADER, vertexPath);
 	GLuint fragmentShader = loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentPath);
 	this->program = createShaderProgram(vertexShader, fragmentShader);
@@ -9,12 +18,29 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
 	glDeleteShader(fragmentShader);
 }
 
-GLuint Shader::GetProgram() {
+GLuint Shader::GetProgram() const {
     return this->program;
 }
 
-void Shader::Use() {
+void Shader::Use() const {
 	glUseProgram(this->program);
+}
+
+void Shader::BindTexture(const Texture& texture, GLuint textureNum) const {
+	if (this->program) {
+		if (textureNum >= GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS) {
+			std::string errorOutput = "Cannot bind '" + texture.GetName() + "' to GL_TEXTURE" + std::to_string(textureNum) + ". Not enough texture units.";
+			throw std::invalid_argument(errorOutput);
+		}
+		glActiveTexture(GL_TEXTURE0 + textureNum);
+		glUniform1i(glGetUniformLocation(program, texture.GetName().c_str()), textureNum);
+		glBindTexture(GL_TEXTURE_2D, texture.GetId());
+	}
+}
+
+void Shader::UnbindTexture(GLuint textureNum) const {
+	glActiveTexture(GL_TEXTURE0 + textureNum);
+	glBindTexture(GL_TEXTURE_2D, NULL);
 }
 
 void Shader::loadShaderFile(const GLchar* filePath, std::string& shaderSource) {

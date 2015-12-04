@@ -1,8 +1,7 @@
-#ifndef _WINDOW_H_
-#define _WINDOW_H_
+#pragma once
 
-#include <array>
 #include <GL/glew.h>
+#include <array>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Keyboard.h"
@@ -43,5 +42,3 @@ private:
     static void close_callback(GLFWwindow* window);
 };
 }
-
-#endif

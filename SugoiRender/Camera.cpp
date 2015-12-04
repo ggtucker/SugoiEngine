@@ -1,23 +1,29 @@
 #include "Camera.h"
 
 namespace sr {
-Camera::Camera(glm::vec3 pos) : 
+Camera::Camera() : Camera(glm::vec3()) {}
+
+Camera::Camera(const glm::vec3& pos) : 
     pos(pos),
-    up(),
-    front(),
-    right(),
-    worldUp(0.0f, 1.0f, 0.0f),
-    pitch(PITCH),
-    yaw(YAW),
+	worldUp(0.0f, 1.0f, 0.0f),
+	pitch(PITCH),
+	yaw(YAW),
     movementSpeed(SPEED),
     mouseSensitivity(SENSITIVITY),
-    zoom(ZOOM) {
+    zoom(ZOOM),
+	aspect(ASPECT),
+	near(NEAR),
+	far(FAR) {
 
     updateVectors();
 }
 
-glm::mat4 Camera::GetViewMatrix() {
+glm::mat4 Camera::GetViewMatrix() const {
     return glm::lookAt(this->pos, this->pos + this->front, this->up);
+}
+
+glm::mat4 Camera::GetProjectionMatrix() const {
+	return glm::perspective(glm::radians(GetZoom()), this->aspect, this->near, this->far);
 }
 
 Camera& Camera::operator+=(const glm::vec3& delta) {
@@ -30,39 +36,39 @@ Camera& Camera::operator-=(const glm::vec3& delta) {
     return *this;
 }
 
-glm::vec3 Camera::GetPosition() {
+glm::vec3 Camera::GetPosition() const {
     return this->pos;
 }
 
-glm::vec3 Camera::GetFront() {
+glm::vec3 Camera::GetFront() const {
     return this->front;
 }
 
-glm::vec3 Camera::GetRight() {
+glm::vec3 Camera::GetRight() const {
     return this->right;
 }
 
-glm::vec3 Camera::GetWorldUp() {
+glm::vec3 Camera::GetWorldUp() const {
     return this->worldUp;
 }
 
-GLfloat Camera::GetPitch() {
+GLfloat Camera::GetPitch() const {
     return this->pitch;
 }
 
-GLfloat Camera::GetYaw() {
+GLfloat Camera::GetYaw() const {
     return this->yaw;
 }
 
-GLfloat Camera::GetMovementSpeed() {
+GLfloat Camera::GetMovementSpeed() const {
     return this->movementSpeed;
 }
 
-GLfloat Camera::GetMouseSensitivity() {
+GLfloat Camera::GetMouseSensitivity() const {
     return this->mouseSensitivity;
 }
 
-GLfloat Camera::GetZoom() {
+GLfloat Camera::GetZoom() const {
     return this->zoom;
 }
 
@@ -108,13 +114,25 @@ void Camera::SetZoom(GLfloat zoom) {
     }
 }
 
+void Camera::SetAspectRatio(GLfloat aspect) {
+	this->aspect = aspect;
+}
+
+void Camera::SetNearPlane(GLfloat near) {
+	this->near = near;
+}
+
+void Camera::SetFarPlane(GLfloat far) {
+	this->far = far;
+}
+
 void Camera::updateVectors() {
     // Recalculate front vector
     glm::vec3 tempFront;
     tempFront.x = cos(glm::radians(this->pitch)) * cos(glm::radians(this->yaw));
     tempFront.y = sin(glm::radians(this->pitch));
     tempFront.z = cos(glm::radians(this->pitch)) * sin(glm::radians(this->yaw));
-    front = glm::normalize(tempFront);
+    this->front = glm::normalize(tempFront);
 
     // Recalculate right and up vectors
     this->right = glm::normalize(glm::cross(this->front, this->worldUp));
