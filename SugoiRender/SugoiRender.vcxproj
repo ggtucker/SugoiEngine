@@ -96,6 +96,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Event.h" />
+    <ClInclude Include="CircularQueue.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />

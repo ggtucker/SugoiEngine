@@ -1,18 +1,24 @@
 #include "Window.h"
 
 namespace sr {
-GLuint Window::queueHead = 0;
-GLuint Window::queueTail = 0;
-std::array<Event, MAX_PENDING> Window::eventQueue;
+CircularQueue<Event> Window::eventQueue;
 
-Window::Window() {
+Window::Window() : window{ nullptr }, isWindowOpen{ false } {
 }
 
-Window::Window(GLuint width, GLuint height, const GLchar* title, GLboolean resizable) {
+Window::Window(GLuint width, GLuint height, const GLchar* title, GLboolean resizable) : window{ nullptr }, isWindowOpen { false } {
     Create(width, height, title, resizable);
 }
 
+Window::~Window() {
+	glfwTerminate();
+}
+
 void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean resizable) {
+	if (this->isWindowOpen) {
+		throw new std::runtime_error("Window.Create() has already been called");
+	}
+
     this->width = width;
     this->height = height;
     this->isWindowOpen = true;
@@ -62,21 +68,29 @@ void Window::SetMouseCursorVisible(GLboolean visible) {
     }
 }
 
-void Window::close() {
+void Window::Close() {
     this->isWindowOpen = false;
 }
 
-GLboolean Window::isOpen() {
-    return this->isWindowOpen;
+void Window::SwapBuffers() {
+	glfwSwapBuffers(this->window);
 }
 
-GLboolean Window::pollEvent(Event& event) {
+GLboolean Window::PollEvent(Event& event) {
     glfwPollEvents();
-    return pop_event(event);
+    return eventQueue.Pop(event);
 }
 
-GLFWwindow* Window::getWindow() {
-    return this->window;
+GLboolean Window::IsOpen() const {
+	return this->isWindowOpen;
+}
+
+GLuint Window::GetWidth() const {
+	return this->width;
+}
+
+GLuint Window::GetHeight() const {
+	return this->height;
 }
 
 void Window::key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode) {
@@ -90,11 +104,11 @@ void Window::key_callback(GLFWwindow* window, int key, int scanCode, int action,
     if(action == GLFW_PRESS) {
         Keyboard::KeyDown(key);
         keyEvent.type = Event::KEY_PRESSED;
-        push_event(keyEvent);
+		eventQueue.Push(keyEvent);
     } else if(action == GLFW_RELEASE) {
         Keyboard::KeyUp(key);
         keyEvent.type = Event::KEY_RELEASED;
-        push_event(keyEvent);
+		eventQueue.Push(keyEvent);
     }
 }
 
@@ -104,10 +118,10 @@ void Window::mouse_button_callback(GLFWwindow* window, int button, int action, i
 
     if(action == GLFW_PRESS) {
         mouseEvent.type = Event::MOUSE_PRESSED;
-        push_event(mouseEvent);
+		eventQueue.Push(mouseEvent);
     } else if(action == GLFW_RELEASE) {
         mouseEvent.type = Event::MOUSE_RELEASED;
-        push_event(mouseEvent);
+		eventQueue.Push(mouseEvent);
     }
 }
 
@@ -116,7 +130,7 @@ void Window::mouse_move_callback(GLFWwindow* window, double xpos, double ypos) {
     mouseEvent.type = Event::MOUSE_MOVED;
     mouseEvent.mouseMoved.x = xpos;
     mouseEvent.mouseMoved.y = ypos;
-    push_event(mouseEvent);
+	eventQueue.Push(mouseEvent);
 }
 
 void Window::mouse_enter_callback(GLFWwindow* window, int entered) {
@@ -126,7 +140,7 @@ void Window::mouse_enter_callback(GLFWwindow* window, int entered) {
     } else {
         mouseEvent.type = Event::MOUSE_EXITED;
     }
-    push_event(mouseEvent);
+	eventQueue.Push(mouseEvent);
 }
 
 void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -134,7 +148,7 @@ void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     mouseEvent.type = Event::MOUSE_SCROLLED;
     mouseEvent.mouseScrolled.xoffset = xoffset;
     mouseEvent.mouseScrolled.yoffset = yoffset;
-    push_event(mouseEvent);
+	eventQueue.Push(mouseEvent);
 }
 
 void Window::resize_callback(GLFWwindow* window, int width, int height) {
@@ -142,31 +156,16 @@ void Window::resize_callback(GLFWwindow* window, int width, int height) {
     resizeEvent.type = Event::WINDOW_RESIZED;
     resizeEvent.resized.width = width;
     resizeEvent.resized.height = height;
-    push_event(resizeEvent);
+	eventQueue.Push(resizeEvent);
 }
 
 void Window::close_callback(GLFWwindow* window) {
     if(glfwWindowShouldClose(window)) {
         Event windowClosedEvent;
         windowClosedEvent.type = Event::WINDOW_CLOSED;
-        push_event(windowClosedEvent);
+		eventQueue.Push(windowClosedEvent);
     }
 }
 
-void Window::push_event(Event event) {
-    if ((queueTail + 1) % MAX_PENDING != queueHead) {
-        eventQueue[queueTail] = event;
-        queueTail = (queueTail + 1) % MAX_PENDING;
-    }
-}
 
-GLboolean Window::pop_event(Event& event) {
-    if (queueHead != queueTail) {
-        event = eventQueue[queueHead];
-        queueHead = (queueHead + 1) % MAX_PENDING;
-        return true;
-    }
-    event.type = Event::UNKNOWN;
-    return false;
-}
 }

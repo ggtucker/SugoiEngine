@@ -24,9 +24,6 @@ glm::vec3 cubePositions[] = {
   glm::vec3(-1.3f,  1.0f, -1.5f)  
 };
 
-// Window dimensions
-const GLuint WIDTH = 800, HEIGHT = 600;
-
 // Function prototypes
 sr::Mesh createCube();
 void doMovement(sr::Camera& camera);
@@ -52,13 +49,13 @@ int main() {
 	sr::Mesh cube = createCube();
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    while (window.isOpen()) {
+    while (window.IsOpen()) {
 
         sr::Event event;
-        while(window.pollEvent(event)) {
+        while(window.PollEvent(event)) {
             switch(event.type) {
             case sr::Event::WINDOW_CLOSED:
-                window.close();
+                window.Close();
                 break;
             case sr::Event::WINDOW_RESIZED:
                 std::cout << "Window resized: " << event.resized.width << " " << event.resized.height << std::endl;
@@ -69,7 +66,7 @@ int main() {
             case sr::Event::KEY_RELEASED:
                 std::cout << "Key released: " << event.key.keyCode << std::endl;
                 if(event.key.keyCode == GLFW_KEY_ESCAPE) {
-                    window.close();
+                    window.Close();
                 }
                 break;
             case sr::Event::MOUSE_PRESSED:
@@ -99,11 +96,8 @@ int main() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // Clear the colorbuffer
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		renderer.Clear(0.2f, 0.3f, 0.3f, 1.0f);
         
-        // Draw container
         for(GLuint i = 0; i < 10; ++i) {
 			renderer.PushMatrix();
 			renderer.Translate(cubePositions[i].x, cubePositions[i].y, cubePositions[i].z);
@@ -112,12 +106,9 @@ int main() {
 			renderer.PopMatrix();
         }
 
-        // Swap the screen buffers
-        glfwSwapBuffers(window.getWindow());
+		window.SwapBuffers();
     }
 
-    // Terminate GLFW, clearing any resources allocated by GLFW.
-    glfwTerminate();
     return 0;
 }
 

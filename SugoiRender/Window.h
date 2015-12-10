@@ -6,32 +6,31 @@
 #include <iostream>
 #include "Keyboard.h"
 #include "Event.h"
-
-#define MAX_PENDING 16
+#include "CircularQueue.h"
 
 namespace sr {
 class Window {
 public:
     Window();
     Window(GLuint width, GLuint height, const GLchar* title, GLboolean resizable);
+	~Window();
+
     void Create(GLuint width, GLuint height, const GLchar* title, GLboolean resizable);
     void SetMouseCursorVisible(GLboolean visible);
-    void close();
-    GLboolean isOpen();
-    GLboolean pollEvent(Event& event);
-    GLFWwindow* getWindow();
+    void Close();
+	void SwapBuffers();
+    GLboolean PollEvent(Event& event);
+
+	GLboolean IsOpen() const;
+	GLuint GetWidth() const;
+	GLuint GetHeight() const;
 private:
     GLFWwindow* window;
     GLboolean isWindowOpen;
     GLuint width;
     GLuint height;
 
-    static std::array<Event, MAX_PENDING> eventQueue;
-    static GLuint queueHead;
-    static GLuint queueTail;
-
-    static void push_event(Event event);
-    static GLboolean pop_event(Event& event);
+	static CircularQueue<Event> eventQueue;
 
     static void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);

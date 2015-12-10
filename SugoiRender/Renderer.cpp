@@ -26,15 +26,20 @@ void Renderer::init() {
 	glEnable(GL_DEPTH_TEST);
 }
 
-void Renderer::UpdateMVP() const {
+void Renderer::updateMVP() const {
 	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
 	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
 	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "model"), 1, GL_FALSE, glm::value_ptr(model.top()));
 }
 
+void Renderer::Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) const {
+	glClearColor(red, green, blue, alpha);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
 void Renderer::Render(const Mesh& mesh) const {
 	shader.Use();
-	UpdateMVP();
+	updateMVP();
 	mesh.Render(this->shader);
 }
 

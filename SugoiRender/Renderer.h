@@ -14,7 +14,7 @@ public:
 	explicit Renderer(const Camera& camera);
 	Renderer(const Shader& shader, const Camera& camera);
 
-	void UpdateMVP() const;
+	void Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) const;
 	void Render(const Mesh& mesh) const;
 
 	void PushMatrix();
@@ -47,5 +47,6 @@ private:
 	std::stack<glm::mat4> model;
 
 	void init();
+	void updateMVP() const;
 };
 }
