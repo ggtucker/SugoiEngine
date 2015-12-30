@@ -1,4 +1,5 @@
 #include "Window.h"
+#include <cassert>
 
 namespace sr {
 CircularQueue<Event> Window::eventQueue;
@@ -15,15 +16,14 @@ Window::~Window() {
 }
 
 void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean resizable) {
-	if (this->isWindowOpen) {
-		throw new std::runtime_error("Window.Create() has already been called");
-	}
+	assert(!this->isWindowOpen);
 
     this->width = width;
     this->height = height;
     this->isWindowOpen = true;
 
-    glfwInit();
+    bool glfwInitSuccess = glfwInit();
+	assert(glfwInitSuccess);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -32,11 +32,7 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
     // Create a GLFWwindow object that we can use for GLFW's functions
     GLFWwindow* sharedContext = glfwGetCurrentContext();
     this->window = glfwCreateWindow(width, height, title, nullptr, sharedContext);
-    if(window == nullptr) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        this->isWindowOpen = false;
-    }
+	assert(this->window);
     glfwMakeContextCurrent(window);
 
     // Set the required callback functions
@@ -52,9 +48,8 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
     glewExperimental = GL_TRUE;
 
     // Initialize GLEW to setup the OpenGL Function pointers
-    if(glewInit() != GLEW_OK) {
-        std::cout << "Failed to initialize GLEW" << std::endl;
-    }
+	bool glewInitSuccess = glewInit();
+	assert(glewInitSuccess == GLEW_OK);
 
     // Define the viewport dimensions
     glViewport(0, 0, width, height);

@@ -1,6 +1,7 @@
 #include "Shader.h"
 
 #include <stdexcept>
+#include <cassert>
 
 namespace sr {
 
@@ -28,10 +29,7 @@ void Shader::Use() const {
 
 void Shader::BindTexture(const Texture& texture, GLuint textureNum) const {
 	if (this->program) {
-		if (textureNum >= GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS) {
-			std::string errorOutput = "Cannot bind '" + texture.GetName() + "' to GL_TEXTURE" + std::to_string(textureNum) + ". Not enough texture units.";
-			throw std::invalid_argument(errorOutput);
-		}
+		assert(textureNum < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 		glActiveTexture(GL_TEXTURE0 + textureNum);
 		glUniform1i(glGetUniformLocation(program, texture.GetName().c_str()), textureNum);
 		glBindTexture(GL_TEXTURE_2D, texture.GetId());
@@ -65,9 +63,7 @@ void Shader::loadShaderFile(const GLchar* filePath, std::string& shaderSource) {
 }
 
 GLuint Shader::compileShader(GLenum shaderType, const GLchar* shaderSource) {
-	if (shaderType != GL_VERTEX_SHADER && shaderType != GL_FRAGMENT_SHADER) {
-		std::cout << "ERROR::SHADER::UNKNOWN_SHADER_TYPE" << std::endl;
-	}
+	assert(shaderType == GL_VERTEX_SHADER || shaderType == GL_FRAGMENT_SHADER);
 	// Create and compile shader
 	GLuint shader;
 	shader = glCreateShader(shaderType);
