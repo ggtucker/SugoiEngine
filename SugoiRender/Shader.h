@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include "Texture.h"
+#include <GL/glew.h>
 
 namespace sr {
 class Shader {
@@ -16,9 +16,6 @@ public:
 	GLuint GetProgram() const;
 	void Use() const;
 
-	void BindTexture(const Texture& texture, GLuint textureNum) const;
-	void UnbindTexture(GLuint num) const;
-	
 private:
     GLuint program;
 

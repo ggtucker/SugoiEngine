@@ -11,6 +11,10 @@
 #include "Keyboard.h"
 #include "Renderer.h"
 
+void _check_gl_error(const char *file, int line);
+
+#define check_gl_error() _check_gl_error(__FILE__,__LINE__)
+
 glm::vec3 cubePositions[] = {
   glm::vec3( 0.0f,  0.0f,  0.0f),
   glm::vec3( 2.0f,  5.0f, -15.0f),
@@ -40,6 +44,7 @@ int main() {
     // Create our window for drawing
     sr::Window window(800, 600, "SugoiRender", true);
     window.SetMouseCursorVisible(false);
+	check_gl_error();
 
     lastFrame = glfwGetTime();
 

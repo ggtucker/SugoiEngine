@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <cassert>
+#include "GLError.h"
 
 namespace sr {
 CircularQueue<Event> Window::eventQueue;
@@ -7,7 +8,7 @@ CircularQueue<Event> Window::eventQueue;
 Window::Window() : window{ nullptr }, isWindowOpen{ false } {
 }
 
-Window::Window(GLuint width, GLuint height, const GLchar* title, GLboolean resizable) : window{ nullptr }, isWindowOpen { false } {
+Window::Window(GLuint width, GLuint height, const GLchar* title, GLboolean resizable) : Window() {
     Create(width, height, title, resizable);
 }
 
@@ -22,7 +23,7 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
     this->height = height;
     this->isWindowOpen = true;
 
-    bool glfwInitSuccess = glfwInit();
+    int glfwInitSuccess = glfwInit();
 	assert(glfwInitSuccess);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -48,7 +49,7 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
     glewExperimental = GL_TRUE;
 
     // Initialize GLEW to setup the OpenGL Function pointers
-	bool glewInitSuccess = glewInit();
+	GLenum glewInitSuccess = glewInit();
 	assert(glewInitSuccess == GLEW_OK);
 
     // Define the viewport dimensions

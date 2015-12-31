@@ -14,7 +14,9 @@ Camera::Camera(const glm::vec3& pos) :
 	aspect{ ASPECT },
 	near{ NEAR },
 	far{ FAR }
-{}
+{
+	updateVectors();
+}
 
 glm::mat4 Camera::GetViewMatrix() const {
     return glm::lookAt(this->pos, this->pos + this->front, this->up);
