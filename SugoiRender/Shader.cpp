@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-#include <stdexcept>
+#include <assert.h>
 
 namespace sr {
 
@@ -28,10 +28,7 @@ void Shader::Use() const {
 
 void Shader::BindTexture(const Texture& texture, GLuint textureNum) const {
 	if (this->program) {
-		if (textureNum >= GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS) {
-			std::string errorOutput = "Cannot bind '" + texture.GetName() + "' to GL_TEXTURE" + std::to_string(textureNum) + ". Not enough texture units.";
-			throw std::invalid_argument(errorOutput);
-		}
+		assert(textureNum < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 		glActiveTexture(GL_TEXTURE0 + textureNum);
 		glUniform1i(glGetUniformLocation(program, texture.GetName().c_str()), textureNum);
 		glBindTexture(GL_TEXTURE_2D, texture.GetId());
@@ -69,8 +66,7 @@ GLuint Shader::compileShader(GLenum shaderType, const GLchar* shaderSource) {
 		std::cout << "ERROR::SHADER::UNKNOWN_SHADER_TYPE" << std::endl;
 	}
 	// Create and compile shader
-	GLuint shader;
-	shader = glCreateShader(shaderType);
+	GLuint shader = glCreateShader(shaderType);
 	glShaderSource(shader, 1, &shaderSource, NULL);
 	glCompileShader(shader);
 	// Detect and log any compilation errors
@@ -86,8 +82,7 @@ GLuint Shader::compileShader(GLenum shaderType, const GLchar* shaderSource) {
 
 GLuint Shader::createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
 	// Create shader program and link shaders
-	GLuint shaderProgram;
-	shaderProgram = glCreateProgram();
+	GLuint shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);

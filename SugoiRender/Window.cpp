@@ -1,4 +1,5 @@
 #include "Window.h"
+#include <assert.h>
 
 namespace sr {
 CircularQueue<Event> Window::eventQueue;
@@ -32,11 +33,7 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
     // Create a GLFWwindow object that we can use for GLFW's functions
     GLFWwindow* sharedContext = glfwGetCurrentContext();
     this->window = glfwCreateWindow(width, height, title, nullptr, sharedContext);
-    if(window == nullptr) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        this->isWindowOpen = false;
-    }
+	assert(window);
     glfwMakeContextCurrent(window);
 
     // Set the required callback functions
@@ -52,9 +49,7 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
     glewExperimental = GL_TRUE;
 
     // Initialize GLEW to setup the OpenGL Function pointers
-    if(glewInit() != GLEW_OK) {
-        std::cout << "Failed to initialize GLEW" << std::endl;
-    }
+	assert(glewInit() == GLEW_OK);
 
     // Define the viewport dimensions
     glViewport(0, 0, width, height);
