@@ -1,15 +1,23 @@
 #include "Keyboard.h"
 
+#define MAX_KEY_STATES 1024
+
 namespace sr {
-bool Keyboard::IsKeyPressed(GLuint keyCode) {
-    return keyStates[keyCode];
+namespace Keyboard {
+
+static std::array<bool, MAX_KEY_STATES> keyStates;
+
+bool IsKeyPressed(GLuint keyCode) {
+	return keyStates[keyCode];
 }
 
-void Keyboard::KeyDown(GLuint keyCode) {
-    keyStates[keyCode] = true;
+void KeyDown(GLuint keyCode) {
+	keyStates[keyCode] = true;
 }
 
-void Keyboard::KeyUp(GLuint keyCode) {
-    keyStates[keyCode] = false;
+void KeyUp(GLuint keyCode) {
+	keyStates[keyCode] = false;
+}
+
 }
 }

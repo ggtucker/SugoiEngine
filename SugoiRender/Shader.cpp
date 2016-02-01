@@ -1,6 +1,7 @@
 #include "Shader.h"
 
-#include <assert.h>
+#include <stdexcept>
+#include <cassert>
 
 namespace sr {
 
@@ -26,20 +27,6 @@ void Shader::Use() const {
 	glUseProgram(this->program);
 }
 
-void Shader::BindTexture(const Texture& texture, GLuint textureNum) const {
-	if (this->program) {
-		assert(textureNum < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-		glActiveTexture(GL_TEXTURE0 + textureNum);
-		glUniform1i(glGetUniformLocation(program, texture.GetName().c_str()), textureNum);
-		glBindTexture(GL_TEXTURE_2D, texture.GetId());
-	}
-}
-
-void Shader::UnbindTexture(GLuint textureNum) const {
-	glActiveTexture(GL_TEXTURE0 + textureNum);
-	glBindTexture(GL_TEXTURE_2D, NULL);
-}
-
 void Shader::loadShaderFile(const GLchar* filePath, std::string& shaderSource) {
 	// Stream for loading shader file
 	std::ifstream shaderFile;
@@ -62,9 +49,7 @@ void Shader::loadShaderFile(const GLchar* filePath, std::string& shaderSource) {
 }
 
 GLuint Shader::compileShader(GLenum shaderType, const GLchar* shaderSource) {
-	if (shaderType != GL_VERTEX_SHADER && shaderType != GL_FRAGMENT_SHADER) {
-		std::cout << "ERROR::SHADER::UNKNOWN_SHADER_TYPE" << std::endl;
-	}
+	assert(shaderType == GL_VERTEX_SHADER || shaderType == GL_FRAGMENT_SHADER);
 	// Create and compile shader
 	GLuint shader = glCreateShader(shaderType);
 	glShaderSource(shader, 1, &shaderSource, NULL);
@@ -100,7 +85,6 @@ GLuint Shader::createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
 GLuint Shader::loadAndCompileShader(GLenum shaderType, const GLchar* filePath) {
 	std::string shaderString;
 	loadShaderFile(filePath, shaderString);
-	const GLchar* shaderSource = shaderString.c_str();
-	return compileShader(shaderType, shaderSource);
+	return compileShader(shaderType, shaderString.c_str());
 }
 }

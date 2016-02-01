@@ -46,7 +46,6 @@ private:
 	Camera camera;
 	std::stack<glm::mat4> model;
 
-	void init();
 	void updateMVP() const;
 };
 }

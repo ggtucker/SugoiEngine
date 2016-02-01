@@ -1,42 +1,40 @@
 #pragma once
 
 #include <array>
-#include <GL/glew.h>
-#include "Event.h"
 
 namespace sr {
-template<typename T, size_t MAX_PENDING = 16>
-class CircularQueue {
-public:
-	CircularQueue() {}
+	template<typename TObject, size_t MAX_SIZE = 16>
+	class CircularQueue {
+	public:
+		CircularQueue() {}
 
-	void Push(T obj) {
-		if ((queueTail + 1) % MAX_PENDING != queueHead) {
-			eventQueue[queueTail] = obj;
-			queueTail = (queueTail + 1) % MAX_PENDING;
+		void Push(TObject obj) {
+			if ((queueTail + 1) % MAX_SIZE != queueHead) {
+				eventQueue[queueTail] = obj;
+				queueTail = (queueTail + 1) % MAX_SIZE;
+			}
 		}
-	}
 
-	GLboolean Pop(T& obj) {
-		if (queueHead != queueTail) {
-			obj = eventQueue[queueHead];
-			queueHead = (queueHead + 1) % MAX_PENDING;
-			return true;
+		bool Pop(TObject& obj) {
+			if (queueHead != queueTail) {
+				obj = eventQueue[queueHead];
+				queueHead = (queueHead + 1) % MAX_SIZE;
+				return true;
+			}
+			return false;
 		}
-		return false;
-	}
 
-	GLboolean Peek(T& obj) {
-		if (queueHead != queueTail) {
-			obj = eventQueue[queueHead];
-			return true;
+		bool Peek(TObject& obj) {
+			if (queueHead != queueTail) {
+				obj = eventQueue[queueHead];
+				return true;
+			}
+			return false;
 		}
-		return false;
-	}
 
-private:
-	std::array<Event, MAX_PENDING> eventQueue;
-	GLuint queueHead;
-	GLuint queueTail;
-};
+	private:
+		std::array<TObject, MAX_SIZE> eventQueue;
+		unsigned int queueHead;
+		unsigned int queueTail;
+	};
 }

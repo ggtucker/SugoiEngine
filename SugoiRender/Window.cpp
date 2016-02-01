@@ -1,5 +1,6 @@
 #include "Window.h"
-#include <assert.h>
+#include <cassert>
+#include "GLError.h"
 
 namespace sr {
 CircularQueue<Event> Window::eventQueue;
@@ -7,7 +8,7 @@ CircularQueue<Event> Window::eventQueue;
 Window::Window() : window{ nullptr }, isWindowOpen{ false } {
 }
 
-Window::Window(GLuint width, GLuint height, const GLchar* title, GLboolean resizable) : window{ nullptr }, isWindowOpen { false } {
+Window::Window(GLuint width, GLuint height, const GLchar* title, GLboolean resizable) : Window() {
     Create(width, height, title, resizable);
 }
 
@@ -16,15 +17,14 @@ Window::~Window() {
 }
 
 void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean resizable) {
-	if (this->isWindowOpen) {
-		throw new std::runtime_error("Window.Create() has already been called");
-	}
+	assert(!this->isWindowOpen);
 
     this->width = width;
     this->height = height;
     this->isWindowOpen = true;
 
-    glfwInit();
+    int glfwInitSuccess = glfwInit();
+	assert(glfwInitSuccess);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -33,7 +33,7 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
     // Create a GLFWwindow object that we can use for GLFW's functions
     GLFWwindow* sharedContext = glfwGetCurrentContext();
     this->window = glfwCreateWindow(width, height, title, nullptr, sharedContext);
-	assert(window);
+	assert(this->window);
     glfwMakeContextCurrent(window);
 
     // Set the required callback functions

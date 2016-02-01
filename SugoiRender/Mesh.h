@@ -10,8 +10,13 @@ namespace sr {
 class Mesh {
 public:
 	Mesh();
+	Mesh(const Mesh& other);
+	Mesh(Mesh&& other);
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices, const std::vector<Texture>& textures);
 	~Mesh();
+
+	Mesh& operator=(const Mesh& other) = delete;
+	Mesh& operator=(Mesh&& other);
 
 	void Render(const Shader& shader) const;
 

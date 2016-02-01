@@ -18,7 +18,7 @@ namespace sr {
 class Camera {
 public:
 	Camera();
-    Camera(const glm::vec3& pos);
+    explicit Camera(const glm::vec3& pos);
 
     glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;

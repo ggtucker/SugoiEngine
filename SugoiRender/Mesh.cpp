@@ -1,9 +1,23 @@
 #include "Mesh.h"
 
+#include "GLError.h"
 #include <stdexcept>
 
 namespace sr {
 Mesh::Mesh() {}
+
+Mesh::Mesh(const Mesh& other) {
+	
+}
+
+Mesh::Mesh(Mesh&& other)
+	: VAO{ other.VAO }, VBO{ other.VBO }, EBO{ other.EBO },
+	vertices{ std::move(other.vertices) }, indices{ std::move(other.indices) }, textures{ std::move(other.textures) } {
+
+	other.VAO = 0;
+	other.VBO = 0;
+	other.EBO = 0;
+}
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices, const std::vector<Texture>& textures)
 	: vertices{ vertices }, indices{ indices }, textures{ textures } {
@@ -12,18 +26,35 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indic
 }
 
 Mesh::~Mesh() {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	glDeleteVertexArrays(1, &this->VAO);
+	glDeleteBuffers(1, &this->VBO);
+	glDeleteBuffers(1, &this->EBO);
+}
+
+Mesh& Mesh::operator=(Mesh&& other) {
+	assert(this != &other);
+	glDeleteVertexArrays(1, &this->VAO);
+	glDeleteBuffers(1, &this->VBO);
+	glDeleteBuffers(1, &this->EBO);
+	this->VAO = other.VAO;
+	this->VBO = other.VBO;
+	this->EBO = other.EBO;
+	this->vertices = std::move(other.vertices);
+	this->indices = std::move(other.indices);
+	this->textures = std::move(other.textures);
+	other.VAO = 0;
+	other.VBO = 0;
+	other.EBO = 0;
+	return *this;
 }
 
 void Mesh::Render(const Shader& shader) const {
-	if (this->VAO == NULL) {
-		throw std::invalid_argument("Cannot render: must call Mesh::Build() first");
-	}
+	assert(this->VAO);
 
 	for (GLuint i = 0; i < this->textures.size(); ++i) {
-		shader.BindTexture(this->textures[i], i);
+		const Texture& tex = this->textures[i];
+		tex.Bind(i);
+		glUniform1i(glGetUniformLocation(shader.GetProgram(), tex.GetName().c_str()), i);
 	}
 
 	glBindVertexArray(this->VAO);
@@ -31,7 +62,7 @@ void Mesh::Render(const Shader& shader) const {
 	glBindVertexArray(0);
 
 	for (GLuint i = 0; i < this->textures.size(); ++i) {
-		shader.UnbindTexture(i);
+		this->textures[i].Unbind(i);
 	}
 }
 
@@ -59,6 +90,8 @@ void Mesh::AddTexture(const Texture& texture) {
 }
 
 void Mesh::Build() {
+	check_gl_error();
+
 	glGenVertexArrays(1, &this->VAO);
 	glGenBuffers(1, &this->VBO);
 	glGenBuffers(1, &this->EBO);
@@ -77,13 +110,17 @@ void Mesh::Build() {
 
 	// Vertex normals
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
+	size_t noffset = offsetof(Vertex, Normal);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)noffset);
 
 	// Vertex texture coords
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
+	size_t toffset = offsetof(Vertex, TexCoords);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)toffset);
 
 	glBindVertexArray(0);
+
+	check_gl_error();
 }
 
 }

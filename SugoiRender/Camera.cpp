@@ -3,19 +3,19 @@
 namespace sr {
 Camera::Camera() : Camera(glm::vec3()) {}
 
-Camera::Camera(const glm::vec3& pos) : 
-    pos(pos),
-	worldUp(0.0f, 1.0f, 0.0f),
-	pitch(PITCH),
-	yaw(YAW),
-    movementSpeed(SPEED),
-    mouseSensitivity(SENSITIVITY),
-    zoom(ZOOM),
-	aspect(ASPECT),
-	near(NEAR),
-	far(FAR) {
-
-    updateVectors();
+Camera::Camera(const glm::vec3& pos) :
+	pos{ pos },
+	worldUp{ 0.0f, 1.0f, 0.0f },
+	pitch{ PITCH },
+	yaw{ YAW },
+	movementSpeed{ SPEED },
+	mouseSensitivity{ SENSITIVITY },
+	zoom{ ZOOM },
+	aspect{ ASPECT },
+	near{ NEAR },
+	far{ FAR }
+{
+	updateVectors();
 }
 
 glm::mat4 Camera::GetViewMatrix() const {

@@ -1,35 +1,29 @@
 #include "Renderer.h"
 
+#include "GLError.h"
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace sr {
 
-Renderer::Renderer() {
-	init();
-}
+Renderer::Renderer() : Renderer(Shader(), Camera()) {}
 
-Renderer::Renderer(const Shader& shader) : shader{ shader } {
-	init();
-}
+Renderer::Renderer(const Shader& shader) : Renderer(shader, Camera()) {}
 
-Renderer::Renderer(const Camera& camera) : camera{ camera } {
-	init();
-}
+Renderer::Renderer(const Camera& camera) : Renderer(Shader(), camera) {}
 
 Renderer::Renderer(const Shader& shader, const Camera& camera) : shader{ shader }, camera{ camera } {
-	init();
-}
-
-void Renderer::init() {
 	model.push(glm::mat4());
 	glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::updateMVP() const {
-	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(camera.GetProjectionMatrix()));
-	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(camera.GetViewMatrix()));
-	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "model"), 1, GL_FALSE, glm::value_ptr(model.top()));
+	glm::mat4 _proj = camera.GetProjectionMatrix();
+	glm::mat4 _view = camera.GetViewMatrix();
+	glm::mat4 _model = model.top();
+	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(_proj));
+	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(_view));
+	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "model"), 1, GL_FALSE, glm::value_ptr(_model));
 }
 
 void Renderer::Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) const {
