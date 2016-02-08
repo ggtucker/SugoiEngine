@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SugoiRender", "SugoiRender\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SugoiEngine", "SugoiEngine\SugoiEngine.vcxproj", "{8A3AC25B-1813-4547-A249-76F59D487575}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataStructures", "DataStructures\DataStructures.vcxproj", "{83736059-9485-460F-9AA2-B218B28AD742}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -29,6 +31,14 @@ Global
 		{8A3AC25B-1813-4547-A249-76F59D487575}.Release|Win32.Build.0 = Release|Win32
 		{8A3AC25B-1813-4547-A249-76F59D487575}.Release|x64.ActiveCfg = Release|x64
 		{8A3AC25B-1813-4547-A249-76F59D487575}.Release|x64.Build.0 = Release|x64
+		{83736059-9485-460F-9AA2-B218B28AD742}.Debug|Win32.ActiveCfg = Debug|Win32
+		{83736059-9485-460F-9AA2-B218B28AD742}.Debug|Win32.Build.0 = Debug|Win32
+		{83736059-9485-460F-9AA2-B218B28AD742}.Debug|x64.ActiveCfg = Debug|x64
+		{83736059-9485-460F-9AA2-B218B28AD742}.Debug|x64.Build.0 = Debug|x64
+		{83736059-9485-460F-9AA2-B218B28AD742}.Release|Win32.ActiveCfg = Release|Win32
+		{83736059-9485-460F-9AA2-B218B28AD742}.Release|Win32.Build.0 = Release|Win32
+		{83736059-9485-460F-9AA2-B218B28AD742}.Release|x64.ActiveCfg = Release|x64
+		{83736059-9485-460F-9AA2-B218B28AD742}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

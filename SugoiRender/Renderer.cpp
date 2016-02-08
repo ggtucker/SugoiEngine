@@ -29,7 +29,7 @@ Renderer::Renderer(const Shader& shader, const Camera& camera) : shader{ shader 
 	check_gl_error();
 }
 
-void Renderer::updateMVP() const {
+void Renderer::updateMVP() {
 	glm::mat4 _proj = camera.GetProjectionMatrix();
 	glm::mat4 _view = camera.GetViewMatrix();
 	glm::mat4 _model = model.top();
@@ -39,16 +39,16 @@ void Renderer::updateMVP() const {
 	check_gl_error();
 }
 
-void Renderer::Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) const {
+void Renderer::Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
 	glClearColor(red, green, blue, alpha);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	check_gl_error();
 }
 
-void Renderer::Render(const Mesh& mesh) const {
+void Renderer::RenderMesh(GLuint meshId) {
 	shader.Use();
 	updateMVP();
-	mesh.Render(this->shader);
+	meshPool[meshId].Render();
 }
 
 void Renderer::PushMatrix() {
@@ -86,6 +86,11 @@ void Renderer::RotateZ(GLfloat degrees) {
 	model.top() = glm::rotate(model.top(), degrees, glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
+void Renderer::SetRenderMode(GLenum mode) {
+	glRenderMode(mode);
+	check_gl_error();
+}
+
 void Renderer::EnableImmediateMode(GLenum mode) {
 	glBegin(mode);
 	check_gl_error();
@@ -121,19 +126,27 @@ void Renderer::ImmediateTexCoord(GLfloat s, GLfloat t) {
 	check_gl_error();
 }
 
+void Renderer::CreateMesh(GLuint* meshId) {
+	*meshId = meshPool.create();
+}
+
+void Renderer::FinishMesh(GLuint meshId) {
+	meshPool[meshId].Build();
+}
+
+GLuint Renderer::AddVertexToMesh(GLuint meshId, const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords) {
+	return meshPool[meshId].AddVertex(position, normal, texCoords);
+}
+
+void Renderer::AddTriangleToMesh(GLuint meshId, GLuint v1, GLuint v2, GLuint v3) {
+	meshPool[meshId].AddTriangle(v1, v2, v3);
+}
+
 Shader& Renderer::GetShader() {
 	return this->shader;
 }
 
-const Shader& Renderer::GetShader() const {
-	return this->shader;
-}
-
 Camera& Renderer::GetCamera() {
-	return this->camera;
-}
-
-const Camera& Renderer::GetCamera() const {
 	return this->camera;
 }
 

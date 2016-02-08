@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <DataStructures\TMemoryPool.h>
 #include <stack>
 #include "Shader.h"
 #include "Camera.h"
@@ -16,8 +17,8 @@ public:
 	explicit Renderer(const Camera& camera);
 	Renderer(const Shader& shader, const Camera& camera);
 
-	void Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) const;
-	void Render(const Mesh& mesh) const;
+	void Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+	void RenderMesh(GLuint meshId);
 
 	void PushMatrix();
 	void PopMatrix();
@@ -30,6 +31,7 @@ public:
 	void RotateY(GLfloat degrees);
 	void RotateZ(GLfloat degrees);
 
+	void SetRenderMode(GLenum mode);
 	void EnableImmediateMode(GLenum mode);
 	void DisableImmediateMode();
 	void ImmediateColor(GLfloat red, GLfloat green, GLfloat blue);
@@ -38,16 +40,21 @@ public:
 	void ImmediateNormal(GLfloat x, GLfloat y, GLfloat z);
 	void ImmediateTexCoord(GLfloat s, GLfloat t);
 
+	void CreateMesh(GLuint* meshId);
+	void FinishMesh(GLuint meshId);
+	GLuint AddVertexToMesh(GLuint meshId, const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords);
+	void AddTriangleToMesh(GLuint meshId, GLuint v1, GLuint v2, GLuint v3);
+
 	Shader& GetShader();
-	const Shader& GetShader() const;
 	Camera& GetCamera();
-	const Camera& GetCamera() const;
 
 private:
 	Shader shader;
 	Camera camera;
 	std::stack<glm::mat4> model;
 
-	void updateMVP() const;
+	TMemoryPool<Mesh, 16> meshPool;
+
+	void updateMVP();
 };
 }
