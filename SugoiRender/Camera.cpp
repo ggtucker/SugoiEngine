@@ -3,6 +3,36 @@
 namespace sr {
 Camera::Camera() : Camera(glm::vec3()) {}
 
+Camera::Camera(const Camera& other) :
+	pos{ other.pos },
+	worldUp{ other.worldUp },
+	pitch{ other.pitch },
+	yaw{ other.yaw },
+	front{ other.front },
+	right{ other.right },
+	up{ other.up },
+	movementSpeed{ other.movementSpeed },
+	mouseSensitivity{ other.mouseSensitivity },
+	zoom{ other.zoom },
+	aspect{ other.aspect },
+	near{ other.near },
+	far{ other.far } {}
+
+Camera::Camera(Camera&& other) :
+	pos{ std::move(other.pos) },
+	worldUp{ std::move(other.worldUp) },
+	pitch{ std::move(other.pitch) },
+	yaw{ std::move(other.yaw) },
+	front{ std::move(other.front) },
+	right{ std::move(other.right) },
+	up{ std::move(other.up) },
+	movementSpeed{ std::move(other.movementSpeed) },
+	mouseSensitivity{ std::move(other.mouseSensitivity) },
+	zoom{ std::move(other.zoom) },
+	aspect{ std::move(other.aspect) },
+	near{ std::move(other.near) },
+	far{ std::move(other.far) } {}
+
 Camera::Camera(const glm::vec3& pos) :
 	pos{ pos },
 	worldUp{ 0.0f, 1.0f, 0.0f },
@@ -16,6 +46,44 @@ Camera::Camera(const glm::vec3& pos) :
 	far{ FAR }
 {
 	updateVectors();
+}
+
+Camera& Camera::operator=(const Camera& other) {
+	if (this != &other) {
+		pos = other.pos;
+		worldUp = other.worldUp;
+		pitch = other.pitch;
+		yaw = other.yaw;
+		front = other.front;
+		right = other.right;
+		up = other.up;
+		movementSpeed = other.movementSpeed;
+		mouseSensitivity = other.mouseSensitivity;
+		zoom = other.zoom;
+		aspect = other.aspect;
+		near = other.near;
+		far = other.far;
+	}
+	return *this;
+}
+
+Camera& Camera::operator=(Camera&& other) {
+	if (this != &other) {
+		pos = std::move(other.pos);
+		worldUp = std::move(other.worldUp);
+		pitch = std::move(other.pitch);
+		yaw = std::move(other.yaw);
+		front = std::move(other.front);
+		right = std::move(other.right);
+		up = std::move(other.up);
+		movementSpeed = std::move(other.movementSpeed);
+		mouseSensitivity = std::move(other.mouseSensitivity);
+		zoom = std::move(other.zoom);
+		aspect = std::move(other.aspect);
+		near = std::move(other.near);
+		far = std::move(other.far);
+	}
+	return *this;
 }
 
 glm::mat4 Camera::GetViewMatrix() const {

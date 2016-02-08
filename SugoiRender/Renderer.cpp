@@ -8,6 +8,17 @@ namespace sr {
 
 Renderer::Renderer() : Renderer(Shader(), Camera()) {}
 
+Renderer::Renderer(const Renderer& other) :
+	shader{ other.shader },
+	camera{ other.camera },
+	model{ other.model } {
+
+}
+
+Renderer::Renderer(Renderer&& other) {
+
+}
+
 Renderer::Renderer(const Shader& shader) : Renderer(shader, Camera()) {}
 
 Renderer::Renderer(const Camera& camera) : Renderer(Shader(), camera) {}
@@ -15,6 +26,7 @@ Renderer::Renderer(const Camera& camera) : Renderer(Shader(), camera) {}
 Renderer::Renderer(const Shader& shader, const Camera& camera) : shader{ shader }, camera{ camera } {
 	model.push(glm::mat4());
 	glEnable(GL_DEPTH_TEST);
+	check_gl_error();
 }
 
 void Renderer::updateMVP() const {
@@ -24,11 +36,13 @@ void Renderer::updateMVP() const {
 	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(_proj));
 	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(_view));
 	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "model"), 1, GL_FALSE, glm::value_ptr(_model));
+	check_gl_error();
 }
 
 void Renderer::Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) const {
 	glClearColor(red, green, blue, alpha);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	check_gl_error();
 }
 
 void Renderer::Render(const Mesh& mesh) const {
@@ -74,30 +88,37 @@ void Renderer::RotateZ(GLfloat degrees) {
 
 void Renderer::EnableImmediateMode(GLenum mode) {
 	glBegin(mode);
+	check_gl_error();
 }
 
 void Renderer::DisableImmediateMode() {
 	glEnd();
+	check_gl_error();
 }
 
 void Renderer::ImmediateColor(GLfloat red, GLfloat green, GLfloat blue) {
 	glColor3f(red, green, blue);
+	check_gl_error();
 }
 
 void Renderer::ImmediateColorAlpha(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
 	glColor4f(red, green, blue, alpha);
+	check_gl_error();
 }
 
 void Renderer::ImmediateVertex(GLfloat x, GLfloat y, GLfloat z) {
 	glVertex3f(x, y, z);
+	check_gl_error();
 }
 
 void Renderer::ImmediateNormal(GLfloat nx, GLfloat ny, GLfloat nz) {
 	glNormal3f(nx, ny, nz);
+	check_gl_error();
 }
 
 void Renderer::ImmediateTexCoord(GLfloat s, GLfloat t) {
 	glTexCoord2f(s, t);
+	check_gl_error();
 }
 
 Shader& Renderer::GetShader() {

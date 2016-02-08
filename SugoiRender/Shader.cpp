@@ -1,5 +1,6 @@
 #include "Shader.h"
 
+#include "GLError.h"
 #include <stdexcept>
 #include <cassert>
 
@@ -17,6 +18,7 @@ void Shader::LoadShaderFiles(const GLchar* vertexPath, const GLchar* fragmentPat
 	this->program = createShaderProgram(vertexShader, fragmentShader);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	check_gl_error();
 }
 
 GLuint Shader::GetProgram() const {
@@ -25,6 +27,7 @@ GLuint Shader::GetProgram() const {
 
 void Shader::Use() const {
 	glUseProgram(this->program);
+	check_gl_error();
 }
 
 void Shader::loadShaderFile(const GLchar* filePath, std::string& shaderSource) {
@@ -62,6 +65,7 @@ GLuint Shader::compileShader(GLenum shaderType, const GLchar* shaderSource) {
 		glGetShaderInfoLog(shader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
+	check_gl_error();
 	return shader;
 }
 
@@ -79,6 +83,7 @@ GLuint Shader::createShaderProgram(GLuint vertexShader, GLuint fragmentShader) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED\n" << infoLog << std::endl;
 	}
+	check_gl_error();
 	return shaderProgram;
 }
 

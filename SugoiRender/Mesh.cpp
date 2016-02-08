@@ -29,6 +29,7 @@ Mesh::~Mesh() {
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
 	glDeleteBuffers(1, &this->EBO);
+	check_gl_error();
 }
 
 Mesh& Mesh::operator=(Mesh&& other) {
@@ -36,6 +37,7 @@ Mesh& Mesh::operator=(Mesh&& other) {
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
 	glDeleteBuffers(1, &this->EBO);
+	check_gl_error();
 	this->VAO = other.VAO;
 	this->VBO = other.VBO;
 	this->EBO = other.EBO;
@@ -64,9 +66,11 @@ void Mesh::Render(const Shader& shader) const {
 	for (GLuint i = 0; i < this->textures.size(); ++i) {
 		this->textures[i].Unbind(i);
 	}
+
+	check_gl_error();
 }
 
-GLuint Mesh::AddVertex(const Vertex& vertex) {
+GLuint Mesh::AddVertex(Vertex&& vertex) {
 	this->vertices.push_back(vertex);
 	return this->vertices.size() - 1;
 }
@@ -76,7 +80,7 @@ GLuint Mesh::AddVertex(const glm::vec3& position, const glm::vec3& normal, const
 	v.Position = position;
 	v.Normal = normal;
 	v.TexCoords = texCoords;
-	return AddVertex(v);
+	return AddVertex(std::move(v));
 }
 
 void Mesh::AddTriangle(GLuint v1, GLuint v2, GLuint v3) {
@@ -90,8 +94,6 @@ void Mesh::AddTexture(const Texture& texture) {
 }
 
 void Mesh::Build() {
-	check_gl_error();
-
 	glGenVertexArrays(1, &this->VAO);
 	glGenBuffers(1, &this->VBO);
 	glGenBuffers(1, &this->EBO);

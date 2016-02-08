@@ -10,6 +10,8 @@ namespace sr {
 class Renderer {
 public:
 	Renderer();
+	Renderer(const Renderer& other);
+	Renderer(Renderer&& other);
 	explicit Renderer(const Shader& shader);
 	explicit Renderer(const Camera& camera);
 	Renderer(const Shader& shader, const Camera& camera);

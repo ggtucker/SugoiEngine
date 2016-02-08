@@ -8,6 +8,34 @@ namespace sr {
 	public:
 		CircularQueue() {}
 
+		CircularQueue(const CircularQueue& other) :
+			eventQueue{ other.eventQueue },
+			queueHead{ other.queueHead },
+			queueTail{ other.queueTail } {}
+
+		CircularQueue(CircularQueue&& other) :
+			eventQueue{ std::move(other.eventQueue) },
+			queueHead{ std::move(other.queueHead) },
+			queueTail{ std::move(other.queueTail) } {}
+
+		CircularQueue& operator=(const CircularQueue& other) {
+			if (this != &other) {
+				eventQueue = other.eventQueue;
+				queueHead = other.queueHead;
+				queueTail = other.queueTail;
+			}
+			return *this;
+		}
+
+		CircularQueue& operator=(CircularQueue&& other) {
+			if (this != &other) {
+				eventQueue = std::move(other.eventQueue);
+				queueHead = std::move(other.queueHead);
+				queueTail = std::move(other.queueTail);
+			}
+			return *this;
+		}
+
 		void Push(TObject obj) {
 			if ((queueTail + 1) % MAX_SIZE != queueHead) {
 				eventQueue[queueTail] = obj;
