@@ -2,8 +2,8 @@
 #include <SugoiRender/Camera.h>
 #include <SugoiRender/Mesh.h>
 #include <SugoiRender/Renderer.h>
-#include <SugoiRender\Texture.h>
-#include "Chunk.h"
+#include <SugoiRender/Texture.h>
+#include "ChunkManager.h"
 
 //glm::vec3 cubepositions[] = {
 //	glm::vec3(0.0f,  0.0f,  0.0f),
@@ -41,8 +41,8 @@ int main() {
 	sr::Renderer renderer(shader);
 	sr::Camera& camera = renderer.GetCamera();
 
-	Chunk chunk;
-	chunk.CreateMesh(renderer);
+	ChunkManager chunkManager(&renderer);
+	chunkManager.CreateNewChunk(0, 0, 0);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while (window.IsOpen()) {
@@ -99,7 +99,7 @@ int main() {
 		glUniform1i(glGetUniformLocation(shader.GetProgram(), tex.GetName().c_str()), 0);
 
 		renderer.Clear(0.2f, 0.3f, 0.3f, 1.0f);
-		chunk.Render(renderer);
+		chunkManager.Render();
 		window.SwapBuffers();
 	}
 

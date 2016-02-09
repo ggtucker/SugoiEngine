@@ -126,12 +126,25 @@ void Renderer::ImmediateTexCoord(GLfloat s, GLfloat t) {
 	check_gl_error();
 }
 
-void Renderer::CreateMesh(GLuint* meshId) {
+void Renderer::CreateMesh(GLint* meshId) {
 	*meshId = meshPool.create();
 }
 
-void Renderer::FinishMesh(GLuint meshId) {
+void Renderer::DeleteMesh(GLint meshId) {
+	meshPool.deallocate(meshId);
+}
+
+void Renderer::FinishMesh(GLint meshId) {
 	meshPool[meshId].Build();
+}
+
+void Renderer::ClearMesh(GLint meshId) {
+	meshPool[meshId].Clear();
+}
+
+void Renderer::GetMeshInfo(GLint meshId, int* numVerts, int* numTriangles) {
+	*numVerts = meshPool[meshId].GetNumVertices();
+	*numTriangles = meshPool[meshId].GetNumTriangles();
 }
 
 GLuint Renderer::AddVertexToMesh(GLuint meshId, const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords) {

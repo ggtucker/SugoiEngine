@@ -17,18 +17,12 @@ Mesh::Mesh(Mesh&& other)
 }
 
 Mesh::~Mesh() {
-	glDeleteVertexArrays(1, &this->VAO);
-	glDeleteBuffers(1, &this->VBO);
-	glDeleteBuffers(1, &this->EBO);
-	check_gl_error();
+	Clear();
 }
 
 Mesh& Mesh::operator=(Mesh&& other) {
 	assert(this != &other);
-	glDeleteVertexArrays(1, &this->VAO);
-	glDeleteBuffers(1, &this->VBO);
-	glDeleteBuffers(1, &this->EBO);
-	check_gl_error();
+	Clear();
 	this->vertices = std::move(other.vertices);
 	this->indices = std::move(other.indices);
 	this->VAO = other.VAO;
@@ -58,6 +52,13 @@ void Mesh::AddTriangle(GLuint v1, GLuint v2, GLuint v3) {
 void Mesh::Clear() {
 	this->vertices.clear();
 	this->indices.clear();
+	if (this->VAO)
+		glDeleteVertexArrays(1, &this->VAO);
+	if (this->VBO)
+		glDeleteBuffers(1, &this->VBO);
+	if (this->EBO)
+		glDeleteBuffers(1, &this->EBO);
+	check_gl_error();
 }
 
 void Mesh::Build() {

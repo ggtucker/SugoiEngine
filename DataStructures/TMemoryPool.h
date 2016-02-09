@@ -52,12 +52,12 @@ public:
 		return pool_[i].obj;
 	}
 
-	unsigned int create() {
+	int create() {
 		return create<>();
 	}
 
 	template<class... Args>
-	unsigned int create(Args&&... args) {
+	int create(Args&&... args) {
 		std::lock_guard<std::mutex> lock(mutex_);
 		if (first_avail_) {
 			int index = first_avail_ - pool_.data();
@@ -69,10 +69,10 @@ public:
 		return -1;
 	}
 
-	void deallocate(unsigned int i) {
+	void deallocate(int i) {
 		std::lock_guard<std::mutex> lock(mutex_);
-		if (i >= 0 && i < pool_.size()) {
-			TObject* obj = reinterpret_cast<TObject*>(pool_[i]);
+		if (i >= 0 && i < (int) pool_.size()) {
+			TObject* obj = &pool_[i].obj;
 			obj->~TObject();
 			PoolNode* node = reinterpret_cast<PoolNode*>(obj);
 			node->next = first_avail_;

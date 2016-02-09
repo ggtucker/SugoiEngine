@@ -4,8 +4,6 @@
 
 class Block {
 public:
-	static const float BLOCK_RENDER_SIZE;
-
 	Block() : m_active{ true }, m_blockType{ BlockType::Default } {}
 	~Block() {}
 

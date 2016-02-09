@@ -40,8 +40,11 @@ public:
 	void ImmediateNormal(GLfloat x, GLfloat y, GLfloat z);
 	void ImmediateTexCoord(GLfloat s, GLfloat t);
 
-	void CreateMesh(GLuint* meshId);
-	void FinishMesh(GLuint meshId);
+	void CreateMesh(GLint* meshId);
+	void DeleteMesh(GLint meshId);
+	void FinishMesh(GLint meshId);
+	void ClearMesh(GLint meshId);
+	void GetMeshInfo(GLint meshId, int* numVerts, int* numTriangles);
 	GLuint AddVertexToMesh(GLuint meshId, const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords);
 	void AddTriangleToMesh(GLuint meshId, GLuint v1, GLuint v2, GLuint v3);
 

@@ -22,6 +22,9 @@ public:
 	void Build();
 	void Render();
 
+	int GetNumVertices() { return vertices.size(); }
+	int GetNumTriangles() { return indices.size() / 3; }
+
 private:
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
