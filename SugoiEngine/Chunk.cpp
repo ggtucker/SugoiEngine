@@ -9,12 +9,14 @@ Chunk::Chunk(sr::Renderer* renderer, ChunkManager* chunkManager) :
 	m_chunkManager{ chunkManager },
 	m_blocks{ nullptr },
 	m_meshId{ -1 },
-	m_position{ 0.0f, 0.0f, 0.0f },
+	m_cachedMeshId{ -1 },
 	m_grid{ 0, 0, 0 },
 	m_setup { false },
 	m_created{ false },
+	m_unloading{ false },
 	m_rebuild{ false },
 	m_rebuildNeighbors{ false },
+	m_rebuildComplete{ false },
 	m_empty{ false },
 	m_surrounded{ false },
 	m_x_minus_full{ false },
@@ -46,18 +48,21 @@ Chunk::~Chunk() {
 }
 
 void Chunk::Unload() {
+	ClearMeshCache();
+
 	if (m_meshId != -1) {
 		m_renderer->DeleteMesh(m_meshId);
 		m_meshId = -1;
 	}
 
 	if (IsSetup()) {
-		std::vector<Chunk*> neighbors = Chunk::GetNeighbors();
+		std::vector<Chunk*> neighbors = GetNeighbors();
 		for (Chunk* neighbor : neighbors) {
 			if (neighbor->IsSetup()) {
 				neighbor->UpdateSurroundedFlag();
 			}
 		}
+		m_setup = false;
 	}
 }
 
@@ -90,6 +95,32 @@ std::vector<Chunk*> Chunk::GetNeighbors() {
 		neighbors.push_back(chunkZPlus);
 
 	return neighbors;
+}
+
+ChunkCoordKeyList Chunk::GetMissingNeighbors() {
+	ChunkCoordKeyList missing;
+
+	Chunk* chunkXMinus = m_chunkManager->GetChunk(m_grid.x - 1, m_grid.y, m_grid.z);
+	Chunk* chunkXPlus = m_chunkManager->GetChunk(m_grid.x + 1, m_grid.y, m_grid.z);
+	Chunk* chunkYMinus = m_chunkManager->GetChunk(m_grid.x, m_grid.y - 1, m_grid.z);
+	Chunk* chunkYPlus = m_chunkManager->GetChunk(m_grid.x, m_grid.y + 1, m_grid.z);
+	Chunk* chunkZMinus = m_chunkManager->GetChunk(m_grid.x, m_grid.y, m_grid.z - 1);
+	Chunk* chunkZPlus = m_chunkManager->GetChunk(m_grid.x, m_grid.y, m_grid.z + 1);
+
+	if (chunkXMinus == nullptr)
+		missing.push_back(ChunkCoordKey(m_grid.x - 1, m_grid.y, m_grid.z));
+	if (chunkXPlus == nullptr)
+		missing.push_back(ChunkCoordKey(m_grid.x + 1, m_grid.y, m_grid.z));
+	if (chunkYMinus == nullptr)
+		missing.push_back(ChunkCoordKey(m_grid.x, m_grid.y - 1, m_grid.z));
+	if (chunkYPlus == nullptr)
+		missing.push_back(ChunkCoordKey(m_grid.x, m_grid.y + 1, m_grid.z));
+	if (chunkZMinus == nullptr)
+		missing.push_back(ChunkCoordKey(m_grid.x, m_grid.y, m_grid.z - 1));
+	if (chunkZPlus == nullptr)
+		missing.push_back(ChunkCoordKey(m_grid.x, m_grid.y, m_grid.z + 1));
+
+	return missing;
 }
 
 bool Chunk::GetActive(int x, int y, int z) {
@@ -175,15 +206,19 @@ void Chunk::UpdateEmptyFlag() {
 }
 
 void Chunk::Render() {
-	m_renderer->PushMatrix();
-		//m_renderer->EnableImmediateMode(GL_QUADS);
-		//m_renderer->ImmediateColorAlpha(1.0f, 1.0f, 1.0f, 1.0f);
-		//m_renderer->SetRenderMode(GL_RENDER);
-		m_renderer->Translate(m_position.x, m_position.y, m_position.z);
-		if (m_meshId != -1) {
-			m_renderer->RenderMesh(m_meshId);
-		}
-	m_renderer->PopMatrix();
+
+	int meshToUse = (m_cachedMeshId != -1) ?  m_cachedMeshId : m_meshId;
+
+	if (meshToUse != -1) {
+		m_renderer->PushMatrix();
+			//m_renderer->EnableImmediateMode(GL_QUADS);
+			//m_renderer->ImmediateColorAlpha(1.0f, 1.0f, 1.0f, 1.0f);
+			//m_renderer->SetRenderMode(GL_RENDER);
+			glm::vec3 pos = GetPosition();
+			m_renderer->Translate(pos.x, pos.y, pos.z);
+			m_renderer->RenderMesh(meshToUse);
+		m_renderer->PopMatrix();
+	}
 }
 
 void Chunk::CreateMesh() {
@@ -199,14 +234,11 @@ void Chunk::CreateMesh() {
 			}
 		}
 	}
-	m_renderer->FinishMesh(m_meshId);
 }
 
 void Chunk::RebuildMesh() {
-	if (m_meshId != -1) {
-		m_renderer->ClearMesh(m_meshId);
-	}
 
+	CacheMesh();
 	CreateMesh();
 
 	UpdateWallFlags();
@@ -223,6 +255,27 @@ void Chunk::RebuildMesh() {
 	}
 	m_rebuildNeighbors = false;
 	m_rebuild = false;
+	m_rebuildComplete = true;
+}
+
+void Chunk::CompleteMesh() {
+	m_renderer->FinishMesh(m_meshId);
+	UpdateEmptyFlag();
+	ClearMeshCache();
+	m_rebuildComplete = false;
+}
+
+void Chunk::CacheMesh() {
+	ClearMeshCache();
+	m_cachedMeshId = m_meshId;
+	m_meshId = -1;
+}
+
+void Chunk::ClearMeshCache() {
+	if (m_cachedMeshId != -1) {
+		m_renderer->ClearMesh(m_cachedMeshId);
+		m_cachedMeshId = -1;
+	}
 }
 
 void Chunk::SetNeedsRebuild(bool rebuild, bool rebuildNeighbors) {

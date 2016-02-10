@@ -1,9 +1,36 @@
 #pragma once
 
 #include <SugoiRender\Renderer.h>
+#include <vector>
 #include "Block.h"
 
 class ChunkManager;
+
+struct ChunkCoordKey {
+	ChunkCoordKey(int x, int y, int z) : x{ x }, y{ y }, z{ z } {}
+	int x;
+	int y;
+	int z;
+};
+
+inline bool const operator==(const ChunkCoordKey& l, const ChunkCoordKey& r) {
+	return l.x == r.x && l.y == r.y && l.z == r.z;
+};
+
+inline bool const operator<(const ChunkCoordKey& l, const ChunkCoordKey& r) {
+	if (l.x < r.x)  return true;
+	if (l.x > r.x)  return false;
+
+	if (l.y < r.y)  return true;
+	if (l.y > r.y)  return false;
+
+	if (l.z < r.z)  return true;
+	if (l.z > r.z)  return false;
+
+	return false;
+};
+
+using ChunkCoordKeyList = std::vector<ChunkCoordKey>;
 
 class Chunk {
 public:
@@ -11,6 +38,13 @@ public:
 	static const int NUM_NEIGHBORS = 6;
 	static const float BLOCK_RENDER_SIZE;
 	static const float HALF_RENDER_SIZE;
+
+	// Static position functions
+	static float GetWorldX(int x) { return x * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
+	static float GetWorldY(int y) { return y * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
+	static float GetWorldZ(int z) { return z * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
+	static glm::vec3 GetWorldPosition(int x, int y, int z) { return glm::vec3(GetWorldX(x), GetWorldY(y), GetWorldZ(z)); }
+	static glm::vec3 GetWorldCenter(int x, int y, int z) { return GetWorldPosition(x, y, z) + glm::vec3(Chunk::CHUNK_SIZE * Chunk::HALF_RENDER_SIZE); }
 
 	Chunk(sr::Renderer* renderer, ChunkManager* chunkManager);
 	~Chunk();
@@ -21,13 +55,16 @@ public:
 	bool IsSetup() const { return m_setup; }
 	void SetCreated(bool created) { m_created = created; }
 	bool IsCreated() { return m_created; }
+	bool IsEmpty() { return m_empty; }
+	void SetUnloading(bool unloading) { m_unloading = unloading; }
+	bool IsUnloading() { return m_unloading; }
 
-	// Position
-	float GetX() const { return m_position.x; }
-	float GetY() const { return m_position.y; }
-	float GetZ() const { return m_position.z; }
-	glm::vec3 GetPosition() const { return m_position; }
-	void SetPosition(float x, float y, float z) { m_position = glm::vec3(x, y, z); }
+	// World position
+	float GetX() const { return GetWorldX(m_grid.x); }
+	float GetY() const { return GetWorldY(m_grid.y); }
+	float GetZ() const { return GetWorldZ(m_grid.z); }
+	glm::vec3 GetPosition() const { return glm::vec3(GetWorldX(m_grid.x), GetWorldY(m_grid.y), GetWorldZ(m_grid.z)); }
+	glm::vec3 GetCenter() const { return GetPosition() + glm::vec3(Chunk::CHUNK_SIZE * Chunk::HALF_RENDER_SIZE); }
 
 	// Grid position
 	int GetGridX() const { return m_grid.x; }
@@ -38,6 +75,7 @@ public:
 
 	// Neighbors
 	std::vector<Chunk*> GetNeighbors();
+	ChunkCoordKeyList GetMissingNeighbors();
 
 	// Active
 	bool GetActive(int x, int y, int z);
@@ -50,8 +88,12 @@ public:
 	// Rebuild
 	void CreateMesh();
 	void RebuildMesh();
+	void CompleteMesh();
+	void CacheMesh();
+	void ClearMeshCache();
 	void SetNeedsRebuild(bool rebuild, bool rebuildNeighbors);
 	bool NeedsRebuild() const { return m_rebuild; }
+	bool IsRebuildComplete() const { return m_rebuildComplete; }
 
 	// Render
 	void Render();
@@ -67,14 +109,16 @@ private:
 
 	Block*** m_blocks;
 	int m_meshId;
-	glm::vec3 m_position;
+	int m_cachedMeshId;
 	glm::ivec3 m_grid;
 
 	// Setup and creation flags
 	bool m_setup;
 	bool m_created;
+	bool m_unloading;
 	bool m_rebuild;
 	bool m_rebuildNeighbors;
+	bool m_rebuildComplete;
 
 	// Flags for empty chunk and completely surrounded
 	bool m_empty;

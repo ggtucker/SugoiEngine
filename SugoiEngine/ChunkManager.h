@@ -6,31 +6,7 @@
 #include <SugoiRender\Renderer.h>
 #include "Chunk.h"
 
-struct ChunkCoordKey {
-	int x;
-	int y;
-	int z;
-};
-
-inline bool const operator==(const ChunkCoordKey& l, const ChunkCoordKey& r) {
-	return l.x == r.x && l.y == r.y && l.z == r.z;
-};
-
-inline bool const operator<(const ChunkCoordKey& l, const ChunkCoordKey& r) {
-	if (l.x < r.x)  return true;
-	if (l.x > r.x)  return false;
-
-	if (l.y < r.y)  return true;
-	if (l.y > r.y)  return false;
-
-	if (l.z < r.z)  return true;
-	if (l.z > r.z)  return false;
-
-	return false;
-};
-
 using ChunkList = std::vector<Chunk*>;
-using ChunkCoordKeyList = std::vector<ChunkCoordKey>;
 
 class ChunkManager {
 public:
@@ -42,13 +18,17 @@ public:
 
 	Chunk* GetChunk(int x, int y, int z);
 	void CreateNewChunk(int x, int y, int z);
+	void UnloadChunk(Chunk* chunk);
 
-	// Render
+	void Update();
 	void Render();
 
 private:
 	sr::Renderer* m_renderer;
 	std::map<ChunkCoordKey, Chunk*> m_chunkMap;
+
+	// Load radius
+	float m_loadRadius;
 
 	// Threads
 	std::thread* m_updateChunksThread;

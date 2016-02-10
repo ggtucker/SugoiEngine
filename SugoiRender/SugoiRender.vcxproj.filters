@@ -68,9 +68,6 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CircularQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GLError.h">
       <Filter>Header Files</Filter>
     </ClInclude>

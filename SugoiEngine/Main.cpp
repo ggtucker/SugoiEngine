@@ -4,7 +4,7 @@
 #include <SugoiRender/Renderer.h>
 #include <SugoiRender/Texture.h>
 #include "ChunkManager.h"
-
+#include "SugoiRender/GLError.h"
 //glm::vec3 cubepositions[] = {
 //	glm::vec3(0.0f,  0.0f,  0.0f),
 //	glm::vec3(2.0f,  5.0f, -15.0f),
@@ -40,9 +40,12 @@ int main() {
 	sr::Shader shader("shader.vert", "shader.frag");
 	sr::Renderer renderer(shader);
 	sr::Camera& camera = renderer.GetCamera();
+	camera.SetPosition(glm::vec3(0.0f, Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE, 0.0f));
 
 	ChunkManager chunkManager(&renderer);
 	chunkManager.CreateNewChunk(0, 0, 0);
+
+	sr::Texture tex("wood_container.jpg", "Texture");
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while (window.IsOpen()) {
@@ -92,13 +95,9 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		sr::Texture tex("wood_container.jpg", "Texture");
-		//sr::Texture tex("awesome_face.png", "Texture");
-
-		tex.Bind();
-		glUniform1i(glGetUniformLocation(shader.GetProgram(), tex.GetName().c_str()), 0);
-
+		shader.BindTexture(tex, 0);
 		renderer.Clear(0.2f, 0.3f, 0.3f, 1.0f);
+		chunkManager.Update();
 		chunkManager.Render();
 		window.SwapBuffers();
 	}

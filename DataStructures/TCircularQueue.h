@@ -4,32 +4,32 @@
 
 namespace sr {
 	template<typename TObject, size_t MAX_SIZE = 16>
-	class CircularQueue {
+	class TCircularQueue {
 	public:
-		CircularQueue() {}
+		TCircularQueue() {}
 
-		CircularQueue(const CircularQueue& other) :
-			eventQueue{ other.eventQueue },
+		TCircularQueue(const TCircularQueue& other) :
+			queue{ other.queue },
 			queueHead{ other.queueHead },
 			queueTail{ other.queueTail } {}
 
-		CircularQueue(CircularQueue&& other) :
-			eventQueue{ std::move(other.eventQueue) },
+		TCircularQueue(TCircularQueue&& other) :
+			queue{ std::move(other.queue) },
 			queueHead{ std::move(other.queueHead) },
 			queueTail{ std::move(other.queueTail) } {}
 
-		CircularQueue& operator=(const CircularQueue& other) {
+		TCircularQueue& operator=(const TCircularQueue& other) {
 			if (this != &other) {
-				eventQueue = other.eventQueue;
+				queue = other.queue;
 				queueHead = other.queueHead;
 				queueTail = other.queueTail;
 			}
 			return *this;
 		}
 
-		CircularQueue& operator=(CircularQueue&& other) {
+		TCircularQueue& operator=(TCircularQueue&& other) {
 			if (this != &other) {
-				eventQueue = std::move(other.eventQueue);
+				queue = std::move(other.queue);
 				queueHead = std::move(other.queueHead);
 				queueTail = std::move(other.queueTail);
 			}
@@ -38,14 +38,14 @@ namespace sr {
 
 		void Push(TObject obj) {
 			if ((queueTail + 1) % MAX_SIZE != queueHead) {
-				eventQueue[queueTail] = obj;
+				queue[queueTail] = obj;
 				queueTail = (queueTail + 1) % MAX_SIZE;
 			}
 		}
 
 		bool Pop(TObject& obj) {
 			if (queueHead != queueTail) {
-				obj = eventQueue[queueHead];
+				obj = queue[queueHead];
 				queueHead = (queueHead + 1) % MAX_SIZE;
 				return true;
 			}
@@ -54,14 +54,14 @@ namespace sr {
 
 		bool Peek(TObject& obj) {
 			if (queueHead != queueTail) {
-				obj = eventQueue[queueHead];
+				obj = queue[queueHead];
 				return true;
 			}
 			return false;
 		}
 
 	private:
-		std::array<TObject, MAX_SIZE> eventQueue;
+		std::array<TObject, MAX_SIZE> queue;
 		unsigned int queueHead;
 		unsigned int queueTail;
 	};

@@ -3,7 +3,7 @@
 #include "GLError.h"
 
 namespace sr {
-CircularQueue<Event> Window::eventQueue;
+TCircularQueue<Event> Window::eventQueue;
 
 Window::Window() : window{ nullptr }, isWindowOpen{ false } {
 }
@@ -53,6 +53,8 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
 
     // Define the viewport dimensions
     glViewport(0, 0, width, height);
+
+	check_gl_error();
 }
 
 void Window::SetMouseCursorVisible(GLboolean visible) {
@@ -61,6 +63,7 @@ void Window::SetMouseCursorVisible(GLboolean visible) {
     } else {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
+	check_gl_error();
 }
 
 void Window::Close() {
@@ -69,10 +72,12 @@ void Window::Close() {
 
 void Window::SwapBuffers() {
 	glfwSwapBuffers(this->window);
+	check_gl_error();
 }
 
 GLboolean Window::PollEvent(Event& event) {
     glfwPollEvents();
+	check_gl_error();
     return eventQueue.Pop(event);
 }
 

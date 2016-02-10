@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TMemoryPool.h">
+    <ClInclude Include="TIndexMemoryPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TCircularQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

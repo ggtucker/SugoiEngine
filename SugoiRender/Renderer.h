@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <DataStructures\TMemoryPool.h>
+#include <DataStructures\TIndexMemoryPool.h>
 #include <stack>
 #include "Shader.h"
 #include "Camera.h"
@@ -56,7 +56,7 @@ private:
 	Camera camera;
 	std::stack<glm::mat4> model;
 
-	TMemoryPool<Mesh, 16> meshPool;
+	TIndexMemoryPool<Mesh, 1024> meshPool;
 
 	void updateMVP();
 };

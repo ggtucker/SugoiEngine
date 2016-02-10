@@ -6,7 +6,7 @@
 #include <iostream>
 #include "Keyboard.h"
 #include "Event.h"
-#include "CircularQueue.h"
+#include "DataStructures/TCircularQueue.h"
 
 namespace sr {
 class Window {
@@ -30,7 +30,7 @@ private:
     GLuint width;
     GLuint height;
 
-	static CircularQueue<Event> eventQueue;
+	static TCircularQueue<Event> eventQueue;
 
     static void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode);
     static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);

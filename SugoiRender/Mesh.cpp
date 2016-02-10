@@ -2,10 +2,11 @@
 
 #include "GLError.h"
 #include <stdexcept>
+#include <GLFW/glfw3.h>
 
 namespace sr {
 
-Mesh::Mesh() {}
+Mesh::Mesh() : VAO{ 0 }, VBO{ 0 }, EBO{ 0 } {}
 
 Mesh::Mesh(Mesh&& other)
 	: VAO{ other.VAO }, VBO{ other.VBO }, EBO{ other.EBO },

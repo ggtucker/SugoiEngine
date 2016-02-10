@@ -6,29 +6,29 @@
 #include <utility>
 
 template<typename TObject, size_t PoolSize>
-class TMemoryPool {
+class TIndexMemoryPool {
 public:
-	TMemoryPool() {
+	TIndexMemoryPool() {
 
 		init_pool_();
 	}
 
-	TMemoryPool(const TMemoryPool& other) :
+	TIndexMemoryPool(const TIndexMemoryPool& other) :
 		pool_{ other.pool_ } {
 
 		init_pool_();
 	}
 
-	TMemoryPool(TMemoryPool&& other) :
+	TIndexMemoryPool(TIndexMemoryPool&& other) :
 		pool_{ std::move(other.pool_) },
 		first_avail_{ other.first_avail_ } {
 
 		other.first_avail_ = nullptr;
 	}
 
-	virtual ~TMemoryPool() {}
+	virtual ~TIndexMemoryPool() {}
 
-	TMemoryPool& operator=(const TMemoryPool& other) {
+	TIndexMemoryPool& operator=(const TIndexMemoryPool& other) {
 		if (this != &other) {
 			std::lock(this->mutex_, other.mutex_);
 			std::lock_guard<std::mutex> lhs_lock(this->mutex_, std::adopt_lock);
@@ -39,7 +39,7 @@ public:
 		return *this;
 	}
 
-	TMemoryPool& operator=(TMemoryPool&& other) {
+	TIndexMemoryPool& operator=(TIndexMemoryPool&& other) {
 		if (this != &other) {
 			pool_ = std::move(other.pool_);
 			first_avail_ = other.first_avail_;

@@ -146,7 +146,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="TMemoryPool.h" />
+    <ClInclude Include="TCircularQueue.h" />
+    <ClInclude Include="TIndexMemoryPool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

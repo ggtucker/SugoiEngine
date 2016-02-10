@@ -26,8 +26,8 @@ public:
 	int GetNumTriangles() { return indices.size() / 3; }
 
 private:
+	GLuint VAO, VBO, EBO;
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
-	GLuint VAO, VBO, EBO;
 };
 }

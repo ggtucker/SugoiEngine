@@ -1,6 +1,7 @@
 #include "Texture.h"
 #include <cassert>
 #include <SOIL2/SOIL2.h>
+#include "GLError.h"
 
 #define INVALID_TEXTURE ((unsigned int)-1)
 
@@ -59,10 +60,12 @@ Texture& Texture::operator=(Texture&& other) {
 
 void Texture::Bind() const {
 	glBindTexture(GL_TEXTURE_2D, this->id);
+	check_gl_error();
 }
 
 void Texture::Unbind() const {
 	glBindTexture(GL_TEXTURE_2D, NULL);
+	check_gl_error();
 }
 
 void Texture::Bind(GLuint textureNum) const {
@@ -116,6 +119,7 @@ void Texture::Load(const unsigned char* image, unsigned int w, unsigned int h) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+	check_gl_error();
 }
 
 bool Texture::IsLoaded() const {
