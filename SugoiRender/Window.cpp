@@ -81,6 +81,11 @@ GLboolean Window::PollEvent(Event& event) {
     return eventQueue.Pop(event);
 }
 
+void Window::SetPosition(int x, int y) {
+	glfwSetWindowPos(this->window, x, y);
+	check_gl_error();
+}
+
 GLboolean Window::IsOpen() const {
 	return this->isWindowOpen;
 }

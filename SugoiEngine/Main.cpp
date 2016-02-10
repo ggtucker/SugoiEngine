@@ -34,6 +34,7 @@ int main() {
 	// Create our window for drawing
 	sr::Window window(800, 600, "SugoiEngine", true);
 	window.SetMouseCursorVisible(false);
+	window.SetPosition(700, 200);
 
 	lastFrame = glfwGetTime();
 

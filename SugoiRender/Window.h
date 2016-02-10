@@ -21,6 +21,8 @@ public:
 	void SwapBuffers();
     GLboolean PollEvent(Event& event);
 
+	void SetPosition(int x, int y);
+
 	GLboolean IsOpen() const;
 	GLuint GetWidth() const;
 	GLuint GetHeight() const;
