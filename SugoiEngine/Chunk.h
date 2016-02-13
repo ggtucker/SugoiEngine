@@ -32,12 +32,22 @@ inline bool const operator<(const ChunkCoordKey& l, const ChunkCoordKey& r) {
 
 using ChunkCoordKeyList = std::vector<ChunkCoordKey>;
 
+enum class ChunkState {
+	Initial,
+	Loading,
+	Unloading,
+	RebuildingMesh,
+	RebuildComplete,
+	Idle
+};
+
 class Chunk {
 public:
-	static const int CHUNK_SIZE = 16;
-	static const int NUM_NEIGHBORS = 6;
-	static const float BLOCK_RENDER_SIZE;
-	static const float HALF_RENDER_SIZE;
+	/* PUBLIC FUNCTIONS */
+
+	// Construction & destruction
+	Chunk(sr::Renderer* renderer, ChunkManager* chunkManager);
+	~Chunk();
 
 	// Static position functions
 	static float GetWorldX(int x) { return x * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
@@ -46,18 +56,21 @@ public:
 	static glm::vec3 GetWorldPosition(int x, int y, int z) { return glm::vec3(GetWorldX(x), GetWorldY(y), GetWorldZ(z)); }
 	static glm::vec3 GetWorldCenter(int x, int y, int z) { return GetWorldPosition(x, y, z) + glm::vec3(Chunk::CHUNK_SIZE * Chunk::HALF_RENDER_SIZE); }
 
-	Chunk(sr::Renderer* renderer, ChunkManager* chunkManager);
-	~Chunk();
-
 	// Creation and destruction
 	void Unload();
-	void Setup();
-	bool IsSetup() const { return m_setup; }
-	void SetCreated(bool created) { m_created = created; }
-	bool IsCreated() { return m_created; }
+	void Load();
+	void SetUnloading() { m_state = ChunkState::Unloading; }
+	bool IsLoaded() { return m_loaded; }
 	bool IsEmpty() { return m_empty; }
-	void SetUnloading(bool unloading) { m_unloading = unloading; }
-	bool IsUnloading() { return m_unloading; }
+
+	// Chunk state accessors
+	ChunkState GetState() { return m_state; }
+	bool IsInitialState() { return m_state == ChunkState::Initial; }
+	bool IsLoading() { return m_state == ChunkState::Loading; }
+	bool IsUnloading() { return m_state == ChunkState::Unloading; }
+	bool IsRebuildingMesh() { return m_state == ChunkState::RebuildingMesh; }
+	bool IsRebuildComplete() const { return m_state == ChunkState::RebuildComplete; }
+	bool IsIdle() { return m_state == ChunkState::Idle; }
 
 	// World position
 	float GetX() const { return GetWorldX(m_grid.x); }
@@ -86,14 +99,14 @@ public:
 	void UpdateEmptyFlag();
 	
 	// Rebuild
-	void CreateMesh();
 	void RebuildMesh();
+	void CreateMesh();
 	void CompleteMesh();
 	void CacheMesh();
+	void ClearMesh();
 	void ClearMeshCache();
 	void SetNeedsRebuild(bool rebuild, bool rebuildNeighbors);
 	bool NeedsRebuild() const { return m_rebuild; }
-	bool IsRebuildComplete() const { return m_rebuildComplete; }
 
 	// Render
 	void Render();
@@ -102,8 +115,15 @@ public:
 	bool operator<(const Chunk &w) const;
 	static bool ClosestToCamera(const Chunk *lhs, const Chunk *rhs);
 
+public:
+	/* PUBLIC MEMBERS */
+	static const int CHUNK_SIZE = 16;
+	static const int NUM_NEIGHBORS = 6;
+	static const float BLOCK_RENDER_SIZE;
+	static const float HALF_RENDER_SIZE;
+
 private:
-	/* Private members */
+	/* PRIVATE MEMBERS */
 	sr::Renderer* m_renderer;
 	ChunkManager* m_chunkManager;
 
@@ -111,14 +131,13 @@ private:
 	int m_meshId;
 	int m_cachedMeshId;
 	glm::ivec3 m_grid;
+	int m_textureId;
 
 	// Setup and creation flags
-	bool m_setup;
-	bool m_created;
-	bool m_unloading;
+	ChunkState m_state;
+	bool m_loaded;
 	bool m_rebuild;
 	bool m_rebuildNeighbors;
-	bool m_rebuildComplete;
 
 	// Flags for empty chunk and completely surrounded
 	bool m_empty;

@@ -11,12 +11,10 @@ Chunk::Chunk(sr::Renderer* renderer, ChunkManager* chunkManager) :
 	m_meshId{ -1 },
 	m_cachedMeshId{ -1 },
 	m_grid{ 0, 0, 0 },
-	m_setup { false },
-	m_created{ false },
-	m_unloading{ false },
+	m_textureId { -1 },
+	m_state{ ChunkState::Initial },
 	m_rebuild{ false },
 	m_rebuildNeighbors{ false },
-	m_rebuildComplete{ false },
 	m_empty{ false },
 	m_surrounded{ false },
 	m_x_minus_full{ false },
@@ -48,27 +46,36 @@ Chunk::~Chunk() {
 }
 
 void Chunk::Unload() {
-	ClearMeshCache();
+	m_state = ChunkState::Unloading;
 
-	if (m_meshId != -1) {
-		m_renderer->DeleteMesh(m_meshId);
-		m_meshId = -1;
-	}
-
-	if (IsSetup()) {
+	if (m_loaded) {
+		m_loaded = false;
 		std::vector<Chunk*> neighbors = GetNeighbors();
 		for (Chunk* neighbor : neighbors) {
-			if (neighbor->IsSetup()) {
+			if (neighbor->IsLoaded()) {
 				neighbor->UpdateSurroundedFlag();
 			}
 		}
-		m_setup = false;
 	}
+
+	ClearMesh();
+	ClearMeshCache();
 }
 
-void Chunk::Setup() {
+void Chunk::Load() {
+	m_state = ChunkState::Loading;
+
 	// Generate chunk, i.e. load from file
-	m_setup = true;
+	for (int x = 0; x < CHUNK_SIZE; ++x) {
+		for (int y = 0; y < CHUNK_SIZE; ++y) {
+			for (int z = 0; z < CHUNK_SIZE; ++z) {
+				m_blocks[x][y][z] = Block();
+			}
+		}
+	}
+	m_loaded = true;
+
+	m_state = ChunkState::Idle;
 }
 
 std::vector<Chunk*> Chunk::GetNeighbors() {
@@ -184,12 +191,12 @@ void Chunk::UpdateSurroundedFlag() {
 	Chunk* chunkZMinus = m_chunkManager->GetChunk(m_grid.x, m_grid.y, m_grid.z - 1);
 	Chunk* chunkZPlus = m_chunkManager->GetChunk(m_grid.x, m_grid.y, m_grid.z + 1);
 
-	if (chunkXMinus != nullptr && chunkXMinus->IsSetup() && chunkXMinus->m_x_plus_full &&
-		chunkXPlus != nullptr  && chunkXPlus->IsSetup() && chunkXPlus->m_x_minus_full &&
-		chunkYMinus != nullptr && chunkYMinus->IsSetup() && chunkYMinus->m_y_plus_full &&
-		chunkYPlus != nullptr  && chunkYPlus->IsSetup() && chunkYPlus->m_y_minus_full &&
-		chunkZMinus != nullptr && chunkZMinus->IsSetup() && chunkZMinus->m_z_plus_full &&
-		chunkZPlus != nullptr  && chunkZPlus->IsSetup() && chunkZPlus->m_z_minus_full) {
+	if (chunkXMinus != nullptr && chunkXMinus->IsLoaded() && chunkXMinus->m_x_plus_full &&
+		chunkXPlus != nullptr  && chunkXPlus->IsLoaded() && chunkXPlus->m_x_minus_full &&
+		chunkYMinus != nullptr && chunkYMinus->IsLoaded() && chunkYMinus->m_y_plus_full &&
+		chunkYPlus != nullptr  && chunkYPlus->IsLoaded() && chunkYPlus->m_y_minus_full &&
+		chunkZMinus != nullptr && chunkZMinus->IsLoaded() && chunkZMinus->m_z_plus_full &&
+		chunkZPlus != nullptr  && chunkZPlus->IsLoaded() && chunkZPlus->m_z_minus_full) {
 
 		m_surrounded = true;
 	} else {
@@ -211,9 +218,6 @@ void Chunk::Render() {
 
 	if (meshToUse != -1) {
 		m_renderer->PushMatrix();
-			//m_renderer->EnableImmediateMode(GL_QUADS);
-			//m_renderer->ImmediateColorAlpha(1.0f, 1.0f, 1.0f, 1.0f);
-			//m_renderer->SetRenderMode(GL_RENDER);
 			glm::vec3 pos = GetPosition();
 			m_renderer->Translate(pos.x, pos.y, pos.z);
 			m_renderer->RenderMesh(meshToUse);
@@ -221,10 +225,39 @@ void Chunk::Render() {
 	}
 }
 
+void Chunk::RebuildMesh() {
+
+	m_state = ChunkState::RebuildingMesh;
+
+	CacheMesh();
+	CreateMesh();
+
+	UpdateWallFlags();
+	UpdateSurroundedFlag();
+	
+	std::vector<Chunk*> neighbors = GetNeighbors();
+	for (Chunk* neighbor : neighbors) {
+		if (neighbor->IsLoaded()) {
+			neighbor->UpdateSurroundedFlag();
+			if (m_rebuildNeighbors) {
+				neighbor->SetNeedsRebuild(true, false);
+			}
+		}
+	}
+	m_rebuildNeighbors = false;
+	m_rebuild = false;
+	
+	m_state = ChunkState::RebuildComplete;
+}
+
 void Chunk::CreateMesh() {
+
+	ClearMesh();
+
 	if (m_meshId == -1) {
 		m_renderer->CreateMesh(&m_meshId);
 	}
+
 	for (int x = 0; x < CHUNK_SIZE; ++x) {
 		for (int y = 0; y < CHUNK_SIZE; ++y) {
 			for (int z = 0; z < CHUNK_SIZE; ++z) {
@@ -236,33 +269,11 @@ void Chunk::CreateMesh() {
 	}
 }
 
-void Chunk::RebuildMesh() {
-
-	CacheMesh();
-	CreateMesh();
-
-	UpdateWallFlags();
-	UpdateSurroundedFlag();
-	
-	std::vector<Chunk*> neighbors = GetNeighbors();
-	for (Chunk* neighbor : neighbors) {
-		if (neighbor->IsSetup()) {
-			neighbor->UpdateSurroundedFlag();
-			if (m_rebuildNeighbors) {
-				neighbor->SetNeedsRebuild(true, false);
-			}
-		}
-	}
-	m_rebuildNeighbors = false;
-	m_rebuild = false;
-	m_rebuildComplete = true;
-}
-
 void Chunk::CompleteMesh() {
 	m_renderer->FinishMesh(m_meshId);
 	UpdateEmptyFlag();
 	ClearMeshCache();
-	m_rebuildComplete = false;
+	m_state = ChunkState::Idle;
 }
 
 void Chunk::CacheMesh() {
@@ -271,9 +282,16 @@ void Chunk::CacheMesh() {
 	m_meshId = -1;
 }
 
+void Chunk::ClearMesh() {
+	if (m_meshId != -1) {
+		m_renderer->DeleteMesh(m_meshId);
+		m_meshId = -1;
+	}
+}
+
 void Chunk::ClearMeshCache() {
 	if (m_cachedMeshId != -1) {
-		m_renderer->ClearMesh(m_cachedMeshId);
+		m_renderer->DeleteMesh(m_cachedMeshId);
 		m_cachedMeshId = -1;
 	}
 }

@@ -11,8 +11,6 @@ namespace sr {
 class Renderer {
 public:
 	Renderer();
-	Renderer(const Renderer& other);
-	Renderer(Renderer&& other);
 	explicit Renderer(const Shader& shader);
 	explicit Renderer(const Camera& camera);
 	Renderer(const Shader& shader, const Camera& camera);
@@ -30,15 +28,6 @@ public:
 	void RotateX(GLfloat degrees);
 	void RotateY(GLfloat degrees);
 	void RotateZ(GLfloat degrees);
-
-	void SetRenderMode(GLenum mode);
-	void EnableImmediateMode(GLenum mode);
-	void DisableImmediateMode();
-	void ImmediateColor(GLfloat red, GLfloat green, GLfloat blue);
-	void ImmediateColorAlpha(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-	void ImmediateVertex(GLfloat x, GLfloat y, GLfloat z);
-	void ImmediateNormal(GLfloat x, GLfloat y, GLfloat z);
-	void ImmediateTexCoord(GLfloat s, GLfloat t);
 
 	void CreateMesh(GLint* meshId);
 	void DeleteMesh(GLint meshId);

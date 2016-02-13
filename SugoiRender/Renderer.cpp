@@ -8,17 +8,6 @@ namespace sr {
 
 Renderer::Renderer() : Renderer(Shader(), Camera()) {}
 
-Renderer::Renderer(const Renderer& other) :
-	shader{ other.shader },
-	camera{ other.camera },
-	model{ other.model } {
-
-}
-
-Renderer::Renderer(Renderer&& other) {
-
-}
-
 Renderer::Renderer(const Shader& shader) : Renderer(shader, Camera()) {}
 
 Renderer::Renderer(const Camera& camera) : Renderer(Shader(), camera) {}
@@ -84,46 +73,6 @@ void Renderer::RotateY(GLfloat degrees) {
 
 void Renderer::RotateZ(GLfloat degrees) {
 	model.top() = glm::rotate(model.top(), degrees, glm::vec3(0.0f, 0.0f, 1.0f));
-}
-
-void Renderer::SetRenderMode(GLenum mode) {
-	glRenderMode(mode);
-	check_gl_error();
-}
-
-void Renderer::EnableImmediateMode(GLenum mode) {
-	glBegin(mode);
-	check_gl_error();
-}
-
-void Renderer::DisableImmediateMode() {
-	glEnd();
-	check_gl_error();
-}
-
-void Renderer::ImmediateColor(GLfloat red, GLfloat green, GLfloat blue) {
-	glColor3f(red, green, blue);
-	check_gl_error();
-}
-
-void Renderer::ImmediateColorAlpha(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
-	glColor4f(red, green, blue, alpha);
-	check_gl_error();
-}
-
-void Renderer::ImmediateVertex(GLfloat x, GLfloat y, GLfloat z) {
-	glVertex3f(x, y, z);
-	check_gl_error();
-}
-
-void Renderer::ImmediateNormal(GLfloat nx, GLfloat ny, GLfloat nz) {
-	glNormal3f(nx, ny, nz);
-	check_gl_error();
-}
-
-void Renderer::ImmediateTexCoord(GLfloat s, GLfloat t) {
-	glTexCoord2f(s, t);
-	check_gl_error();
 }
 
 void Renderer::CreateMesh(GLint* meshId) {

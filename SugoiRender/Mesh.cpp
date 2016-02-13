@@ -6,51 +6,34 @@
 
 namespace sr {
 
-Mesh::Mesh() : VAO{ 0 }, VBO{ 0 }, EBO{ 0 } {}
-
-Mesh::Mesh(Mesh&& other)
-	: VAO{ other.VAO }, VBO{ other.VBO }, EBO{ other.EBO },
-	vertices{ std::move(other.vertices) }, indices{ std::move(other.indices) } {
-
-	other.VAO = 0;
-	other.VBO = 0;
-	other.EBO = 0;
-}
+Mesh::Mesh() : VAO{ 0 }, VBO{ 0 }, EBO{ 0 }, finalized{ false } {}
 
 Mesh::~Mesh() {
 	Clear();
 }
 
-Mesh& Mesh::operator=(Mesh&& other) {
-	assert(this != &other);
-	Clear();
-	this->vertices = std::move(other.vertices);
-	this->indices = std::move(other.indices);
-	this->VAO = other.VAO;
-	this->VBO = other.VBO;
-	this->EBO = other.EBO;
-	other.VAO = 0;
-	other.VBO = 0;
-	other.EBO = 0;
-	return *this;
-}
-
 GLuint Mesh::AddVertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords) {
-	Vertex v;
-	v.Position = position;
-	v.Normal = normal;
-	v.TexCoords = texCoords;
-	this->vertices.push_back(v);
-	return this->vertices.size() - 1;
+	if (!finalized) {
+		Vertex v;
+		v.Position = position;
+		v.Normal = normal;
+		v.TexCoords = texCoords;
+		this->vertices.push_back(v);
+		return this->vertices.size() - 1;
+	}
+	return -1;
 }
 
 void Mesh::AddTriangle(GLuint v1, GLuint v2, GLuint v3) {
-	this->indices.push_back(v1);
-	this->indices.push_back(v2);
-	this->indices.push_back(v3);
+	if (!finalized) {
+		this->indices.push_back(v1);
+		this->indices.push_back(v2);
+		this->indices.push_back(v3);
+	}
 }
 
 void Mesh::Clear() {
+	finalized = false;
 	this->vertices.clear();
 	this->indices.clear();
 	if (this->VAO)
@@ -60,6 +43,10 @@ void Mesh::Clear() {
 	if (this->EBO)
 		glDeleteBuffers(1, &this->EBO);
 	check_gl_error();
+
+	this->VAO = 0;
+	this->VBO = 0;
+	this->EBO = 0;
 }
 
 void Mesh::Build() {
@@ -96,10 +83,12 @@ void Mesh::Build() {
 	glBindVertexArray(0);
 
 	check_gl_error();
+
+	finalized = true;
 }
 
 void Mesh::Render() {
-	if (this->VAO) {
+	if (finalized) {
 		glBindVertexArray(this->VAO);
 		glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);

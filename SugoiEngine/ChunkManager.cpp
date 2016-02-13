@@ -72,7 +72,7 @@ void ChunkManager::UpdateChunksThread() {
 				float cameraDistance = glm::length(chunkCenter - cameraPos);
 
 				if (cameraDistance > m_loadRadius) {
-					chunk->SetUnloading(true);
+					chunk->SetUnloading();
 				}
 				else if (numAddedChunks < MAX_NUM_CHUNKS_ADD) {
 
@@ -82,12 +82,15 @@ void ChunkManager::UpdateChunksThread() {
 
 						for (ChunkCoordKey key : missing) {
 
-							glm::vec3 chunkCenter = Chunk::GetWorldCenter(key.x, key.y, key.z);
-							float cameraDistance = glm::length(chunkCenter - cameraPos);
+							if (std::find(addKeyList.begin(), addKeyList.end(), key) == addKeyList.end()) {
 
-							if (cameraDistance <= m_loadRadius && key.y == 0) {
-								addKeyList.push_back(key);
-								++numAddedChunks;
+								glm::vec3 chunkCenter = Chunk::GetWorldCenter(key.x, key.y, key.z);
+								float cameraDistance = glm::length(chunkCenter - cameraPos);
+
+								if (cameraDistance <= m_loadRadius && key.y == 0) {
+									addKeyList.push_back(key);
+									++numAddedChunks;
+								}
 							}
 						}
 					}
@@ -165,10 +168,9 @@ void ChunkManager::CreateNewChunk(int x, int y, int z) {
 	m_chunkMap[key] = chunk;
 	m_chunkMapMutex.unlock();
 
-	chunk->Setup();
+	chunk->Load();
 	chunk->SetNeedsRebuild(true, true);
 	chunk->RebuildMesh();
-	chunk->SetCreated(true);
 
 	// UpdateChunkNeighbors(chunk, x, y, z);
 }
@@ -204,8 +206,10 @@ void ChunkManager::Update() {
 		}
 	}
 	m_chunkMapMutex.unlock();
-
-	for (unsigned int i = 0; i < unloadList.size(); ++i) {
+	
+	int numUnloadChunks = 0;
+	const static int MAX_NUM_CHUNKS_UNLOAD = 2;
+	for (unsigned int i = 0; i < unloadList.size() && numUnloadChunks < MAX_NUM_CHUNKS_UNLOAD; ++i) {
 		Chunk* chunk = unloadList[i];
 		UnloadChunk(chunk);
 	}
@@ -217,7 +221,7 @@ void ChunkManager::Render() {
 		std::map<ChunkCoordKey, Chunk*>::iterator it;
 		for (it = m_chunkMap.begin(); it != m_chunkMap.end(); ++it) {
 			Chunk* chunk = it->second;
-			if (chunk->IsCreated()) {
+			if (chunk->IsLoaded()) {
 				chunk->Render();
 			}
 		}
