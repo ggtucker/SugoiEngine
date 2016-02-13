@@ -5,18 +5,6 @@
 #include <SugoiRender/Texture.h>
 #include "ChunkManager.h"
 #include "SugoiRender/GLError.h"
-//glm::vec3 cubepositions[] = {
-//	glm::vec3(0.0f,  0.0f,  0.0f),
-//	glm::vec3(2.0f,  5.0f, -15.0f),
-//	glm::vec3(-1.5f, -2.2f, -2.5f),
-//	glm::vec3(-3.8f, -2.0f, -12.3f),
-//	glm::vec3(2.4f, -0.4f, -3.5f),
-//	glm::vec3(-1.7f,  3.0f, -7.5f),
-//	glm::vec3(1.3f, -2.0f, -2.5f),
-//	glm::vec3(1.5f,  2.0f, -2.5f),
-//	glm::vec3(1.5f,  0.2f, -1.5f),
-//	glm::vec3(-1.3f,  1.0f, -1.5f)
-//};
 
 // Function prototypes
 sr::Mesh createCube();
@@ -43,10 +31,12 @@ int main() {
 	sr::Camera& camera = renderer.GetCamera();
 	camera.SetPosition(glm::vec3(0.0f, Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE, 0.0f));
 
-	ChunkManager chunkManager(&renderer);
-	chunkManager.CreateNewChunk(0, 0, 0);
+	int textureId;
+	renderer.LoadTexture(&textureId, "wood_container.jpg", "Texture");
+	renderer.BindTextureToShader(textureId, 0);
 
-	sr::Texture tex("wood_container.jpg", "Texture");
+	ChunkManager chunkManager(&renderer, textureId);
+	chunkManager.CreateNewChunk(0, 0, 0);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while (window.IsOpen()) {
@@ -96,7 +86,6 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		shader.BindTexture(tex, 0);
 		renderer.Clear(0.2f, 0.3f, 0.3f, 1.0f);
 		chunkManager.Update();
 		chunkManager.Render();

@@ -22,8 +22,10 @@ void Shader::LoadShaderFiles(const GLchar* vertexPath, const GLchar* fragmentPat
 }
 
 void Shader::BindTexture(const sr::Texture& tex, int index) const {
-	tex.Bind();
+	Use();
+	glActiveTexture(GL_TEXTURE0 + index);
 	glUniform1i(glGetUniformLocation(this->program, tex.GetName().c_str()), index);
+	tex.Bind();
 	check_gl_error();
 }
 

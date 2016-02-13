@@ -15,6 +15,11 @@ public:
 	explicit Renderer(const Camera& camera);
 	Renderer(const Shader& shader, const Camera& camera);
 
+	void LoadTexture(GLint* textureId, const GLchar* imagePath, const std::string& name);
+	void BindTexture(GLint textureId);
+	void BindTextureUnit(GLint textureId, GLint textureIndex);
+	void BindTextureToShader(GLint textureId, GLint textureIndex);
+
 	void Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 	void RenderMesh(GLuint meshId);
 
@@ -46,6 +51,7 @@ private:
 	std::stack<glm::mat4> model;
 
 	TIndexMemoryPool<Mesh, 1024> meshPool;
+	TIndexMemoryPool<Texture, 16> texturePool;
 
 	void updateMVP();
 };

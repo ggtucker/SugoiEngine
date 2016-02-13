@@ -11,7 +11,6 @@ Chunk::Chunk(sr::Renderer* renderer, ChunkManager* chunkManager) :
 	m_meshId{ -1 },
 	m_cachedMeshId{ -1 },
 	m_grid{ 0, 0, 0 },
-	m_textureId { -1 },
 	m_state{ ChunkState::Initial },
 	m_rebuild{ false },
 	m_rebuildNeighbors{ false },

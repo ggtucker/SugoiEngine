@@ -18,6 +18,24 @@ Renderer::Renderer(const Shader& shader, const Camera& camera) : shader{ shader 
 	check_gl_error();
 }
 
+void Renderer::LoadTexture(GLint* textureId, const GLchar* imagePath, const std::string& name) {
+	*textureId = texturePool.create(imagePath, name);
+}
+
+void Renderer::BindTexture(GLint textureId) {
+	texturePool[textureId].Bind();
+}
+
+void Renderer::BindTextureUnit(GLint textureId, GLint textureIndex) {
+	glActiveTexture(GL_TEXTURE0 + textureIndex);
+	BindTexture(textureId);
+}
+
+void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex) {
+	shader.BindTexture(texturePool[textureId], textureIndex);
+	check_gl_error();
+}
+
 void Renderer::updateMVP() {
 	glm::mat4 _proj = camera.GetProjectionMatrix();
 	glm::mat4 _view = camera.GetViewMatrix();

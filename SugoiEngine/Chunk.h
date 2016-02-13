@@ -49,13 +49,6 @@ public:
 	Chunk(sr::Renderer* renderer, ChunkManager* chunkManager);
 	~Chunk();
 
-	// Static position functions
-	static float GetWorldX(int x) { return x * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
-	static float GetWorldY(int y) { return y * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
-	static float GetWorldZ(int z) { return z * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
-	static glm::vec3 GetWorldPosition(int x, int y, int z) { return glm::vec3(GetWorldX(x), GetWorldY(y), GetWorldZ(z)); }
-	static glm::vec3 GetWorldCenter(int x, int y, int z) { return GetWorldPosition(x, y, z) + glm::vec3(Chunk::CHUNK_SIZE * Chunk::HALF_RENDER_SIZE); }
-
 	// Creation and destruction
 	void Unload();
 	void Load();
@@ -115,6 +108,13 @@ public:
 	bool operator<(const Chunk &w) const;
 	static bool ClosestToCamera(const Chunk *lhs, const Chunk *rhs);
 
+	// Static position functions
+	static float GetWorldX(int x) { return x * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
+	static float GetWorldY(int y) { return y * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
+	static float GetWorldZ(int z) { return z * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE; }
+	static glm::vec3 GetWorldPosition(int x, int y, int z) { return glm::vec3(GetWorldX(x), GetWorldY(y), GetWorldZ(z)); }
+	static glm::vec3 GetWorldCenter(int x, int y, int z) { return GetWorldPosition(x, y, z) + glm::vec3(Chunk::CHUNK_SIZE * Chunk::HALF_RENDER_SIZE); }
+
 public:
 	/* PUBLIC MEMBERS */
 	static const int CHUNK_SIZE = 16;
@@ -131,7 +131,6 @@ private:
 	int m_meshId;
 	int m_cachedMeshId;
 	glm::ivec3 m_grid;
-	int m_textureId;
 
 	// Setup and creation flags
 	ChunkState m_state;

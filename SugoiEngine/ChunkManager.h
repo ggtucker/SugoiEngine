@@ -10,7 +10,7 @@ using ChunkList = std::vector<Chunk*>;
 
 class ChunkManager {
 public:
-	ChunkManager(sr::Renderer* renderer);
+	ChunkManager(sr::Renderer* renderer, int textureId);
 	~ChunkManager();
 
 	static void _UpdateChunksThread(void* pData);
@@ -26,6 +26,9 @@ public:
 private:
 	sr::Renderer* m_renderer;
 	std::map<ChunkCoordKey, Chunk*> m_chunkMap;
+
+	// Texture map
+	int m_textureId;
 
 	// Load radius
 	float m_loadRadius;

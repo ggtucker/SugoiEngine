@@ -2,8 +2,9 @@
 
 #include <algorithm>
 
-ChunkManager::ChunkManager(sr::Renderer* renderer) :
+ChunkManager::ChunkManager(sr::Renderer* renderer, int textureId) :
 		m_renderer{ renderer },
+		m_textureId{ textureId },
 		m_updateChunksThread{ nullptr },
 		m_loadRadius{ 40.0f },
 		m_updateThreadActive{ true },
@@ -216,6 +217,9 @@ void ChunkManager::Update() {
 }
 
 void ChunkManager::Render() {
+	if (m_textureId != -1) {
+		m_renderer->BindTexture(m_textureId);
+	}
 	m_renderer->PushMatrix();
 		m_chunkMapMutex.lock();
 		std::map<ChunkCoordKey, Chunk*>::iterator it;
