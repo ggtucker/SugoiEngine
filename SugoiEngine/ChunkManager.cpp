@@ -209,7 +209,7 @@ void ChunkManager::Update() {
 	m_chunkMapMutex.unlock();
 	
 	int numUnloadChunks = 0;
-	const static int MAX_NUM_CHUNKS_UNLOAD = 2;
+	const static int MAX_NUM_CHUNKS_UNLOAD = 1;
 	for (unsigned int i = 0; i < unloadList.size() && numUnloadChunks < MAX_NUM_CHUNKS_UNLOAD; ++i) {
 		Chunk* chunk = unloadList[i];
 		UnloadChunk(chunk);
