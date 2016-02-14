@@ -52,9 +52,8 @@ void Skybox::Render () {
 
 
     m_renderer->BindTexture(m_textureId);
-   Shader shader = m_renderer->GetSkyboxShader();
+
    glDepthMask(GL_FALSE);
-   shader.Use();
 
    // Set view and projection matrix
   // glBindVertexArray(skyboxVAO);

@@ -15,7 +15,11 @@ Renderer::Renderer(const Shader& shader) : Renderer(shader, Camera()) {}
 
 Renderer::Renderer(const Camera& camera) : Renderer(Shader(), camera) {}
 
-Renderer::Renderer(const Shader& shader, const Camera& camera) : shader{ shader }, camera{ camera } {
+Renderer::Renderer(const Shader& shader, const Camera& camera) : camera{ camera } {
+    m_shaderManager.BuildDefaultShaders();
+    if (shader.ShaderType() != e_shaderInvalid)
+        m_shaderManager.AddShader(shader);
+
 	model.push(glm::mat4());
 	glEnable(GL_DEPTH_TEST);
 	check_gl_error();
@@ -49,8 +53,8 @@ void Renderer::BindTextureUnit(GLint textureId, GLint textureIndex) {
 	BindTexture(textureId);
 }
 
-void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex) {
-	shader.BindTexture(texturePool[textureId], textureIndex);
+void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex, EShaderType type) {
+	m_shaderManager.GetShaderByEnum(type).BindTexture(texturePool[textureId], textureIndex);
 	check_gl_error();
 }
 
@@ -62,7 +66,7 @@ GLint Renderer::LoadCubeMapTexture (std::vector<const GLchar*>&& faces) {
     return texturePool.create(std::move(faces));
 }
 
-void Renderer::UpdateMVP() {
+void Renderer::UpdateMVP (const Shader& shader) {
 	glm::mat4 _proj = camera.GetProjectionMatrix();
 	glm::mat4 _view = camera.GetViewMatrix();
 	glm::mat4 _model = model.top();
@@ -108,8 +112,9 @@ void Renderer::RotateZ(GLfloat degrees) {
 }
 
 void Renderer::RenderMesh(GLuint meshId) {
-	shader.Use();
-	UpdateMVP();
+    const Shader& shader = m_shaderManager.GetActiveShader();
+    shader.Use();
+	UpdateMVP(shader);
 	meshPool[meshId].Render();
 }
 

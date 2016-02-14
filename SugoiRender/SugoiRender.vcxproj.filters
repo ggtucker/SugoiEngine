@@ -57,6 +57,9 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\ShaderSystem</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Source Files\ShaderSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Texture.h">

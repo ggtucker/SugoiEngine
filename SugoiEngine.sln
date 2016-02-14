@@ -11,8 +11,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataStructures", "DataStruc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SugoiMath", "SugoiMath\SugoiMath.vcxproj", "{800DE66A-99C4-483A-9C01-EA7FE9F282B6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyjson", "tinyjson\tinyjson.vcxproj", "{350DAC01-34C8-47F1-850B-5D150338B833}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -51,14 +49,6 @@ Global
 		{800DE66A-99C4-483A-9C01-EA7FE9F282B6}.Release|Win32.Build.0 = Release|Win32
 		{800DE66A-99C4-483A-9C01-EA7FE9F282B6}.Release|x64.ActiveCfg = Release|x64
 		{800DE66A-99C4-483A-9C01-EA7FE9F282B6}.Release|x64.Build.0 = Release|x64
-		{350DAC01-34C8-47F1-850B-5D150338B833}.Debug|Win32.ActiveCfg = Debug|Win32
-		{350DAC01-34C8-47F1-850B-5D150338B833}.Debug|Win32.Build.0 = Debug|Win32
-		{350DAC01-34C8-47F1-850B-5D150338B833}.Debug|x64.ActiveCfg = Debug|x64
-		{350DAC01-34C8-47F1-850B-5D150338B833}.Debug|x64.Build.0 = Debug|x64
-		{350DAC01-34C8-47F1-850B-5D150338B833}.Release|Win32.ActiveCfg = Release|Win32
-		{350DAC01-34C8-47F1-850B-5D150338B833}.Release|Win32.Build.0 = Release|Win32
-		{350DAC01-34C8-47F1-850B-5D150338B833}.Release|x64.ActiveCfg = Release|x64
-		{350DAC01-34C8-47F1-850B-5D150338B833}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

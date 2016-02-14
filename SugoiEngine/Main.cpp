@@ -27,10 +27,7 @@ int main() {
 
 	lastFrame = glfwGetTime();
 
-	sr::Shader shader("shader.vert", "shader.frag");
-    sr::Shader skyboxShader ("SkyboxVertexShader.shader", "SkyboxFragmentShader.frag");
-	sr::Renderer renderer(shader);
-    renderer.SetSkyboxShader(skyboxShader); // HACK this must be made scalable
+    sr::Renderer renderer;
 	sr::Camera& camera = renderer.GetCamera();
 	camera.SetPosition(glm::vec3(0.0f, Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE, 0.0f));
 

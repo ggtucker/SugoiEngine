@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "ShaderManager.h"
 
 namespace sr {
 
@@ -54,7 +55,7 @@ public:
 	void LoadTexture(GLint* textureId, const GLchar* imagePath, const std::string& name);
 	void BindTexture(GLint textureId);
 	void BindTextureUnit(GLint textureId, GLint textureIndex);
-	void BindTextureToShader(GLint textureId, GLint textureIndex);
+	void BindTextureToShader(GLint textureId, GLint textureIndex, EShaderType type = e_shaderDefault);
 
     // Cube Maps
     // TODO this should be refactored to take a CubeMap type or a vector
@@ -67,7 +68,7 @@ public:
    //void DisableCubeMapTexture ();
 
 	// Matrix stack
-	void UpdateMVP();
+	void UpdateMVP (const Shader& shader);
 	void PushMatrix();
 	void PopMatrix();
 
@@ -93,24 +94,18 @@ public:
 	// Camera
 	bool CubeInFrustum(glm::vec3 center, float x, float y, float z);
 
-	Shader& GetShader() { return shader; }
 	Camera& GetCamera() { return camera; }
-    
-    // Getting warning C4458 here, not sure why
-    void SetSkyboxShader (const Shader& shader) { skyboxShader = shader; }
-    Shader& GetSkyboxShader () { return skyboxShader; }
 
     // Rendering Code
     void SetRenderModeContext (ERenderMode mode);
 
-
-
     // Temporary
     static std::string TextureDirectory;
 
+    void SetActiveShader (EShaderType type) { m_shaderManager.SetActiveShader(type); }
+
 private:
-	Shader shader;
-    Shader skyboxShader; // HACK: This must be made scalable.  We will have many shaders soon
+    ShaderManager m_shaderManager;
 	Camera camera;
 	std::stack<glm::mat4> model;
 
