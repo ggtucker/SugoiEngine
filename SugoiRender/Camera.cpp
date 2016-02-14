@@ -5,7 +5,6 @@ Camera::Camera() : Camera(glm::vec3()) {}
 
 Camera::Camera(const Camera& other) :
 	m_position{ other.m_position },
-	m_worldPosition{ other.m_worldPosition },
 	m_worldUp{ other.m_worldUp },
 	m_front{ other.m_front },
 	m_right{ other.m_right },
@@ -17,7 +16,6 @@ Camera::Camera(const Camera& other) :
 
 Camera::Camera(const glm::vec3& pos) :
 	m_position{ pos },
-	m_worldPosition{ 0.0f, 0.0f, 0.0f },
 	m_worldUp{ 0.0f, 1.0f, 0.0f },
 	m_front{ 0.0f, 0.0f, 1.0f },
 	m_zoom{ ZOOM },
@@ -31,7 +29,6 @@ Camera::Camera(const glm::vec3& pos) :
 Camera& Camera::operator=(const Camera& other) {
 	if (this != &other) {
 		m_position = other.m_position;
-		m_worldPosition = other.m_worldPosition;
 		m_worldUp = other.m_worldUp;
 		m_front = other.m_front;
 		m_right = other.m_right;
@@ -163,12 +160,7 @@ void Camera::SetWorldUp(glm::vec3 worldUp) {
     updateVectors();
 }
 
-void Camera::SetWorldPosition(glm::vec3 position) {
-	m_worldPosition = position;
-	updateFrustum();
-}
-
-void Camera::SetRelativeDistanceFromPoint(glm::vec3 target, GLfloat dist) {
+void Camera::SetDistanceFromPoint(glm::vec3 target, GLfloat dist) {
 	m_position = target - m_front * dist;
 	updateFrustum();
 }
@@ -230,8 +222,8 @@ void Camera::updateVectors() {
 
 void Camera::updateFrustum() {
 
-	glm::vec3 nc = m_worldPosition + m_front * m_near;
-	glm::vec3 fc = m_worldPosition + m_front * m_far;
+	glm::vec3 nc = m_position + m_front * m_near;
+	glm::vec3 fc = m_position + m_front * m_far;
 
 	float tang = (float)glm::tan(glm::radians(m_zoom) * 0.5);
 	float nearHeight = m_near * tang;

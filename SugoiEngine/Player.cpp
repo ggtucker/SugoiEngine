@@ -29,6 +29,7 @@ void Player::Render() {
 	if (m_meshId != -1) {
 		m_renderer->PushMatrix();
 			float angle = -glm::atan(m_forward.z, m_forward.x);
+			m_renderer->Translate(m_position.x, m_position.y, m_position.z);
 			m_renderer->RotateY(angle);
 			m_renderer->RenderMesh(m_meshId);
 		m_renderer->PopMatrix();

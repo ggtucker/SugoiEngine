@@ -33,8 +33,7 @@ public:
     Camera& operator+=(const glm::vec3& delta);
     Camera& operator-=(const glm::vec3& delta);
 
-	glm::vec3 GetRelativePosition() const { return m_position; }
-	glm::vec3 GetWorldPosition() const { return m_worldPosition + m_position; }
+	glm::vec3 GetPosition() const { return m_position; }
 	glm::vec3 GetFront() const { return m_front; }
 	glm::vec3 GetRight() const { return m_right; }
 	glm::vec3 GetWorldUp() const { return m_worldUp; }
@@ -45,10 +44,9 @@ public:
 
 	// Mutable view attributes
 	void SetRelativePosition(glm::vec3 position) { m_position = position; }
-	void SetWorldPosition(glm::vec3 position);
 	void SetWorldUp(glm::vec3 worldUp);
 	
-	void SetRelativeDistanceFromPoint(glm::vec3 target, GLfloat dist);
+	void SetDistanceFromPoint(glm::vec3 target, GLfloat dist);
 	void LookAt(glm::vec3 target);
 	void RotateAroundPoint(glm::vec3 target, GLfloat pitchDelta, GLfloat yawDelta);
 
@@ -64,7 +62,6 @@ private:
 
     // View attributes
     glm::vec3 m_position;
-	glm::vec3 m_worldPosition;
     glm::vec3 m_worldUp;
 
 	// Derived view attributes

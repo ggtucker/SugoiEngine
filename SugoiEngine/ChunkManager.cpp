@@ -70,7 +70,7 @@ void ChunkManager::UpdateChunksThread() {
 
 			if (chunk) {
 				glm::vec3 chunkCenter = chunk->GetCenter();
-				glm::vec3 cameraPos = m_renderer->GetCamera().GetWorldPosition();
+				glm::vec3 cameraPos = m_renderer->GetCamera().GetPosition();
 				float cameraDistance = glm::length(chunkCenter - cameraPos);
 
 				if (cameraDistance > m_loadRadius) {

@@ -30,7 +30,7 @@ void SugoiGame::Create(GameSettings settings) {
 	m_chunkManager->CreateNewChunk(0, 0, 0);
 
 	m_cameraDistance = 10.0f;
-	m_renderer->GetCamera().SetRelativeDistanceFromPoint(m_player->GetPosition(), m_cameraDistance);
+	m_renderer->GetCamera().SetDistanceFromPoint(m_player->GetPosition(), m_cameraDistance);
 
 	m_lastTime = glfwGetTime();
 }
@@ -118,11 +118,7 @@ void SugoiGame::Render() {
 
 	m_renderer->Clear(0.2f, 0.3f, 0.3f, 1.0f);
 
-	m_renderer->PushMatrix();
-		glm::vec3 worldTransform = m_player->GetPosition();
-		m_renderer->Translate(-worldTransform.x, -worldTransform.y, -worldTransform.z);
-		m_chunkManager->Render();
-	m_renderer->PopMatrix();
+	m_chunkManager->Render();
 
 	m_player->Render();
 
@@ -131,7 +127,8 @@ void SugoiGame::Render() {
 
 void SugoiGame::UpdateCamera() {
 	sr::Camera& camera = m_renderer->GetCamera();
-	camera.SetWorldPosition(m_player->GetPosition());
+	glm::vec3 target = Player::PLAYER_CENTER_OFFSET + m_player->GetPosition();
+	camera.SetDistanceFromPoint(target, m_cameraDistance);
 }
 
 void SugoiGame::KeyPressed(int keyCode, bool alt, bool control, bool shift, bool system) {
@@ -172,8 +169,6 @@ void SugoiGame::MouseMiddleReleased() {
 
 void SugoiGame::MouseScroll(float x, float y) {
 	m_cameraDistance -= y;
-	sr::Camera& camera = m_renderer->GetCamera();
-	camera.SetRelativeDistanceFromPoint(Player::PLAYER_CENTER_OFFSET, m_cameraDistance);
 }
 
 void SugoiGame::MouseMoved(float x, float y) {
@@ -186,7 +181,8 @@ void SugoiGame::MouseMoved(float x, float y) {
 	pitch *= m_settings.mouseSensitivity;
 	
 	sr::Camera& camera = m_renderer->GetCamera();
-	camera.RotateAroundPoint(Player::PLAYER_CENTER_OFFSET, pitch, yaw);
-	camera.SetRelativeDistanceFromPoint(Player::PLAYER_CENTER_OFFSET, m_cameraDistance);
+	glm::vec3 target = Player::PLAYER_CENTER_OFFSET + m_player->GetPosition();
+	camera.RotateAroundPoint(target, pitch, yaw);
+	camera.SetDistanceFromPoint(target, m_cameraDistance);
 	m_player->SetForward(camera.GetFront());
 }
