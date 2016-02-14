@@ -35,6 +35,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.VC.opendb
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

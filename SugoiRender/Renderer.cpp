@@ -6,6 +6,8 @@
 
 namespace sr {
 
+    std::string Renderer::TextureDirectory = "Resources/Textures/";
+
 Renderer::Renderer() : Renderer(Shader(), Camera()) {}
 
 Renderer::Renderer(const Shader& shader) : Renderer(shader, Camera()) {}

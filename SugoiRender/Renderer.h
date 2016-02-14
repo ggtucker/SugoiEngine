@@ -52,6 +52,8 @@ public:
 	Shader& GetShader() { return shader; }
 	Camera& GetCamera() { return camera; }
 
+    static std::string TextureDirectory;
+
 private:
 	Shader shader;
 	Camera camera;
