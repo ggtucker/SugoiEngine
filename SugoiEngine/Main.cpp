@@ -38,8 +38,8 @@ int main() {
 	ChunkManager chunkManager(&renderer, textureId);
 	chunkManager.CreateNewChunk(0, 0, 0);
 
-    sr::SkyboxManager skyboxManager(&renderer);
-    skyboxManager.AddSkybox(new sr::Skybox("BlueSky"));
+    sr::SkyboxManager skyboxManager(&renderer); 
+    skyboxManager.AddSkybox(new sr::Skybox("BlueSky")); // No need for pointers here.
 	while (window.IsOpen()) {
 
 		sr::Event event;
