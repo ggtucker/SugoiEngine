@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Shader.h"
+#include "tinyjson/tinyjsonp.h"
 namespace sr {
     class ShaderManager {
     public:
@@ -18,7 +19,7 @@ namespace sr {
     private:
         std::vector<Shader> m_shaders;
         std::string m_shaderRootDirectory;
-
+        
 
     };
 
