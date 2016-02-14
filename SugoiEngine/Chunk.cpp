@@ -348,6 +348,7 @@ void Chunk::addCubeToMesh(
 	glm::vec3 p7(sx - Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
 	glm::vec3 p8(sx + Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
 
+	// Get texture coordinates based on block type
 	glm::vec2 tc00 = Block::GetTopLeftUV(type);
 	glm::vec2 tc01 = Block::GetBottomLeftUV(type);
 	glm::vec2 tc10 = Block::GetTopRightUV(type);
