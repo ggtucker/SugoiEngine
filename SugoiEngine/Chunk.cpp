@@ -1,5 +1,6 @@
 #include "Chunk.h"
 #include "ChunkManager.h"
+#include <random>
 
 const float Chunk::BLOCK_RENDER_SIZE = 1.0f;
 const float Chunk::HALF_RENDER_SIZE = BLOCK_RENDER_SIZE / 2.0f;
@@ -64,11 +65,15 @@ void Chunk::Unload() {
 void Chunk::Load() {
 	m_state = ChunkState::Loading;
 
+	std::default_random_engine generator;
+	std::uniform_int_distribution<int> distribution(17, 26);
+	auto randomBlock = std::bind(distribution, generator);
+
 	// Generate chunk, i.e. load from file
 	for (int x = 0; x < CHUNK_SIZE; ++x) {
 		for (int y = 0; y < CHUNK_SIZE; ++y) {
 			for (int z = 0; z < CHUNK_SIZE; ++z) {
-				m_blocks[x][y][z] = Block();
+				m_blocks[x][y][z] = Block((BlockType)randomBlock());
 			}
 		}
 	}
@@ -285,7 +290,7 @@ void Chunk::CreateMesh() {
 					if (z < CHUNK_SIZE - 1)
 						activeZPlus = m_blocks[x][y][z + 1].IsActive();
 
-					addCubeToMesh(x, y, z, activeXMinus, activeXPlus, activeYMinus, activeYPlus, activeZMinus, activeZPlus);
+					addCubeToMesh(x, y, z, m_blocks[x][y][z].GetType(), activeXMinus, activeXPlus, activeYMinus, activeYPlus, activeZMinus, activeZPlus);
 				}
 			}
 		}
@@ -325,24 +330,28 @@ void Chunk::SetNeedsRebuild(bool rebuild, bool rebuildNeighbors) {
 }
 
 void Chunk::addCubeToMesh(
-		int x, int y, int z,
+		int x, int y, int z, BlockType type,
 		bool activeXMinus, bool activeXPlus,
 		bool activeYMinus, bool activeYPlus,
 		bool activeZMinus, bool activeZPlus) {
 
-	glm::vec3 p1(x - Chunk::HALF_RENDER_SIZE, y - Chunk::HALF_RENDER_SIZE, z + Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p2(x + Chunk::HALF_RENDER_SIZE, y - Chunk::HALF_RENDER_SIZE, z + Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p3(x + Chunk::HALF_RENDER_SIZE, y + Chunk::HALF_RENDER_SIZE, z + Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p4(x - Chunk::HALF_RENDER_SIZE, y + Chunk::HALF_RENDER_SIZE, z + Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p5(x + Chunk::HALF_RENDER_SIZE, y - Chunk::HALF_RENDER_SIZE, z - Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p6(x - Chunk::HALF_RENDER_SIZE, y - Chunk::HALF_RENDER_SIZE, z - Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p7(x - Chunk::HALF_RENDER_SIZE, y + Chunk::HALF_RENDER_SIZE, z - Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p8(x + Chunk::HALF_RENDER_SIZE, y + Chunk::HALF_RENDER_SIZE, z - Chunk::HALF_RENDER_SIZE);
+	float sx = (float)x * Chunk::BLOCK_RENDER_SIZE;
+	float sy = (float)y * Chunk::BLOCK_RENDER_SIZE;
+	float sz = (float)z * Chunk::BLOCK_RENDER_SIZE;
 
-	glm::vec2 tc00(0.0f, 0.0f);
-	glm::vec2 tc01(0.0f, 1.0f);
-	glm::vec2 tc10(1.0f, 0.0f);
-	glm::vec2 tc11(1.0f, 1.0f);
+	glm::vec3 p1(sx - Chunk::HALF_RENDER_SIZE, sy - Chunk::HALF_RENDER_SIZE, sz + Chunk::HALF_RENDER_SIZE);
+	glm::vec3 p2(sx + Chunk::HALF_RENDER_SIZE, sy - Chunk::HALF_RENDER_SIZE, sz + Chunk::HALF_RENDER_SIZE);
+	glm::vec3 p3(sx + Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz + Chunk::HALF_RENDER_SIZE);
+	glm::vec3 p4(sx - Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz + Chunk::HALF_RENDER_SIZE);
+	glm::vec3 p5(sx + Chunk::HALF_RENDER_SIZE, sy - Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
+	glm::vec3 p6(sx - Chunk::HALF_RENDER_SIZE, sy - Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
+	glm::vec3 p7(sx - Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
+	glm::vec3 p8(sx + Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
+
+	glm::vec2 tc00 = Block::GetTopLeftUV(type);
+	glm::vec2 tc01 = Block::GetBottomLeftUV(type);
+	glm::vec2 tc10 = Block::GetTopRightUV(type);
+	glm::vec2 tc11 = Block::GetBottomRightUV(type);
 
 	glm::vec3 norm;
 
