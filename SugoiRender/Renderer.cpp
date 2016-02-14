@@ -3,6 +3,7 @@
 #include "GLError.h"
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "SkyboxVertices.h"
 
 namespace sr {
 
@@ -14,7 +15,11 @@ Renderer::Renderer(const Shader& shader) : Renderer(shader, Camera()) {}
 
 Renderer::Renderer(const Camera& camera) : Renderer(Shader(), camera) {}
 
-Renderer::Renderer(const Shader& shader, const Camera& camera) : shader{ shader }, camera{ camera } {
+Renderer::Renderer(const Shader& shader, const Camera& camera) : camera{ camera } {
+    m_shaderManager.BuildDefaultShaders();
+    if (shader.ShaderType() != e_shaderInvalid)
+        m_shaderManager.AddShader(shader);
+
 	model.push(glm::mat4());
 	glEnable(GL_DEPTH_TEST);
 	check_gl_error();
@@ -48,8 +53,8 @@ void Renderer::BindTextureUnit(GLint textureId, GLint textureIndex) {
 	BindTexture(textureId);
 }
 
-void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex) {
-	shader.BindTexture(texturePool[textureId], textureIndex);
+void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex, EShaderType type) {
+	m_shaderManager.GetShaderByEnum(type).BindTexture(texturePool[textureId], textureIndex);
 	check_gl_error();
 }
 
@@ -57,29 +62,11 @@ void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex) {
 * Cube Maps
 **********************/
 
-bool Renderer::LoadCubeMapTexture (std::vector<const GLchar*>&& faces) {
-    bool loaded = false;
-    GLint textureId = texturePool.create(std::move(faces));
-    
-    
-
-
+GLint Renderer::LoadCubeMapTexture (std::vector<const GLchar*>&& faces) {
+    return texturePool.create(std::move(faces));
 }
 
-void Renderer::BindCubeMapTexture (unsigned int id) {
-
-}
-
-void Renderer::EmptyCubeMapTextureIndex (unsigned int textureIndex) {
-
-}
-
-void Renderer::DisableCubeMapTexture () {
-
-}
-
-
-void Renderer::UpdateMVP() {
+void Renderer::UpdateMVP (const Shader& shader) {
 	glm::mat4 _proj = camera.GetProjectionMatrix();
 	glm::mat4 _view = camera.GetViewMatrix();
 	glm::mat4 _model = model.top();
@@ -125,13 +112,22 @@ void Renderer::RotateZ(GLfloat degrees) {
 }
 
 void Renderer::RenderMesh(GLuint meshId) {
-	shader.Use();
-	UpdateMVP();
+    const Shader& shader = m_shaderManager.GetActiveShader();
+    shader.Use();
+	UpdateMVP(shader);
 	meshPool[meshId].Render();
 }
 
 void Renderer::CreateMesh(GLint* meshId) {
 	*meshId = meshPool.create();
+}
+
+void Renderer::CreateSkyboxMesh (GLint* meshId) {
+    CreateMesh(meshId);
+
+   // for (int i = 0; i < numSkyboxVerts; ++i) {
+   //     meshPool[mesh
+   // }
 }
 
 void Renderer::DeleteMesh(GLint meshId) {
@@ -253,6 +249,42 @@ void Renderer::AddCubeToMesh(
 bool Renderer::CubeInFrustum(glm::vec3 center, float x, float y, float z) {
 	FrustumResult result = camera.CubeInFrustum(center, x, y, z);
 	return result != FrustumResult::Outside;
+}
+
+
+void Renderer::SetRenderModeContext (ERenderMode mode) {
+    switch (mode) {
+    case ERenderMode::e_renderModeWireframe:
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_LINE);
+        glPolygonMode(GL_BACK, GL_LINE);
+        break;
+    case ERenderMode::e_renderModeSolid:
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
+        break;
+    case ERenderMode::e_renderModeShaded:
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
+        break;
+    case ERenderMode::e_renderModeTextured:
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
+        break;
+    case ERenderMode::e_renderModeTexturedLighting:
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
+        break;
+    };
 }
 
 }

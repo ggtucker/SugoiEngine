@@ -8,7 +8,15 @@
 #include "Texture.h"
 
 namespace sr {
+
+enum EShaderType {
+    e_shaderInvalid = -1,
+    e_shaderDefault,
+    e_shaderCubeMap
+};
 class Shader {
+
+    friend class ShaderManager;
 public:
 	Shader();
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
@@ -19,9 +27,12 @@ public:
 	GLuint GetProgram() const;
 	void Use() const;
 
+    void SetShaderType (EShaderType type) { m_shaderType = type; }
+    EShaderType ShaderType () const { return m_shaderType; }
+
 private:
     GLuint program;
-
+    EShaderType m_shaderType;
 	void loadShaderFile(const GLchar* filePath, std::string& shaderSource);
 	GLuint compileShader(GLenum shaderType, const GLchar* shaderSource);
 	GLuint createShaderProgram(GLuint vertexShader, GLuint fragmentShader);

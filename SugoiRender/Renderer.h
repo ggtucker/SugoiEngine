@@ -6,8 +6,41 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "ShaderManager.h"
 
 namespace sr {
+
+    enum ERenderMode {
+        e_renderModeWireframe,
+        e_renderModeSolid,
+        e_renderModeShaded,
+        e_renderModeTextured,
+        e_renderModeTexturedLighting,
+        e_renderModeCubeMap,
+        e_lastRenderMode
+    };
+
+    enum EProjectionMode {
+        e_projectionModePerspective = 0,
+        e_projectionModeOrthographic,
+        e_projectionMode2D
+    };
+
+    enum EPrimitiveMode {
+        e_primitivePoints = 0,
+        e_primitiveLines,
+        e_primitiveTriangles,
+        e_primitiveTriangleStrips,
+        e_primitiveTriangleFans,
+        e_primitiveQuads
+    };
+
+    enum ECullMode {
+        e_cullModeNoCull = 0,
+        e_cullModeBack,
+        e_cullModeFront
+    };
+
 class Renderer {
 public:
 	Renderer();
@@ -22,18 +55,18 @@ public:
 	void LoadTexture(GLint* textureId, const GLchar* imagePath, const std::string& name);
 	void BindTexture(GLint textureId);
 	void BindTextureUnit(GLint textureId, GLint textureIndex);
-	void BindTextureToShader(GLint textureId, GLint textureIndex);
+	void BindTextureToShader(GLint textureId, GLint textureIndex, EShaderType type = e_shaderDefault);
 
     // Cube Maps
     // TODO this should be refactored to take a CubeMap type or a vector
-    bool LoadCubeMapTexture (std::vector<const GLchar*>&& faces);
+    GLint LoadCubeMapTexture (std::vector<const GLchar*>&& faces);
 
-    void BindCubeMapTexture (unsigned int id);
-    void EmptyCubeMapTextureIndex (unsigned int textureIndex);
-    void DisableCubeMapTexture ();
+   //void BindCubeMapTexture (unsigned int id);
+   //void EmptyCubeMapTextureIndex (unsigned int textureIndex);
+   //void DisableCubeMapTexture ();
 
 	// Matrix stack
-	void UpdateMVP();
+	void UpdateMVP (const Shader& shader);
 	void PushMatrix();
 	void PopMatrix();
 
@@ -48,6 +81,7 @@ public:
 	// Mesh
 	void RenderMesh(GLuint meshId);
 	void CreateMesh(GLint* meshId);
+    void CreateSkyboxMesh (GLint* meshId);
 	void DeleteMesh(GLint meshId);
 	void FinishMesh(GLint meshId);
 	void ClearMesh(GLint meshId);
@@ -55,24 +89,26 @@ public:
 	GLuint AddVertexToMesh(GLuint meshId, const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords);
 	void AddTriangleToMesh(GLuint meshId, GLuint v1, GLuint v2, GLuint v3);
 
-	// Bulk mesh
-	void AddCubeToMesh(
-		GLuint meshId, glm::vec3 center, glm::vec3 halfSize,
-		glm::vec2 tc00, glm::vec2 tc11,
-		bool activeXMinus, bool activeXPlus,
-		bool activeYMinus, bool activeYPlus,
-		bool activeZMinus, bool activeZPlus);
+    void AddCubeToMesh(GLuint meshId, glm::vec3 center, 
+        glm::vec3 halfSize, glm::vec2 tc00, glm::vec2 tc11, 
+        bool activeXMinus, bool activeXPlus, bool activeYMinus, 
+        bool activeYPlus, bool activeZMinus, bool activeZPlus);
 
 	// Camera
 	bool CubeInFrustum(glm::vec3 center, float x, float y, float z);
 
-	Shader& GetShader() { return shader; }
 	Camera& GetCamera() { return camera; }
 
+    // Rendering Code
+    void SetRenderModeContext (ERenderMode mode);
+
+    // Temporary
     static std::string TextureDirectory;
 
+    void SetActiveShader (EShaderType type) { m_shaderManager.SetActiveShader(type); }
+
 private:
-	Shader shader;
+    ShaderManager m_shaderManager;
 	Camera camera;
 	std::stack<glm::mat4> model;
 

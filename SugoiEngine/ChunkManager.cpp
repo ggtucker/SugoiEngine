@@ -88,6 +88,7 @@ void ChunkManager::UpdateChunksThread() {
 
 								glm::vec3 chunkCenter = Chunk::GetWorldCenter(key.x, key.y, key.z);
 								float cameraDistance = glm::length(chunkCenter - cameraPos);
+                                // Duplicate code here for cameraDistance
 
 								if (cameraDistance <= m_loadRadius && key.y == 0) {
 									addKeyList.push_back(key);

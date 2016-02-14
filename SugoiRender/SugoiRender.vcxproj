@@ -96,7 +96,9 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SkyboxManager.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -108,16 +110,14 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SkyboxManager.h" />
     <ClInclude Include="SkyboxVertices.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Uncopyable.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Window.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="SkyboxFragmentShader.shader" />
-    <None Include="SkyboxVertexShader.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

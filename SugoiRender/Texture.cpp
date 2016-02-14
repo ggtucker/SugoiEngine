@@ -62,13 +62,13 @@ Texture& Texture::operator=(Texture&& other) {
 	return *this;
 }
 
-void Texture::Bind() const {
-	glBindTexture(GL_TEXTURE_2D, this->id);
+void Texture::Bind(GLint textureEnum) const {
+	glBindTexture(textureEnum, this->id);
 	check_gl_error();
 }
 
-void Texture::Unbind() const {
-	glBindTexture(GL_TEXTURE_2D, NULL);
+void Texture::Unbind(GLint textureEnum) const {
+	glBindTexture(textureEnum, NULL);
 	check_gl_error();
 }
 

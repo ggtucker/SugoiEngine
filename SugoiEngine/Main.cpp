@@ -7,6 +7,8 @@
 #include "ChunkManager.h"
 #include "Player.h"
 #include "SugoiGame.h"
+#include <SugoiRender/SkyboxManager.h>
+#include "SugoiRender/GLError.h"
 
 // Function prototypes
 void doMovement(sr::Camera& camera);
@@ -27,6 +29,7 @@ int main() {
 	settings.movementSpeed = 3.0f;
 	settings.mouseSensitivity = 0.001f;
 
+
 	SugoiGame* game = SugoiGame::GetInstance();
 	game->Create(settings);
 
@@ -34,7 +37,9 @@ int main() {
 
 		game->PollEvents();
 
+
 		game->Update();
+
 
 		game->Render();
 

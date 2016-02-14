@@ -17,8 +17,8 @@ public:
 	Texture& operator=(const Texture& other);
 	Texture& operator=(Texture&& other);
 
-	void Bind() const;
-	void Unbind() const;
+	void Bind(GLint textureEnum = GL_TEXTURE_2D) const;
+	void Unbind(GLint textureEnum = GL_TEXTURE_2D) const;
 	void Bind(GLuint textureNum) const;
 	void Unbind(GLuint textureNum) const;
 
