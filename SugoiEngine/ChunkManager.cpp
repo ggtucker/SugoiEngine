@@ -1,6 +1,7 @@
 #include "ChunkManager.h"
 
 #include <algorithm>
+#include "Player.h"
 
 ChunkManager::ChunkManager(sr::Renderer* renderer, int textureId) :
 		m_renderer{ renderer },

@@ -6,12 +6,17 @@
 #include <SugoiRender\Renderer.h>
 #include "Chunk.h"
 
+class Player;
+
 using ChunkList = std::vector<Chunk*>;
 
 class ChunkManager {
 public:
 	ChunkManager(sr::Renderer* renderer, int textureId);
 	~ChunkManager();
+
+	Player* GetPlayer() { return m_player; }
+	void SetPlayer(Player* player) { m_player = player; }
 
 	static void _UpdateChunksThread(void* pData);
 	void UpdateChunksThread();
@@ -25,6 +30,7 @@ public:
 
 private:
 	sr::Renderer* m_renderer;
+	Player* m_player;
 	std::map<ChunkCoordKey, Chunk*> m_chunkMap;
 
 	// Texture map

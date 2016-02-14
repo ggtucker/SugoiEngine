@@ -17,9 +17,11 @@ public:
 
     void Create(GLuint width, GLuint height, const GLchar* title, GLboolean resizable);
     void SetMouseCursorVisible(GLboolean visible);
-    void Close();
 	void SwapBuffers();
     GLboolean PollEvent(Event& event);
+
+	bool IsOpen() { return isWindowOpen; }
+	void Close() { isWindowOpen = false; }
 
 	void SetPosition(int x, int y);
 

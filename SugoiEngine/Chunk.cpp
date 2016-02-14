@@ -1,5 +1,7 @@
 #include "Chunk.h"
 #include "ChunkManager.h"
+#include "Player.h"
+
 #include <random>
 
 const float Chunk::BLOCK_RENDER_SIZE = 1.0f;
@@ -290,7 +292,17 @@ void Chunk::CreateMesh() {
 					if (z < CHUNK_SIZE - 1)
 						activeZPlus = m_blocks[x][y][z + 1].IsActive();
 
-					addCubeToMesh(x, y, z, m_blocks[x][y][z].GetType(), activeXMinus, activeXPlus, activeYMinus, activeYPlus, activeZMinus, activeZPlus);
+					float sx = (float)x * Chunk::BLOCK_RENDER_SIZE;
+					float sy = (float)y * Chunk::BLOCK_RENDER_SIZE;
+					float sz = (float)z * Chunk::BLOCK_RENDER_SIZE;
+
+					BlockType blockType = m_blocks[x][y][z].GetType();
+					m_renderer->AddCubeToMesh(
+						m_meshId, glm::vec3(sx, sy, sz), glm::vec3(Chunk::HALF_RENDER_SIZE),
+						Block::GetTopLeftUV(blockType), Block::GetBottomRightUV(blockType),
+						activeXMinus, activeXPlus,
+						activeYMinus, activeYPlus,
+						activeZMinus, activeZPlus);
 				}
 			}
 		}
@@ -329,110 +341,13 @@ void Chunk::SetNeedsRebuild(bool rebuild, bool rebuildNeighbors) {
 	m_rebuildNeighbors = rebuildNeighbors;
 }
 
-void Chunk::addCubeToMesh(
-		int x, int y, int z, BlockType type,
-		bool activeXMinus, bool activeXPlus,
-		bool activeYMinus, bool activeYPlus,
-		bool activeZMinus, bool activeZPlus) {
-
-	float sx = (float)x * Chunk::BLOCK_RENDER_SIZE;
-	float sy = (float)y * Chunk::BLOCK_RENDER_SIZE;
-	float sz = (float)z * Chunk::BLOCK_RENDER_SIZE;
-
-	glm::vec3 p1(sx - Chunk::HALF_RENDER_SIZE, sy - Chunk::HALF_RENDER_SIZE, sz + Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p2(sx + Chunk::HALF_RENDER_SIZE, sy - Chunk::HALF_RENDER_SIZE, sz + Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p3(sx + Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz + Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p4(sx - Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz + Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p5(sx + Chunk::HALF_RENDER_SIZE, sy - Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p6(sx - Chunk::HALF_RENDER_SIZE, sy - Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p7(sx - Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
-	glm::vec3 p8(sx + Chunk::HALF_RENDER_SIZE, sy + Chunk::HALF_RENDER_SIZE, sz - Chunk::HALF_RENDER_SIZE);
-
-	// Get texture coordinates based on block type
-	glm::vec2 tc00 = Block::GetTopLeftUV(type);
-	glm::vec2 tc01 = Block::GetBottomLeftUV(type);
-	glm::vec2 tc10 = Block::GetTopRightUV(type);
-	glm::vec2 tc11 = Block::GetBottomRightUV(type);
-
-	glm::vec3 norm;
-
-	GLuint v1, v2, v3, v4, v5, v6, v7, v8;
-
-	// Front
-	if (!activeZPlus) {
-		norm = glm::vec3(0.0f, 0.0f, 1.0f);
-		v1 = m_renderer->AddVertexToMesh(m_meshId, p1, norm, tc00);
-		v2 = m_renderer->AddVertexToMesh(m_meshId, p2, norm, tc10);
-		v3 = m_renderer->AddVertexToMesh(m_meshId, p3, norm, tc11);
-		v4 = m_renderer->AddVertexToMesh(m_meshId, p4, norm, tc01);
-		m_renderer->AddTriangleToMesh(m_meshId, v1, v2, v3);
-		m_renderer->AddTriangleToMesh(m_meshId, v1, v3, v4);
-	}
-
-	// Back
-	if (!activeZMinus) {
-		norm = glm::vec3(0.0f, 0.0f, -1.0f);
-		v5 = m_renderer->AddVertexToMesh(m_meshId, p5, norm, tc00);
-		v6 = m_renderer->AddVertexToMesh(m_meshId, p6, norm, tc10);
-		v7 = m_renderer->AddVertexToMesh(m_meshId, p7, norm, tc11);
-		v8 = m_renderer->AddVertexToMesh(m_meshId, p8, norm, tc01);
-		m_renderer->AddTriangleToMesh(m_meshId, v5, v6, v7);
-		m_renderer->AddTriangleToMesh(m_meshId, v5, v7, v8);
-	}
-
-	// Right
-	if (!activeXPlus) {
-		norm = glm::vec3(1.0f, 0.0f, 0.0f);
-		v2 = m_renderer->AddVertexToMesh(m_meshId, p2, norm, tc00);
-		v5 = m_renderer->AddVertexToMesh(m_meshId, p5, norm, tc10);
-		v8 = m_renderer->AddVertexToMesh(m_meshId, p8, norm, tc11);
-		v3 = m_renderer->AddVertexToMesh(m_meshId, p3, norm, tc01);
-		m_renderer->AddTriangleToMesh(m_meshId, v2, v5, v8);
-		m_renderer->AddTriangleToMesh(m_meshId, v2, v8, v3);
-	}
-
-	// Left
-	if (!activeXMinus) {
-		norm = glm::vec3(-1.0f, 0.0f, 0.0f);
-		v6 = m_renderer->AddVertexToMesh(m_meshId, p6, norm, tc00);
-		v1 = m_renderer->AddVertexToMesh(m_meshId, p1, norm, tc10);
-		v4 = m_renderer->AddVertexToMesh(m_meshId, p4, norm, tc11);
-		v7 = m_renderer->AddVertexToMesh(m_meshId, p7, norm, tc01);
-		m_renderer->AddTriangleToMesh(m_meshId, v6, v1, v4);
-		m_renderer->AddTriangleToMesh(m_meshId, v6, v4, v7);
-	}
-
-	// Top
-	if (!activeYPlus) {
-		norm = glm::vec3(0.0f, 1.0f, 0.0f);
-		v4 = m_renderer->AddVertexToMesh(m_meshId, p4, norm, tc00);
-		v3 = m_renderer->AddVertexToMesh(m_meshId, p3, norm, tc10);
-		v8 = m_renderer->AddVertexToMesh(m_meshId, p8, norm, tc11);
-		v7 = m_renderer->AddVertexToMesh(m_meshId, p7, norm, tc01);
-		m_renderer->AddTriangleToMesh(m_meshId, v4, v3, v8);
-		m_renderer->AddTriangleToMesh(m_meshId, v4, v8, v7);
-	}
-
-	// Bottom
-	if (!activeYMinus) {
-		norm = glm::vec3(0.0f, -1.0f, 0.0f);
-		v6 = m_renderer->AddVertexToMesh(m_meshId, p6, norm, tc00);
-		v5 = m_renderer->AddVertexToMesh(m_meshId, p5, norm, tc10);
-		v2 = m_renderer->AddVertexToMesh(m_meshId, p2, norm, tc11);
-		v1 = m_renderer->AddVertexToMesh(m_meshId, p1, norm, tc01);
-		m_renderer->AddTriangleToMesh(m_meshId, v6, v5, v2);
-		m_renderer->AddTriangleToMesh(m_meshId, v6, v2, v1);
-	}
-}
-
 bool Chunk::operator<(const Chunk &w) const
 {
-	glm::vec3 cameraPos = m_renderer->GetCamera().GetPosition();
-	int playerX = cameraPos.x / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
-	int playerY = cameraPos.y / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
-	int playerZ = cameraPos.z / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
+	glm::vec3 playerPos = m_chunkManager->GetPlayer()->GetPosition();
+	int playerX = playerPos.x / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
+	int playerY = playerPos.y / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
+	int playerZ = playerPos.z / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
 	
-
 	int distance = abs(playerX - m_grid.x) + abs(playerY - m_grid.y) + abs(playerZ - m_grid.z);
 	int wDistance = abs(playerX - w.GetGridX()) + abs(playerY - w.GetGridY()) + abs(playerZ - w.GetGridZ());
 
