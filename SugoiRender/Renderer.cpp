@@ -155,4 +155,40 @@ bool Renderer::CubeInFrustum(glm::vec3 center, float x, float y, float z) {
 	return result != FrustumResult::Outside;
 }
 
+
+void Renderer::SetRenderModeContext (ERenderMode mode) {
+    switch (mode) {
+    case ERenderMode::e_renderModeWireframe:
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_LINE);
+        glPolygonMode(GL_BACK, GL_LINE);
+        break;
+    case ERenderMode::e_renderModeSolid:
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
+        break;
+    case ERenderMode::e_renderModeShaded:
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
+        break;
+    case ERenderMode::e_renderModeTextured:
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
+        break;
+    case ERenderMode::e_renderModeTexturedLighting:
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
+        break;
+    };
+}
+
 }

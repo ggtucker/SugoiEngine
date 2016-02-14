@@ -19,12 +19,15 @@
     <Filter Include="Source Files\Skybox">
       <UniqueIdentifier>{67a9afdb-478e-4ea5-afc8-9f36bc1da315}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ShaderSystem">
+      <UniqueIdentifier>{14cedeeb-6b5c-4b90-8991-b35342ff3b0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ShaderSystem">
+      <UniqueIdentifier>{135c5e98-c49d-4583-a115-f9b0fb0b4c98}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
@@ -51,11 +54,11 @@
     <ClCompile Include="SkyboxManager.cpp">
       <Filter>Source Files\Skybox</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\ShaderSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -95,13 +98,11 @@
     <ClInclude Include="SkyboxManager.h">
       <Filter>Header Files\Skybox</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="SkyboxVertexShader.shader">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="SkyboxFragmentShader.frag">
-      <Filter>Resource Files</Filter>
-    </None>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\ShaderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Header Files\ShaderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

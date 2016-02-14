@@ -9,7 +9,36 @@
 
 namespace sr {
 
+    enum ERenderMode {
+        e_renderModeWireframe,
+        e_renderModeSolid,
+        e_renderModeShaded,
+        e_renderModeTextured,
+        e_renderModeTexturedLighting,
+        e_renderModeCubeMap,
+        e_lastRenderMode
+    };
 
+    enum EProjectionMode {
+        e_projectionModePerspective = 0,
+        e_projectionModeOrthographic,
+        e_projectionMode2D
+    };
+
+    enum EPrimitiveMode {
+        e_primitivePoints = 0,
+        e_primitiveLines,
+        e_primitiveTriangles,
+        e_primitiveTriangleStrips,
+        e_primitiveTriangleFans,
+        e_primitiveQuads
+    };
+
+    enum ECullMode {
+        e_cullModeNoCull = 0,
+        e_cullModeBack,
+        e_cullModeFront
+    };
 
 class Renderer {
 public:
@@ -70,6 +99,11 @@ public:
     // Getting warning C4458 here, not sure why
     void SetSkyboxShader (const Shader& shader) { skyboxShader = shader; }
     Shader& GetSkyboxShader () { return skyboxShader; }
+
+    // Rendering Code
+    void SetRenderModeContext (ERenderMode mode);
+
+
 
     // Temporary
     static std::string TextureDirectory;
