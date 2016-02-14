@@ -48,6 +48,9 @@
     <ClCompile Include="Skybox.cpp">
       <Filter>Source Files\Skybox</Filter>
     </ClCompile>
+    <ClCompile Include="SkyboxManager.cpp">
+      <Filter>Source Files\Skybox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -89,12 +92,15 @@
     <ClInclude Include="SkyboxVertices.h">
       <Filter>Header Files\Skybox</Filter>
     </ClInclude>
+    <ClInclude Include="SkyboxManager.h">
+      <Filter>Header Files\Skybox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="SkyboxVertexShader.shader">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="SkyboxFragmentShader.shader">
+    <None Include="SkyboxFragmentShader.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -1,6 +1,8 @@
 #pragma once
 #include <GL/glew.h>
 
+const int numSkyboxVerts = 108;
+
 GLfloat skyboxVertices[] = {
     // Positions          
     -1.0f,  1.0f, -1.0f,

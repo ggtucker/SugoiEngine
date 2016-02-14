@@ -8,6 +8,9 @@
 #include "Mesh.h"
 
 namespace sr {
+
+
+
 class Renderer {
 public:
 	Renderer();
@@ -26,11 +29,13 @@ public:
 
     // Cube Maps
     // TODO this should be refactored to take a CubeMap type or a vector
-    bool LoadCubeMapTexture (std::vector<const GLchar*>&& faces);
+    GLint LoadCubeMapTexture (std::vector<const GLchar*>&& faces);
 
-    void BindCubeMapTexture (unsigned int id);
-    void EmptyCubeMapTextureIndex (unsigned int textureIndex);
-    void DisableCubeMapTexture ();
+    void RenderSkybox (GLuint id);
+
+   //void BindCubeMapTexture (unsigned int id);
+   //void EmptyCubeMapTextureIndex (unsigned int textureIndex);
+   //void DisableCubeMapTexture ();
 
 	// Matrix stack
 	void UpdateMVP();
@@ -48,6 +53,7 @@ public:
 	// Mesh
 	void RenderMesh(GLuint meshId);
 	void CreateMesh(GLint* meshId);
+    void CreateSkyboxMesh (GLint* meshId);
 	void DeleteMesh(GLint meshId);
 	void FinishMesh(GLint meshId);
 	void ClearMesh(GLint meshId);
@@ -60,11 +66,17 @@ public:
 
 	Shader& GetShader() { return shader; }
 	Camera& GetCamera() { return camera; }
+    
+    // Getting warning C4458 here, not sure why
+    void SetSkyboxShader (const Shader& shader) { skyboxShader = shader; }
+    Shader& GetSkyboxShader () { return skyboxShader; }
 
+    // Temporary
     static std::string TextureDirectory;
 
 private:
 	Shader shader;
+    Shader skyboxShader; // HACK: This must be made scalable.  We will have many shaders soon
 	Camera camera;
 	std::stack<glm::mat4> model;
 

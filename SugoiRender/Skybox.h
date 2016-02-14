@@ -7,7 +7,7 @@
 ****************************************************************************************/
 
 #include <string>
-
+#include <gl/glew.h>
 namespace sr {
     class Renderer;
 
@@ -21,26 +21,23 @@ namespace sr {
             e_cloudyDay,
             e_rain,
             e_moon,
+            e_default,
             e_lastSkybox
         };
 
-        Skybox (sr::Renderer * render);
+        Skybox (std::string name);
         ~Skybox ();
 
         // TODO: Need a way to switch between skyboxes eventually, probably doesnt belong here
-        void SetAndLoadSkybox (std::string name, ESkyboxType type);
+        void SetAndLoadSkybox ();
 
-        unsigned int GetCubeMapTexture1 ();
-        unsigned int GetCubeMapTexture2 ();
-
+        void SetRenderer (Renderer* renderer) { m_renderer = renderer; }
         void Render ();
         static std::string SkyboxDirectory;
     private:
         Renderer* m_renderer;
-
-        unsigned int m_cubeTextures[e_lastSkybox];
-
-        std::string m_skyBoxNames[e_lastSkybox];
+        GLint     m_textureId;
+        std::string m_skyboxName;
     };
 
 }

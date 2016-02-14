@@ -3,6 +3,7 @@
 #include "GLError.h"
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "SkyboxVertices.h"
 
 namespace sr {
 
@@ -57,27 +58,9 @@ void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex) {
 * Cube Maps
 **********************/
 
-bool Renderer::LoadCubeMapTexture (std::vector<const GLchar*>&& faces) {
-    bool loaded = false;
-    GLint textureId = texturePool.create(std::move(faces));
-    
-    
-
-
+GLint Renderer::LoadCubeMapTexture (std::vector<const GLchar*>&& faces) {
+    return texturePool.create(std::move(faces));
 }
-
-void Renderer::BindCubeMapTexture (unsigned int id) {
-
-}
-
-void Renderer::EmptyCubeMapTextureIndex (unsigned int textureIndex) {
-
-}
-
-void Renderer::DisableCubeMapTexture () {
-
-}
-
 
 void Renderer::UpdateMVP() {
 	glm::mat4 _proj = camera.GetProjectionMatrix();
@@ -132,6 +115,14 @@ void Renderer::RenderMesh(GLuint meshId) {
 
 void Renderer::CreateMesh(GLint* meshId) {
 	*meshId = meshPool.create();
+}
+
+void Renderer::CreateSkyboxMesh (GLint* meshId) {
+    CreateMesh(meshId);
+
+   // for (int i = 0; i < numSkyboxVerts; ++i) {
+   //     meshPool[mesh
+   // }
 }
 
 void Renderer::DeleteMesh(GLint meshId) {

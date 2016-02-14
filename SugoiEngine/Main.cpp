@@ -4,6 +4,7 @@
 #include <SugoiRender/Renderer.h>
 #include <SugoiRender/Texture.h>
 #include "ChunkManager.h"
+#include <SugoiRender/SkyboxManager.h>
 #include "SugoiRender/GLError.h"
 
 // Function prototypes
@@ -27,7 +28,9 @@ int main() {
 	lastFrame = glfwGetTime();
 
 	sr::Shader shader("shader.vert", "shader.frag");
+    sr::Shader skyboxShader ("SkyboxVertexShader.shader", "SkyboxFragmentShader.frag");
 	sr::Renderer renderer(shader);
+    renderer.SetSkyboxShader(skyboxShader); // HACK this must be made scalable
 	sr::Camera& camera = renderer.GetCamera();
 	camera.SetPosition(glm::vec3(0.0f, Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE, 0.0f));
 
@@ -38,6 +41,8 @@ int main() {
 	ChunkManager chunkManager(&renderer, textureId);
 	chunkManager.CreateNewChunk(0, 0, 0);
 
+    sr::SkyboxManager skyboxManager(&renderer);
+    skyboxManager.AddSkybox(new sr::Skybox("BlueSky"));
 	while (window.IsOpen()) {
 
 		sr::Event event;
@@ -86,8 +91,12 @@ int main() {
 		lastFrame = currentFrame;
 
 		renderer.Clear(0.2f, 0.3f, 0.3f, 1.0f);
+
+        skyboxManager.RenderActiveSkybox();
+
 		chunkManager.Update();
 		chunkManager.Render();
+
 		window.SwapBuffers();
 	}
 
