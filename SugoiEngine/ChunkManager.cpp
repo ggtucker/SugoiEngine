@@ -6,7 +6,7 @@ ChunkManager::ChunkManager(sr::Renderer* renderer, int textureId) :
 		m_renderer{ renderer },
 		m_textureId{ textureId },
 		m_updateChunksThread{ nullptr },
-		m_loadRadius{ 40.0f },
+		m_loadRadius{ 100.0f },
 		m_updateThreadActive{ true },
 		m_updateThreadFinished{ false },
 		m_stepLockEnabled{ false },
