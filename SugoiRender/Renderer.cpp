@@ -44,6 +44,32 @@ void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex) {
 	check_gl_error();
 }
 
+/*********************
+* Cube Maps
+**********************/
+
+bool Renderer::LoadCubeMapTexture (std::vector<const GLchar*>&& faces) {
+    bool loaded = false;
+    GLint textureId = texturePool.create(std::move(faces));
+    
+    
+
+
+}
+
+void Renderer::BindCubeMapTexture (unsigned int id) {
+
+}
+
+void Renderer::EmptyCubeMapTextureIndex (unsigned int textureIndex) {
+
+}
+
+void Renderer::DisableCubeMapTexture () {
+
+}
+
+
 void Renderer::UpdateMVP() {
 	glm::mat4 _proj = camera.GetProjectionMatrix();
 	glm::mat4 _view = camera.GetViewMatrix();

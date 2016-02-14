@@ -23,6 +23,10 @@ Texture::Texture(const GLchar* imagePath, const std::string& name) : id{ INVALID
 	Load(imagePath);
 }
 
+Texture::Texture (std::vector<const GLchar*>&& faces) {
+    LoadCubeMap(std::move(faces));
+}
+
 Texture::~Texture() {
 	if (IsLoaded()) {
 		Clear();
@@ -121,6 +125,33 @@ void Texture::Load(const unsigned char* image, unsigned int w, unsigned int h) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	check_gl_error();
 }
+
+void Texture::LoadCubeMap (std::vector<const GLchar*>&& faces) {
+    glGenTextures(1, &id);
+    glActiveTexture(GL_TEXTURE0);
+
+    int width, height;
+    unsigned char* image;
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+    for (GLuint i = 0; i < faces.size(); ++i) {
+        image = SOIL_load_image(faces[i], &width, &height, 0, SOIL_LOAD_RGB);
+        glTexImage2D(
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB,
+            width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
+        );
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    check_gl_error();
+}
+
 
 bool Texture::IsLoaded() const {
 	return (this->id != INVALID_TEXTURE);

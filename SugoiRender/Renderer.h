@@ -23,6 +23,14 @@ public:
 	void BindTextureUnit(GLint textureId, GLint textureIndex);
 	void BindTextureToShader(GLint textureId, GLint textureIndex);
 
+    // Cube Maps
+    // TODO this should be refactored to take a CubeMap type or a vector
+    bool LoadCubeMapTexture (std::vector<const GLchar*>&& faces);
+
+    void BindCubeMapTexture (unsigned int id);
+    void EmptyCubeMapTextureIndex (unsigned int textureIndex);
+    void DisableCubeMapTexture ();
+
 	// Matrix stack
 	void UpdateMVP();
 	void PushMatrix();

@@ -86,5 +86,16 @@
     <ClInclude Include="Skybox.h">
       <Filter>Header Files\Skybox</Filter>
     </ClInclude>
+    <ClInclude Include="SkyboxVertices.h">
+      <Filter>Header Files\Skybox</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SkyboxVertexShader.shader">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="SkyboxFragmentShader.shader">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
