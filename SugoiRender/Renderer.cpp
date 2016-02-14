@@ -131,6 +131,97 @@ void Renderer::AddTriangleToMesh(GLuint meshId, GLuint v1, GLuint v2, GLuint v3)
 	meshPool[meshId].AddTriangle(v1, v2, v3);
 }
 
+void Renderer::AddCubeToMesh(
+	GLuint meshId, glm::vec3 center, glm::vec3 halfSize,
+	glm::vec2 tc00, glm::vec2 tc11,
+	bool activeXMinus, bool activeXPlus,
+	bool activeYMinus, bool activeYPlus,
+	bool activeZMinus, bool activeZPlus) {
+
+	glm::vec3 p1(center.x - halfSize.x, center.y - halfSize.y, center.z + halfSize.z);
+	glm::vec3 p2(center.x + halfSize.x, center.y - halfSize.y, center.z + halfSize.z);
+	glm::vec3 p3(center.x + halfSize.x, center.y + halfSize.y, center.z + halfSize.z);
+	glm::vec3 p4(center.x - halfSize.x, center.y + halfSize.y, center.z + halfSize.z);
+	glm::vec3 p5(center.x + halfSize.x, center.y - halfSize.y, center.z - halfSize.z);
+	glm::vec3 p6(center.x - halfSize.x, center.y - halfSize.y, center.z - halfSize.z);
+	glm::vec3 p7(center.x - halfSize.x, center.y + halfSize.y, center.z - halfSize.z);
+	glm::vec3 p8(center.x + halfSize.x, center.y + halfSize.y, center.z - halfSize.z);
+
+	// Get texture coordinates based on block type
+	glm::vec2 tc01 = glm::vec2(tc00.x, tc11.y);
+	glm::vec2 tc10 = glm::vec2(tc11.x, tc00.y);
+
+	glm::vec3 norm;
+
+	GLuint v1, v2, v3, v4, v5, v6, v7, v8;
+
+	// Front
+	if (!activeZPlus) {
+		norm = glm::vec3(0.0f, 0.0f, 1.0f);
+		v1 = AddVertexToMesh(meshId, p1, norm, tc00);
+		v2 = AddVertexToMesh(meshId, p2, norm, tc10);
+		v3 = AddVertexToMesh(meshId, p3, norm, tc11);
+		v4 = AddVertexToMesh(meshId, p4, norm, tc01);
+		AddTriangleToMesh(meshId, v1, v2, v3);
+		AddTriangleToMesh(meshId, v1, v3, v4);
+	}
+
+	// Back
+	if (!activeZMinus) {
+		norm = glm::vec3(0.0f, 0.0f, -1.0f);
+		v5 = AddVertexToMesh(meshId, p5, norm, tc00);
+		v6 = AddVertexToMesh(meshId, p6, norm, tc10);
+		v7 = AddVertexToMesh(meshId, p7, norm, tc11);
+		v8 = AddVertexToMesh(meshId, p8, norm, tc01);
+		AddTriangleToMesh(meshId, v5, v6, v7);
+		AddTriangleToMesh(meshId, v5, v7, v8);
+	}
+
+	// Right
+	if (!activeXPlus) {
+		norm = glm::vec3(1.0f, 0.0f, 0.0f);
+		v2 = AddVertexToMesh(meshId, p2, norm, tc00);
+		v5 = AddVertexToMesh(meshId, p5, norm, tc10);
+		v8 = AddVertexToMesh(meshId, p8, norm, tc11);
+		v3 = AddVertexToMesh(meshId, p3, norm, tc01);
+		AddTriangleToMesh(meshId, v2, v5, v8);
+		AddTriangleToMesh(meshId, v2, v8, v3);
+	}
+
+	// Left
+	if (!activeXMinus) {
+		norm = glm::vec3(-1.0f, 0.0f, 0.0f);
+		v6 = AddVertexToMesh(meshId, p6, norm, tc00);
+		v1 = AddVertexToMesh(meshId, p1, norm, tc10);
+		v4 = AddVertexToMesh(meshId, p4, norm, tc11);
+		v7 = AddVertexToMesh(meshId, p7, norm, tc01);
+		AddTriangleToMesh(meshId, v6, v1, v4);
+		AddTriangleToMesh(meshId, v6, v4, v7);
+	}
+
+	// Top
+	if (!activeYPlus) {
+		norm = glm::vec3(0.0f, 1.0f, 0.0f);
+		v4 = AddVertexToMesh(meshId, p4, norm, tc00);
+		v3 = AddVertexToMesh(meshId, p3, norm, tc10);
+		v8 = AddVertexToMesh(meshId, p8, norm, tc11);
+		v7 = AddVertexToMesh(meshId, p7, norm, tc01);
+		AddTriangleToMesh(meshId, v4, v3, v8);
+		AddTriangleToMesh(meshId, v4, v8, v7);
+	}
+
+	// Bottom
+	if (!activeYMinus) {
+		norm = glm::vec3(0.0f, -1.0f, 0.0f);
+		v6 = AddVertexToMesh(meshId, p6, norm, tc00);
+		v5 = AddVertexToMesh(meshId, p5, norm, tc10);
+		v2 = AddVertexToMesh(meshId, p2, norm, tc11);
+		v1 = AddVertexToMesh(meshId, p1, norm, tc01);
+		AddTriangleToMesh(meshId, v6, v5, v2);
+		AddTriangleToMesh(meshId, v6, v2, v1);
+	}
+}
+
 bool Renderer::CubeInFrustum(glm::vec3 center, float x, float y, float z) {
 	FrustumResult result = camera.CubeInFrustum(center, x, y, z);
 	return result != FrustumResult::Outside;

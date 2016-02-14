@@ -4,46 +4,38 @@ namespace sr {
 Camera::Camera() : Camera(glm::vec3()) {}
 
 Camera::Camera(const Camera& other) :
-	m_pos{ other.m_pos },
+	m_position{ other.m_position },
+	m_worldPosition{ other.m_worldPosition },
 	m_worldUp{ other.m_worldUp },
-	m_pitch{ other.m_pitch },
-	m_yaw{ other.m_yaw },
 	m_front{ other.m_front },
 	m_right{ other.m_right },
 	m_up{ other.m_up },
-	m_movementSpeed{ other.m_movementSpeed },
-	m_mouseSensitivity{ other.m_mouseSensitivity },
 	m_zoom{ other.m_zoom },
 	m_aspect{ other.m_aspect },
 	m_near{ other.m_near },
 	m_far{ other.m_far } {}
 
 Camera::Camera(const glm::vec3& pos) :
-	m_pos{ pos },
+	m_position{ pos },
+	m_worldPosition{ 0.0f, 0.0f, 0.0f },
 	m_worldUp{ 0.0f, 1.0f, 0.0f },
-	m_pitch{ PITCH },
-	m_yaw{ YAW },
-	m_movementSpeed{ SPEED },
-	m_mouseSensitivity{ SENSITIVITY },
+	m_front{ 0.0f, 0.0f, 1.0f },
 	m_zoom{ ZOOM },
 	m_aspect{ ASPECT },
 	m_near{ NEAR },
 	m_far{ FAR }
 {
-	updateVectors();
+	LookAt(m_position + m_front);
 }
 
 Camera& Camera::operator=(const Camera& other) {
 	if (this != &other) {
-		m_pos = other.m_pos;
+		m_position = other.m_position;
+		m_worldPosition = other.m_worldPosition;
 		m_worldUp = other.m_worldUp;
-		m_pitch = other.m_pitch;
-		m_yaw = other.m_yaw;
 		m_front = other.m_front;
 		m_right = other.m_right;
 		m_up = other.m_up;
-		m_movementSpeed = other.m_movementSpeed;
-		m_mouseSensitivity = other.m_mouseSensitivity;
 		m_zoom = other.m_zoom;
 		m_aspect = other.m_aspect;
 		m_near = other.m_near;
@@ -53,20 +45,20 @@ Camera& Camera::operator=(const Camera& other) {
 }
 
 glm::mat4 Camera::GetViewMatrix() const {
-    return glm::lookAt(m_pos, m_pos + m_front, m_up);
+    return glm::lookAt(m_position, m_position + m_front, m_up);
 }
 
 glm::mat4 Camera::GetProjectionMatrix() const {
-	return glm::perspective(glm::radians(GetZoom()), m_aspect, m_near, m_far);
+	return glm::perspective(glm::radians(m_zoom), m_aspect, m_near, m_far);
 }
 
 Camera& Camera::operator+=(const glm::vec3& delta) {
-    m_pos += delta;
+    m_position += delta;
     return *this;
 }
 
 Camera& Camera::operator-=(const glm::vec3& delta) {
-    m_pos -= delta;
+    m_position -= delta;
     return *this;
 }
 
@@ -171,19 +163,32 @@ void Camera::SetWorldUp(glm::vec3 worldUp) {
     updateVectors();
 }
 
-void Camera::SetPitch(GLfloat pitch) {
-    m_pitch = pitch;
-    if(m_pitch > 89.0f) {
-        m_pitch = 89.0f;
-    } else if(m_pitch < -89.0f) {
-        m_pitch = -89.0f;
-    }
-    updateVectors();
+void Camera::SetWorldPosition(glm::vec3 position) {
+	m_worldPosition = position;
+	updateFrustum();
 }
 
-void Camera::SetYaw(GLfloat yaw) {
-    m_yaw = yaw;
-    updateVectors();
+void Camera::SetRelativeDistanceFromPoint(glm::vec3 target, GLfloat dist) {
+	m_position = target - m_front * dist;
+	updateFrustum();
+}
+
+void Camera::LookAt(glm::vec3 target) {
+	m_front = glm::normalize(target - m_position);
+	m_right = glm::normalize(glm::cross(m_front, m_worldUp));
+	m_up = glm::normalize(glm::cross(m_right, m_front));
+	updateFrustum();
+}
+
+void Camera::RotateAroundPoint(glm::vec3 target, GLfloat pitchDelta, GLfloat yawDelta) {
+
+	glm::vec4 camFocusVector = glm::vec4(glm::normalize(m_position - target), 1.0f);
+	m_position = glm::vec3(glm::rotate(glm::mat4(), yawDelta, m_worldUp) * camFocusVector) + target;
+
+	camFocusVector = glm::vec4(glm::normalize(m_position - target), 1.0f);
+	m_position = glm::vec3(glm::rotate(glm::mat4(), pitchDelta, m_right) * camFocusVector) + target;
+
+	LookAt(target);
 }
 
 void Camera::SetZoom(GLfloat zoom) {
@@ -209,24 +214,24 @@ void Camera::SetFarPlane(GLfloat far) {
 }
 
 void Camera::updateVectors() {
-    // Recalculate front vector
-    glm::vec3 tempFront;
-    tempFront.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
-    tempFront.y = sin(glm::radians(m_pitch));
-    tempFront.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
-    m_front = glm::normalize(tempFront);
+ //   // Recalculate front vector
+ //   glm::vec3 tempFront;
+ //   tempFront.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
+ //   tempFront.y = sin(glm::radians(m_pitch));
+ //   tempFront.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
+ //   m_front = glm::normalize(tempFront);
 
-    // Recalculate right and up vectors
-    m_right = glm::normalize(glm::cross(m_front, m_worldUp));
-    m_up = glm::normalize(glm::cross(m_right, m_front));
+ //   // Recalculate right and up vectors
+ //   m_right = glm::normalize(glm::cross(m_front, m_worldUp));
+ //   m_up = glm::normalize(glm::cross(m_right, m_front));
 
-	updateFrustum();
+	//updateFrustum();
 }
 
 void Camera::updateFrustum() {
 
-	glm::vec3 nc = m_pos + m_front * m_near;
-	glm::vec3 fc = m_pos + m_front * m_far;
+	glm::vec3 nc = m_worldPosition + m_front * m_near;
+	glm::vec3 fc = m_worldPosition + m_front * m_far;
 
 	float tang = (float)glm::tan(glm::radians(m_zoom) * 0.5);
 	float nearHeight = m_near * tang;
@@ -251,5 +256,19 @@ void Camera::updateFrustum() {
 	m_planes[FRUSTOM_NEAR] = sm::Plane3D(nearTopLeft, nearTopRight, nearBottomRight);
 	m_planes[FRUSTOM_FAR] = sm::Plane3D(farTopRight, farTopLeft, farBottomLeft);
 }
+
+//void Camera::setPitch(GLfloat pitch) {
+//	m_pitch = pitch;
+//	if (m_pitch > 89.0f) {
+//		m_pitch = 89.0f;
+//	}
+//	else if (m_pitch < -89.0f) {
+//		m_pitch = -89.0f;
+//	}
+//}
+//
+//void Camera::setYaw(GLfloat yaw) {
+//	m_yaw = yaw;
+//}
 
 }

@@ -67,10 +67,6 @@ void Window::SetMouseCursorVisible(GLboolean visible) {
 	check_gl_error();
 }
 
-void Window::Close() {
-    this->isWindowOpen = false;
-}
-
 void Window::SwapBuffers() {
 	glfwSwapBuffers(this->window);
 	check_gl_error();

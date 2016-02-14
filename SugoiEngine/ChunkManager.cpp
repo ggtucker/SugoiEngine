@@ -1,6 +1,7 @@
 #include "ChunkManager.h"
 
 #include <algorithm>
+#include "Player.h"
 
 ChunkManager::ChunkManager(sr::Renderer* renderer, int textureId) :
 		m_renderer{ renderer },
@@ -69,7 +70,7 @@ void ChunkManager::UpdateChunksThread() {
 
 			if (chunk) {
 				glm::vec3 chunkCenter = chunk->GetCenter();
-				glm::vec3 cameraPos = m_renderer->GetCamera().GetPosition();
+				glm::vec3 cameraPos = m_renderer->GetCamera().GetWorldPosition();
 				float cameraDistance = glm::length(chunkCenter - cameraPos);
 
 				if (cameraDistance > m_loadRadius) {

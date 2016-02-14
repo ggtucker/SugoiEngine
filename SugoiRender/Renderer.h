@@ -47,6 +47,14 @@ public:
 	GLuint AddVertexToMesh(GLuint meshId, const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords);
 	void AddTriangleToMesh(GLuint meshId, GLuint v1, GLuint v2, GLuint v3);
 
+	// Bulk mesh
+	void AddCubeToMesh(
+		GLuint meshId, glm::vec3 center, glm::vec3 halfSize,
+		glm::vec2 tc00, glm::vec2 tc11,
+		bool activeXMinus, bool activeXPlus,
+		bool activeYMinus, bool activeYPlus,
+		bool activeZMinus, bool activeZPlus);
+
 	// Camera
 	bool CubeInFrustum(glm::vec3 center, float x, float y, float z);
 
