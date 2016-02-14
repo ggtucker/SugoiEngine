@@ -260,8 +260,32 @@ void Chunk::CreateMesh() {
 	for (int x = 0; x < CHUNK_SIZE; ++x) {
 		for (int y = 0; y < CHUNK_SIZE; ++y) {
 			for (int z = 0; z < CHUNK_SIZE; ++z) {
+
 				if (m_blocks[x][y][z].IsActive()) {
-					addCubeToMesh(x, y, z);
+
+					bool activeXMinus = false;
+					bool activeXPlus = false;
+					bool activeYMinus = false;
+					bool activeYPlus = false;
+					bool activeZMinus = false;
+					bool activeZPlus = false;
+
+					if (x > 0)
+						activeXMinus = m_blocks[x - 1][y][z].IsActive();
+					if (x < CHUNK_SIZE - 1)
+						activeXPlus = m_blocks[x + 1][y][z].IsActive();
+
+					if (y > 0)
+						activeYMinus = m_blocks[x][y - 1][z].IsActive();
+					if (y < CHUNK_SIZE - 1)
+						activeYPlus = m_blocks[x][y + 1][z].IsActive();
+
+					if (z > 0)
+						activeZMinus = m_blocks[x][y][z - 1].IsActive();
+					if (z < CHUNK_SIZE - 1)
+						activeZPlus = m_blocks[x][y][z + 1].IsActive();
+
+					addCubeToMesh(x, y, z, activeXMinus, activeXPlus, activeYMinus, activeYPlus, activeZMinus, activeZPlus);
 				}
 			}
 		}
@@ -300,7 +324,12 @@ void Chunk::SetNeedsRebuild(bool rebuild, bool rebuildNeighbors) {
 	m_rebuildNeighbors = rebuildNeighbors;
 }
 
-void Chunk::addCubeToMesh(int x, int y, int z) {
+void Chunk::addCubeToMesh(
+		int x, int y, int z,
+		bool activeXMinus, bool activeXPlus,
+		bool activeYMinus, bool activeYPlus,
+		bool activeZMinus, bool activeZPlus) {
+
 	glm::vec3 p1(x - Chunk::HALF_RENDER_SIZE, y - Chunk::HALF_RENDER_SIZE, z + Chunk::HALF_RENDER_SIZE);
 	glm::vec3 p2(x + Chunk::HALF_RENDER_SIZE, y - Chunk::HALF_RENDER_SIZE, z + Chunk::HALF_RENDER_SIZE);
 	glm::vec3 p3(x + Chunk::HALF_RENDER_SIZE, y + Chunk::HALF_RENDER_SIZE, z + Chunk::HALF_RENDER_SIZE);
@@ -320,58 +349,70 @@ void Chunk::addCubeToMesh(int x, int y, int z) {
 	GLuint v1, v2, v3, v4, v5, v6, v7, v8;
 
 	// Front
-	norm = glm::vec3(0.0f, 0.0f, 1.0f);
-	v1 = m_renderer->AddVertexToMesh(m_meshId, p1, norm, tc00);
-	v2 = m_renderer->AddVertexToMesh(m_meshId, p2, norm, tc10);
-	v3 = m_renderer->AddVertexToMesh(m_meshId, p3, norm, tc11);
-	v4 = m_renderer->AddVertexToMesh(m_meshId, p4, norm, tc01);
-	m_renderer->AddTriangleToMesh(m_meshId, v1, v2, v3);
-	m_renderer->AddTriangleToMesh(m_meshId, v1, v3, v4);
+	if (!activeZPlus) {
+		norm = glm::vec3(0.0f, 0.0f, 1.0f);
+		v1 = m_renderer->AddVertexToMesh(m_meshId, p1, norm, tc00);
+		v2 = m_renderer->AddVertexToMesh(m_meshId, p2, norm, tc10);
+		v3 = m_renderer->AddVertexToMesh(m_meshId, p3, norm, tc11);
+		v4 = m_renderer->AddVertexToMesh(m_meshId, p4, norm, tc01);
+		m_renderer->AddTriangleToMesh(m_meshId, v1, v2, v3);
+		m_renderer->AddTriangleToMesh(m_meshId, v1, v3, v4);
+	}
 
 	// Back
-	norm = glm::vec3(0.0f, 0.0f, -1.0f);
-	v5 = m_renderer->AddVertexToMesh(m_meshId, p5, norm, tc00);
-	v6 = m_renderer->AddVertexToMesh(m_meshId, p6, norm, tc10);
-	v7 = m_renderer->AddVertexToMesh(m_meshId, p7, norm, tc11);
-	v8 = m_renderer->AddVertexToMesh(m_meshId, p8, norm, tc01);
-	m_renderer->AddTriangleToMesh(m_meshId, v5, v6, v7);
-	m_renderer->AddTriangleToMesh(m_meshId, v5, v7, v8);
+	if (!activeZMinus) {
+		norm = glm::vec3(0.0f, 0.0f, -1.0f);
+		v5 = m_renderer->AddVertexToMesh(m_meshId, p5, norm, tc00);
+		v6 = m_renderer->AddVertexToMesh(m_meshId, p6, norm, tc10);
+		v7 = m_renderer->AddVertexToMesh(m_meshId, p7, norm, tc11);
+		v8 = m_renderer->AddVertexToMesh(m_meshId, p8, norm, tc01);
+		m_renderer->AddTriangleToMesh(m_meshId, v5, v6, v7);
+		m_renderer->AddTriangleToMesh(m_meshId, v5, v7, v8);
+	}
 
 	// Right
-	norm = glm::vec3(1.0f, 0.0f, 0.0f);
-	v2 = m_renderer->AddVertexToMesh(m_meshId, p2, norm, tc00);
-	v5 = m_renderer->AddVertexToMesh(m_meshId, p5, norm, tc10);
-	v8 = m_renderer->AddVertexToMesh(m_meshId, p8, norm, tc11);
-	v3 = m_renderer->AddVertexToMesh(m_meshId, p3, norm, tc01);
-	m_renderer->AddTriangleToMesh(m_meshId, v2, v5, v8);
-	m_renderer->AddTriangleToMesh(m_meshId, v2, v8, v3);
+	if (!activeXPlus) {
+		norm = glm::vec3(1.0f, 0.0f, 0.0f);
+		v2 = m_renderer->AddVertexToMesh(m_meshId, p2, norm, tc00);
+		v5 = m_renderer->AddVertexToMesh(m_meshId, p5, norm, tc10);
+		v8 = m_renderer->AddVertexToMesh(m_meshId, p8, norm, tc11);
+		v3 = m_renderer->AddVertexToMesh(m_meshId, p3, norm, tc01);
+		m_renderer->AddTriangleToMesh(m_meshId, v2, v5, v8);
+		m_renderer->AddTriangleToMesh(m_meshId, v2, v8, v3);
+	}
 
 	// Left
-	norm = glm::vec3(-1.0f, 0.0f, 0.0f);
-	v6 = m_renderer->AddVertexToMesh(m_meshId, p6, norm, tc00);
-	v1 = m_renderer->AddVertexToMesh(m_meshId, p1, norm, tc10);
-	v4 = m_renderer->AddVertexToMesh(m_meshId, p4, norm, tc11);
-	v7 = m_renderer->AddVertexToMesh(m_meshId, p7, norm, tc01);
-	m_renderer->AddTriangleToMesh(m_meshId, v6, v1, v4);
-	m_renderer->AddTriangleToMesh(m_meshId, v6, v4, v7);
+	if (!activeXMinus) {
+		norm = glm::vec3(-1.0f, 0.0f, 0.0f);
+		v6 = m_renderer->AddVertexToMesh(m_meshId, p6, norm, tc00);
+		v1 = m_renderer->AddVertexToMesh(m_meshId, p1, norm, tc10);
+		v4 = m_renderer->AddVertexToMesh(m_meshId, p4, norm, tc11);
+		v7 = m_renderer->AddVertexToMesh(m_meshId, p7, norm, tc01);
+		m_renderer->AddTriangleToMesh(m_meshId, v6, v1, v4);
+		m_renderer->AddTriangleToMesh(m_meshId, v6, v4, v7);
+	}
 
 	// Top
-	norm = glm::vec3(0.0f, 1.0f, 0.0f);
-	v4 = m_renderer->AddVertexToMesh(m_meshId, p4, norm, tc00);
-	v3 = m_renderer->AddVertexToMesh(m_meshId, p3, norm, tc10);
-	v8 = m_renderer->AddVertexToMesh(m_meshId, p8, norm, tc11);
-	v7 = m_renderer->AddVertexToMesh(m_meshId, p7, norm, tc01);
-	m_renderer->AddTriangleToMesh(m_meshId, v4, v3, v8);
-	m_renderer->AddTriangleToMesh(m_meshId, v4, v8, v7);
+	if (!activeYPlus) {
+		norm = glm::vec3(0.0f, 1.0f, 0.0f);
+		v4 = m_renderer->AddVertexToMesh(m_meshId, p4, norm, tc00);
+		v3 = m_renderer->AddVertexToMesh(m_meshId, p3, norm, tc10);
+		v8 = m_renderer->AddVertexToMesh(m_meshId, p8, norm, tc11);
+		v7 = m_renderer->AddVertexToMesh(m_meshId, p7, norm, tc01);
+		m_renderer->AddTriangleToMesh(m_meshId, v4, v3, v8);
+		m_renderer->AddTriangleToMesh(m_meshId, v4, v8, v7);
+	}
 
 	// Bottom
-	norm = glm::vec3(0.0f, -1.0f, 0.0f);
-	v6 = m_renderer->AddVertexToMesh(m_meshId, p6, norm, tc00);
-	v5 = m_renderer->AddVertexToMesh(m_meshId, p5, norm, tc10);
-	v2 = m_renderer->AddVertexToMesh(m_meshId, p2, norm, tc11);
-	v1 = m_renderer->AddVertexToMesh(m_meshId, p1, norm, tc01);
-	m_renderer->AddTriangleToMesh(m_meshId, v6, v5, v2);
-	m_renderer->AddTriangleToMesh(m_meshId, v6, v2, v1);
+	if (!activeYMinus) {
+		norm = glm::vec3(0.0f, -1.0f, 0.0f);
+		v6 = m_renderer->AddVertexToMesh(m_meshId, p6, norm, tc00);
+		v5 = m_renderer->AddVertexToMesh(m_meshId, p5, norm, tc10);
+		v2 = m_renderer->AddVertexToMesh(m_meshId, p2, norm, tc11);
+		v1 = m_renderer->AddVertexToMesh(m_meshId, p1, norm, tc01);
+		m_renderer->AddTriangleToMesh(m_meshId, v6, v5, v2);
+		m_renderer->AddTriangleToMesh(m_meshId, v6, v2, v1);
+	}
 }
 
 bool Chunk::operator<(const Chunk &w) const

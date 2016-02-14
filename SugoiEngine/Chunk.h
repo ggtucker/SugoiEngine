@@ -150,5 +150,9 @@ private:
 	bool m_z_minus_full;
 	bool m_z_plus_full;
 
-	void addCubeToMesh(int x, int y, int z);
+	void addCubeToMesh(
+		int x, int y, int z,
+		bool activeXMinus, bool activeXPlus,
+		bool activeYMinus, bool activeYPlus,
+		bool activeZMinus, bool activeZPlus);
 };
