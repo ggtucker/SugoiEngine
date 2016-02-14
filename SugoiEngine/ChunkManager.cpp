@@ -226,7 +226,13 @@ void ChunkManager::Render() {
 		for (it = m_chunkMap.begin(); it != m_chunkMap.end(); ++it) {
 			Chunk* chunk = it->second;
 			if (chunk->IsLoaded()) {
-				chunk->Render();
+
+				glm::vec3 chunkCenter = chunk->GetCenter();
+				float chunkSize = Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE;
+
+				if (m_renderer->CubeInFrustum(chunkCenter, chunkSize, chunkSize, chunkSize)) {
+					chunk->Render();
+				}
 			}
 		}
 		m_chunkMapMutex.unlock();

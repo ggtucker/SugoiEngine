@@ -18,6 +18,12 @@ Renderer::Renderer(const Shader& shader, const Camera& camera) : shader{ shader 
 	check_gl_error();
 }
 
+void Renderer::Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
+	glClearColor(red, green, blue, alpha);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	check_gl_error();
+}
+
 void Renderer::LoadTexture(GLint* textureId, const GLchar* imagePath, const std::string& name) {
 	*textureId = texturePool.create(imagePath, name);
 }
@@ -36,7 +42,7 @@ void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex) {
 	check_gl_error();
 }
 
-void Renderer::updateMVP() {
+void Renderer::UpdateMVP() {
 	glm::mat4 _proj = camera.GetProjectionMatrix();
 	glm::mat4 _view = camera.GetViewMatrix();
 	glm::mat4 _model = model.top();
@@ -44,18 +50,6 @@ void Renderer::updateMVP() {
 	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(_view));
 	glUniformMatrix4fv(glGetUniformLocation(shader.GetProgram(), "model"), 1, GL_FALSE, glm::value_ptr(_model));
 	check_gl_error();
-}
-
-void Renderer::Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
-	glClearColor(red, green, blue, alpha);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	check_gl_error();
-}
-
-void Renderer::RenderMesh(GLuint meshId) {
-	shader.Use();
-	updateMVP();
-	meshPool[meshId].Render();
 }
 
 void Renderer::PushMatrix() {
@@ -93,6 +87,12 @@ void Renderer::RotateZ(GLfloat degrees) {
 	model.top() = glm::rotate(model.top(), degrees, glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
+void Renderer::RenderMesh(GLuint meshId) {
+	shader.Use();
+	UpdateMVP();
+	meshPool[meshId].Render();
+}
+
 void Renderer::CreateMesh(GLint* meshId) {
 	*meshId = meshPool.create();
 }
@@ -122,12 +122,9 @@ void Renderer::AddTriangleToMesh(GLuint meshId, GLuint v1, GLuint v2, GLuint v3)
 	meshPool[meshId].AddTriangle(v1, v2, v3);
 }
 
-Shader& Renderer::GetShader() {
-	return this->shader;
-}
-
-Camera& Renderer::GetCamera() {
-	return this->camera;
+bool Renderer::CubeInFrustum(glm::vec3 center, float x, float y, float z) {
+	FrustumResult result = camera.CubeInFrustum(center, x, y, z);
+	return result != FrustumResult::Outside;
 }
 
 }
