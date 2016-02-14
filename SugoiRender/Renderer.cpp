@@ -26,6 +26,15 @@ void Renderer::Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
 	check_gl_error();
 }
 
+void Renderer::SetWireframe(bool active) {
+	if (active) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+}
+
 void Renderer::LoadTexture(GLint* textureId, const GLchar* imagePath, const std::string& name) {
 	*textureId = texturePool.create(imagePath, name);
 }

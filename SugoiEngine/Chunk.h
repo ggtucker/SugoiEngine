@@ -151,7 +151,7 @@ private:
 	bool m_z_plus_full;
 
 	void addCubeToMesh(
-		int x, int y, int z,
+		int x, int y, int z, BlockType type,
 		bool activeXMinus, bool activeXPlus,
 		bool activeYMinus, bool activeYPlus,
 		bool activeZMinus, bool activeZPlus);

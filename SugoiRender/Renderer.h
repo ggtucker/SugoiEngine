@@ -16,6 +16,7 @@ public:
 	Renderer(const Shader& shader, const Camera& camera);
 
 	void Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+	void SetWireframe(bool active);
 
 	// Texture
 	void LoadTexture(GLint* textureId, const GLchar* imagePath, const std::string& name);

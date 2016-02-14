@@ -32,13 +32,12 @@ int main() {
 	camera.SetPosition(glm::vec3(0.0f, Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE, 0.0f));
 
 	int textureId;
-	renderer.LoadTexture(&textureId, "wood_container.jpg", "Texture");
+	renderer.LoadTexture(&textureId, "textures.png", "Texture");
 	renderer.BindTextureToShader(textureId, 0);
 
 	ChunkManager chunkManager(&renderer, textureId);
 	chunkManager.CreateNewChunk(0, 0, 0);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while (window.IsOpen()) {
 
 		sr::Event event;
