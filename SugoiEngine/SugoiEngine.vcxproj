@@ -177,8 +177,10 @@
     <ClInclude Include="GameSettings.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.frag" />
-    <None Include="shader.vert" />
+    <None Include="..\Resources\Shaders\Cube\shader.frag" />
+    <None Include="..\Resources\Shaders\Cube\shader.vert" />
+    <None Include="..\Resources\Shaders\Skybox\SkyboxFragmentShader.frag" />
+    <None Include="..\Resources\Shaders\Skybox\SkyboxVertexShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

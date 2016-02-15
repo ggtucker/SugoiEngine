@@ -14,8 +14,7 @@ void Transform::SetForward(glm::vec3 direction) {
 }
 
 void Transform::LookAt(glm::vec3 target) {
-	forward = glm::normalize(target - position);
-	right = glm::normalize(glm::cross(forward, up));
+	SetForward(target - position);
 }
 
 void Transform::RotateAround(glm::vec3 target, glm::vec3 axis, float angle) {

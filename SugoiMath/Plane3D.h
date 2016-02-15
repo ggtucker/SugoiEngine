@@ -11,7 +11,6 @@ public:
 
 	float GetDistance(glm::vec3 point);
 
-private:
 	glm::vec3 m_normal;
 	float m_d;
 };

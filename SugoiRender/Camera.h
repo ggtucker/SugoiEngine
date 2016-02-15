@@ -38,22 +38,23 @@ public:
 	glm::vec3 GetPosition() const { return m_transform.position; }
 	glm::vec3 GetForward() const { return m_transform.forward; }
 	glm::vec3 GetRight() const { return m_transform.right; }
-	glm::vec3 GetWorldUp() const { return m_transform.up; }
+	glm::vec3 GetUp() const { return m_transform.up; }
+	glm::vec3 GetWorldUp() const { return m_worldUp; }
 	GLfloat GetZoom() const { return m_zoom; }
 
 	// Frustum
 	FrustumResult CubeInFrustum(glm::vec3 center, float x, float y, float z);
 
-	// Mutable view attributes
 	void SetTransform(const Transform& transform) { m_transform = transform; }
 	void SetPosition(glm::vec3 position) { m_transform.position = position; }
 	
+	// View attributes
 	void LookAt(glm::vec3 target);
 	void RotateAround(glm::vec3 target, GLfloat pitchDelta, GLfloat yawDelta);
 	void SetDistanceFromPoint(glm::vec3 target, GLfloat dist);
-
-	// Mutable input options
     void SetZoom(GLfloat zoom);
+	void SetPitch(GLfloat pitch);
+	void SetYaw(GLfloat yaw);
 
 	// Mutable projection options
 	void SetAspectRatio(GLfloat aspect);
@@ -63,12 +64,17 @@ public:
 private:
 
 	Transform m_transform;
+	glm::vec3 m_worldUp;
 
 	// Projection options
 	GLfloat m_aspect;
 	GLfloat m_zoom;
 	GLfloat m_near;
 	GLfloat m_far;
+
+	// Rotation
+	GLfloat m_pitch;
+	GLfloat m_yaw;
 
 	// Frustum planes
 	enum {

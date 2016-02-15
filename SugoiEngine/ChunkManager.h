@@ -15,15 +15,17 @@ public:
 	ChunkManager(sr::Renderer* renderer, int textureId);
 	~ChunkManager();
 
-	Player* GetPlayer() { return m_player; }
-	void SetPlayer(Player* player) { m_player = player; }
-
 	static void _UpdateChunksThread(void* pData);
 	void UpdateChunksThread();
+
+	Player* GetPlayer() { return m_player; }
+	void SetPlayer(Player* player) { m_player = player; }
 
 	Chunk* GetChunk(int x, int y, int z);
 	void CreateNewChunk(int x, int y, int z);
 	void UnloadChunk(Chunk* chunk);
+
+	Chunk* GetChunkFromWorldPosition(float x, float y, float z);
 
 	void Update();
 	void Render();

@@ -7,7 +7,7 @@ ChunkManager::ChunkManager(sr::Renderer* renderer, int textureId) :
 		m_renderer{ renderer },
 		m_textureId{ textureId },
 		m_updateChunksThread{ nullptr },
-		m_loadRadius{ 50.0f },
+		m_loadRadius{ 120.0f },
 		m_updateThreadActive{ true },
 		m_updateThreadFinished{ false },
 		m_stepLockEnabled{ false },
@@ -57,7 +57,7 @@ void ChunkManager::UpdateChunksThread() {
 		// STEP 2: FIND CHUNKS TO ADD (OR UNLOAD IF THEY'RE TOO FAR)
 
 		int numAddedChunks = 0;
-		const int MAX_NUM_CHUNKS_ADD = 30;
+		const int MAX_NUM_CHUNKS_ADD = 20;
 		std::sort(updateList.begin(), updateList.end(), Chunk::ClosestToCamera);
 		for (unsigned int i = 0; i < updateList.size(); ++i) {
 
@@ -75,7 +75,7 @@ void ChunkManager::UpdateChunksThread() {
 
 					ChunkCoordKeyList missing = chunk->GetMissingNeighbors();
 
-					if (!chunk->IsEmpty() || chunk->GetGridY() == 0) {
+					if (!chunk->IsEmpty()) {
 
 						for (ChunkCoordKey key : missing) {
 
@@ -185,6 +185,11 @@ void ChunkManager::UnloadChunk(Chunk* chunk) {
 
 	// Unload and delete chunk
 	delete chunk;
+}
+
+Chunk* ChunkManager::GetChunkFromWorldPosition(float x, float y, float z) {
+	glm::ivec3 grid = Chunk::GetChunkPosition(x, y, z);
+	return GetChunk(grid.x, grid.y, grid.z);
 }
 
 void ChunkManager::Update() {

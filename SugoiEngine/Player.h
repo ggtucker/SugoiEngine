@@ -2,6 +2,7 @@
 
 #include <SugoiRender/Renderer.h>
 #include <SugoiMath/Transform.h>
+#include <SugoiMath/Plane3D.h>
 #include "ChunkManager.h"
 
 class Player {
@@ -11,6 +12,10 @@ public:
 
 	void Update(float deltaTime);
 	void Render();
+
+	void UpdateGridPosition();
+	void UpdatePhysics(float deltaTime);
+	bool CheckCollision(glm::vec3 position, glm::vec3 previousPosition, glm::vec3* normal, glm::vec3* deltaPos);
 
 	// Player accessors and mutators
 	glm::vec3 GetPosition() { return m_transform.position; }
@@ -33,6 +38,8 @@ private:
 
 	// Transform
 	Transform m_transform;
+	bool m_canJump;
+	float m_radius;
 
 	// Mesh
 	int m_meshId;

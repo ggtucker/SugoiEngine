@@ -68,7 +68,7 @@ void Chunk::Load() {
 	m_state = ChunkState::Loading;
 
 	std::default_random_engine generator;
-	std::uniform_int_distribution<int> distribution(17, 26);
+	std::uniform_int_distribution<int> distribution(0, 15);
 	auto randomBlock = std::bind(distribution, generator);
 
 	// Generate chunk, i.e. load from file
@@ -76,6 +76,9 @@ void Chunk::Load() {
 		for (int y = 0; y < CHUNK_SIZE; ++y) {
 			for (int z = 0; z < CHUNK_SIZE; ++z) {
 				m_blocks[x][y][z] = Block((BlockType)randomBlock());
+				if (m_grid.y != 0) {
+					m_blocks[x][y][z].SetActive(false);
+				}
 			}
 		}
 	}
@@ -310,6 +313,7 @@ void Chunk::CreateMesh() {
 }
 
 void Chunk::CompleteMesh() {
+
 	m_renderer->FinishMesh(m_meshId);
 	UpdateEmptyFlag();
 	ClearMeshCache();
@@ -359,4 +363,45 @@ bool Chunk::ClosestToCamera(const Chunk *lhs, const Chunk *rhs)
 	if ((*lhs) < (*rhs)) { return true; }
 	if ((*rhs) < (*lhs)) { return false; }
 	return (*lhs) < (*rhs);
+}
+
+float Chunk::GetWorldCoord(int c) {
+	return (float)(c * Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
+}
+
+glm::vec3 Chunk::GetWorldPosition(int x, int y, int z) {
+	return glm::vec3(GetWorldCoord(x), GetWorldCoord(y), GetWorldCoord(z));
+}
+
+glm::vec3 Chunk::GetWorldCenter(int x, int y, int z) {
+	return GetWorldPosition(x, y, z) + glm::vec3(Chunk::CHUNK_SIZE * Chunk::HALF_RENDER_SIZE);
+}
+
+int Chunk::GetChunkCoord(float c) {
+	int c_coord = (int)(c / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE));
+	return c_coord >= 0.0f ? c_coord : c_coord - 1;
+}
+
+glm::ivec3 Chunk::GetChunkPosition(float x, float y, float z) {
+	return glm::ivec3(GetChunkCoord(x), GetChunkCoord(y), GetChunkCoord(z));
+}
+
+glm::ivec3 Chunk::GetBlockPosition(float x, float y, float z) {
+	glm::vec3 blockWorldPos = glm::ivec3(x, y, z);
+
+	glm::ivec3 blockPos = glm::ivec3(
+		(int)(glm::abs(blockWorldPos.x) / Chunk::BLOCK_RENDER_SIZE) % Chunk::CHUNK_SIZE,
+		(int)(glm::abs(blockWorldPos.y) / Chunk::BLOCK_RENDER_SIZE) % Chunk::CHUNK_SIZE,
+		(int)(glm::abs(blockWorldPos.z) / Chunk::BLOCK_RENDER_SIZE) % Chunk::CHUNK_SIZE);
+
+	if (blockWorldPos.x < 0.0f) {
+		blockPos.x = Chunk::CHUNK_SIZE - 1 - blockPos.x;
+	}
+	if (blockWorldPos.y < 0.0f) {
+		blockPos.y = Chunk::CHUNK_SIZE - 1 - blockPos.y;
+	}
+	if (blockWorldPos.z < 0.0f) {
+		blockPos.z = Chunk::CHUNK_SIZE - 1 - blockPos.z;
+	}
+	return blockPos;
 }

@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{1d248edc-0e49-4acd-9ba0-dc12927e2447}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Cube">
+      <UniqueIdentifier>{ed695a01-d71e-451a-a1d2-f88e8db11373}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Skybox">
+      <UniqueIdentifier>{5f91b965-0a7c-4fc1-bcb9-22e08ae5c9fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -55,11 +64,17 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.frag">
-      <Filter>Resource Files</Filter>
+    <None Include="..\Resources\Shaders\Cube\shader.frag">
+      <Filter>Resource Files\Shaders\Cube</Filter>
     </None>
-    <None Include="shader.vert">
-      <Filter>Resource Files</Filter>
+    <None Include="..\Resources\Shaders\Cube\shader.vert">
+      <Filter>Resource Files\Shaders\Cube</Filter>
+    </None>
+    <None Include="..\Resources\Shaders\Skybox\SkyboxFragmentShader.frag">
+      <Filter>Resource Files\Shaders\Skybox</Filter>
+    </None>
+    <None Include="..\Resources\Shaders\Skybox\SkyboxVertexShader.vert">
+      <Filter>Resource Files\Shaders\Skybox</Filter>
     </None>
   </ItemGroup>
 </Project>

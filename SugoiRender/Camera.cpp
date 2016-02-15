@@ -5,18 +5,24 @@ Camera::Camera() : Camera(glm::vec3()) {}
 
 Camera::Camera(const Camera& other) :
 	m_transform{ other.m_transform },
+	m_worldUp{ other.m_worldUp },
 	m_zoom{ other.m_zoom },
 	m_aspect{ other.m_aspect },
 	m_near{ other.m_near },
-	m_far{ other.m_far } {}
+	m_far{ other.m_far },
+	m_pitch{ other.m_pitch },
+	m_yaw{ other.m_yaw } {}
 
 Camera::Camera(const glm::vec3& pos) :
+	m_worldUp{ 0.0f, 1.0f, 0.0f },
 	m_zoom{ ZOOM },
 	m_aspect{ ASPECT },
 	m_near{ NEAR },
-	m_far{ FAR }
+	m_far{ FAR },
+	m_pitch{ 0.0f },
+	m_yaw{ -90.0f }
 {
-	m_transform.position = glm::vec3(0.0f, 17.0f, 0.0f);
+	m_transform.position = glm::vec3(0.0f, 50.0f, 0.0f);
 	LookAt(m_transform.position + m_transform.forward);
 }
 
@@ -172,6 +178,20 @@ void Camera::SetZoom(GLfloat zoom) {
     }
 }
 
+void Camera::SetPitch(GLfloat pitch) {
+	m_pitch = pitch;
+	if (m_pitch > 89.0f) {
+		m_pitch = 89.0f;
+	}
+	else if (m_pitch < -89.0f) {
+		m_pitch = -89.0f;
+	}
+}
+
+void Camera::SetYaw(GLfloat yaw) {
+	m_yaw = yaw;
+}
+
 void Camera::SetAspectRatio(GLfloat aspect) {
 	m_aspect = aspect;
 }
@@ -185,18 +205,16 @@ void Camera::SetFarPlane(GLfloat far) {
 }
 
 void Camera::updateVectors() {
- //   // Recalculate front vector
- //   glm::vec3 tempFront;
- //   tempFront.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
- //   tempFront.y = sin(glm::radians(m_pitch));
- //   tempFront.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
- //   m_front = glm::normalize(tempFront);
+    glm::vec3 tempFront;
+    tempFront.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
+    tempFront.y = sin(glm::radians(m_pitch));
+    tempFront.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
 
- //   // Recalculate right and up vectors
- //   m_right = glm::normalize(glm::cross(m_front, m_worldUp));
- //   m_up = glm::normalize(glm::cross(m_right, m_front));
+    m_transform.forward = glm::normalize(tempFront);
+	m_transform.right = glm::normalize(glm::cross(m_transform.forward, m_worldUp));
+	m_transform.up = glm::normalize(glm::cross(m_transform.right, m_transform.forward));
 
-	//updateFrustum();
+	updateFrustum();
 }
 
 void Camera::updateFrustum() {
@@ -227,19 +245,5 @@ void Camera::updateFrustum() {
 	m_planes[FRUSTOM_NEAR] = sm::Plane3D(nearTopLeft, nearTopRight, nearBottomRight);
 	m_planes[FRUSTOM_FAR] = sm::Plane3D(farTopRight, farTopLeft, farBottomLeft);
 }
-
-//void Camera::setPitch(GLfloat pitch) {
-//	m_pitch = pitch;
-//	if (m_pitch > 89.0f) {
-//		m_pitch = 89.0f;
-//	}
-//	else if (m_pitch < -89.0f) {
-//		m_pitch = -89.0f;
-//	}
-//}
-//
-//void Camera::setYaw(GLfloat yaw) {
-//	m_yaw = yaw;
-//}
 
 }

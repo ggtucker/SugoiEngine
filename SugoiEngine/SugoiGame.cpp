@@ -15,7 +15,7 @@ void SugoiGame::Create(GameSettings settings) {
 	m_window->SetMouseCursorVisible(false);
 	m_window->SetPosition(700, 200);
 
-	sr::Shader shader("shader.vert", "shader.frag");
+	sr::Shader shader("../Resources/Shaders/Cube/shader.vert", "../Resources/Shaders/Cube/shader.frag");
 	m_renderer = new sr::Renderer(shader);
 
 	int textureId;
