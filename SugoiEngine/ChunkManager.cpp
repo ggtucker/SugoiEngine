@@ -32,7 +32,6 @@ void ChunkManager::_UpdateChunksThread(void* pData) {
 }
 
 void ChunkManager::UpdateChunksThread() {
-	//std::cout << "Thread started" << std::endl;
 	while (m_updateThreadActive) {
 
 		while (m_stepLockEnabled && m_updateStepLock) {
@@ -44,7 +43,6 @@ void ChunkManager::UpdateChunksThread() {
 		ChunkCoordKeyList addKeyList;
 
 		// STEP 1: PUT ALL CREATED CHUNKS IN `UPDATE LIST`
-		//std::cout << "STEP 1" << std::endl;
 
 		m_chunkMapMutex.lock();
 		std::map<ChunkCoordKey, Chunk*>::iterator it;
@@ -56,13 +54,10 @@ void ChunkManager::UpdateChunksThread() {
 		}
 		m_chunkMapMutex.unlock();
 
-		//std::cout << "updatelist:" << updateList.size() << std::endl;
-
 		// STEP 2: FIND CHUNKS TO ADD (OR UNLOAD IF THEY'RE TOO FAR)
-		//std::cout << "STEP 2" << std::endl;
 
 		int numAddedChunks = 0;
-		const int MAX_NUM_CHUNKS_ADD = 10;
+		const int MAX_NUM_CHUNKS_ADD = 30;
 		std::sort(updateList.begin(), updateList.end(), Chunk::ClosestToCamera);
 		for (unsigned int i = 0; i < updateList.size(); ++i) {
 
@@ -86,9 +81,10 @@ void ChunkManager::UpdateChunksThread() {
 
 							if (std::find(addKeyList.begin(), addKeyList.end(), key) == addKeyList.end()) {
 
+								// Here we are calculating the distance of each
+								// neighbor chunk to decide if we should add it
 								glm::vec3 chunkCenter = Chunk::GetWorldCenter(key.x, key.y, key.z);
 								float cameraDistance = glm::length(chunkCenter - cameraPos);
-                                // Duplicate code here for cameraDistance
 
 								if (cameraDistance <= m_loadRadius && key.y == 0) {
 									addKeyList.push_back(key);
@@ -103,7 +99,6 @@ void ChunkManager::UpdateChunksThread() {
 		updateList.clear();
 
 		// STEP 3: ADD CHUNKS
-		//std::cout << "STEP 3: " << addKeyList.size() << std::endl;
 
 		for (unsigned int i = 0; i < addKeyList.size(); ++i) {
 			ChunkCoordKey key = addKeyList[i];
@@ -112,7 +107,6 @@ void ChunkManager::UpdateChunksThread() {
 		addKeyList.clear();
 
 		// STEP 4: CHECK FOR REBUILD CHUNKS
-		//std::cout << "STEP 4" << std::endl;
 
 		m_chunkMapMutex.lock();
 		for (it = m_chunkMap.begin(); it != m_chunkMap.end(); ++it) {
@@ -124,7 +118,6 @@ void ChunkManager::UpdateChunksThread() {
 		m_chunkMapMutex.unlock();
 
 		// STEP 5: REBUILD CHUNKS
-		//std::cout << "STEP 5" << std::endl;
 
 		int numRebuildChunks = 0;
 		const int MAX_NUM_CHUNKS_REBUILD = 30;
@@ -220,7 +213,7 @@ void ChunkManager::Update() {
 
 void ChunkManager::Render() {
 	if (m_textureId != -1) {
-		m_renderer->BindTexture(m_textureId);
+		m_renderer->BindTextureToShader(m_textureId, 0);
 	}
 	m_renderer->PushMatrix();
 		m_chunkMapMutex.lock();

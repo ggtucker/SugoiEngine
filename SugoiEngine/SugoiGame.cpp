@@ -20,11 +20,11 @@ void SugoiGame::Create(GameSettings settings) {
 
 	int textureId;
 	m_renderer->LoadTexture(&textureId, "textures.png", "Texture");
-	m_renderer->BindTextureToShader(textureId, 0);
 
 	m_chunkManager = new ChunkManager(m_renderer, textureId);
 
-	m_player = new Player(m_renderer, m_chunkManager);
+	m_renderer->LoadTexture(&textureId, "Player.png", "Texture");
+	m_player = new Player(m_renderer, m_chunkManager, textureId);
 	m_chunkManager->SetPlayer(m_player);
 
 	m_chunkManager->CreateNewChunk(0, 0, 0);
@@ -172,17 +172,17 @@ void SugoiGame::MouseScroll(float x, float y) {
 }
 
 void SugoiGame::MouseMoved(float x, float y) {
-	GLfloat yaw = x - m_lastMouseX;
-	GLfloat pitch = y - m_lastMouseY;
+	GLfloat yawDelta = x - m_lastMouseX;
+	GLfloat pitchDelta = y - m_lastMouseY;
 	m_lastMouseX = x;
 	m_lastMouseY = y;
 	
-	yaw *= m_settings.mouseSensitivity;
-	pitch *= m_settings.mouseSensitivity;
+	yawDelta *= m_settings.mouseSensitivity;
+	pitchDelta *= m_settings.mouseSensitivity;
 	
 	sr::Camera& camera = m_renderer->GetCamera();
 	glm::vec3 target = Player::PLAYER_CENTER_OFFSET + m_player->GetPosition();
-	camera.RotateAroundPoint(target, pitch, yaw);
-	camera.SetDistanceFromPoint(target, m_cameraDistance);
-	m_player->SetForward(camera.GetFront());
+
+	camera.RotateAround(target, pitchDelta, yawDelta);
+	m_player->SetForward(camera.GetForward());
 }

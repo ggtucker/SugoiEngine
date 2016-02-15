@@ -175,7 +175,6 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="SugoiGame.h" />
     <ClInclude Include="GameSettings.h" />
-    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.frag" />

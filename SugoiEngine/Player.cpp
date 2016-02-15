@@ -2,17 +2,15 @@
 
 const glm::vec3 Player::PLAYER_CENTER_OFFSET = glm::vec3(0.0f, 0.3f, 0.0f);
 
-Player::Player(sr::Renderer* renderer, ChunkManager* chunkManager) :
+Player::Player(sr::Renderer* renderer, ChunkManager* chunkManager, int textureId) :
 	m_renderer{ renderer },
 	m_chunkManager{ chunkManager },
+	m_textureId{ textureId },
 	m_meshId{ -1 },
 	m_cachedChunk{ nullptr },
-	m_position{ 0.0f, 17.0f, 0.0f },
-	m_gravityDirection{ 0.0f, -1.0f, 0.0f },
-	m_targetForward{ 0.0f, 0.0f, 1.0f },
-	m_forward{ 0.0f, 0.0f, 1.0f },
-	m_right{ 1.0f, 0.0f, 0.0f },
-	m_up{ 0.0f, 1.0f, 0.0f } {
+	m_gravityDirection{ 0.0f, -1.0f, 0.0f } {
+
+	m_transform.position = glm::vec3(0.0f, 17.0f, 0.0f);
 
 	createDebugMesh();
 }
@@ -26,10 +24,13 @@ void Player::Update(float deltaTime) {
 }
 
 void Player::Render() {
+	if (m_textureId != -1) {
+		m_renderer->BindTextureToShader(m_textureId, 0);
+	}
 	if (m_meshId != -1) {
 		m_renderer->PushMatrix();
-			float angle = -glm::atan(m_forward.z, m_forward.x);
-			m_renderer->Translate(m_position.x, m_position.y, m_position.z);
+			float angle = -glm::atan(m_transform.forward.z, m_transform.forward.x);
+			m_renderer->Translate(m_transform.position.x, m_transform.position.y, m_transform.position.z);
 			m_renderer->RotateY(angle);
 			m_renderer->RenderMesh(m_meshId);
 		m_renderer->PopMatrix();
@@ -37,21 +38,16 @@ void Player::Render() {
 }
 
 void Player::Move(float speed) {
-	m_position += m_targetForward * speed;
+	m_transform.position += m_transform.forward * speed;
 }
 
 void Player::MoveAbsolute(glm::vec3 direction, float speed) {
-	m_position += (direction * speed);
+	m_transform.position += (direction * speed);
 }
 
 void Player::SetForward(glm::vec3 forward) {
-	m_forward = glm::normalize(forward);
-	m_right = glm::normalize(glm::cross(m_forward, m_up));
-	m_up = glm::normalize(glm::cross(m_right, m_forward));
-
-	m_targetForward = m_forward;
-	m_targetForward.y = 0.0f;
-	m_targetForward = glm::normalize(m_targetForward);
+	forward.y = 0.0f;
+	m_transform.SetForward(forward);
 }
 
 void Player::createDebugMesh() {
