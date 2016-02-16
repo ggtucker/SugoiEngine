@@ -49,5 +49,8 @@ private:
 	float m_lastMouseX;
 	float m_lastMouseY;
 
+	bool m_leftMousePressed;
+	bool m_rightMousePressed;
+
 	static SugoiGame* c_instance;
 };

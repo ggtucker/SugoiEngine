@@ -19,7 +19,7 @@ public:
 	bool CheckCollision(glm::vec3 position, glm::vec3 previousPosition, glm::vec3* normal, glm::vec3* deltaPos);
 
 	// Player accessors and mutators
-	glm::ivec3 GetGrid() { return m_grid; }
+	Transform GetTransform() { return m_transform; }
 	glm::vec3 GetBottomPosition() { return m_transform.position - m_transform.up * m_halfHeight; }
 	glm::vec3 GetPosition() { return m_transform.position; }
 	glm::vec3 GetForward() { return m_transform.forward; }

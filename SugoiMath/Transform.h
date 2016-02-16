@@ -13,6 +13,7 @@ public:
 	void SetForward(glm::vec3 direction);
 
 	void LookAt(glm::vec3 target);
+	void Rotate(glm::vec3 axis, float angle);
 	void RotateAround(glm::vec3 target, glm::vec3 axis, float angle);
 	void SetDistanceFromPoint(glm::vec3 target, float distance);
 

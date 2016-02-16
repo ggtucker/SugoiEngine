@@ -17,6 +17,10 @@ void Transform::LookAt(glm::vec3 target) {
 	SetForward(target - position);
 }
 
+void Transform::Rotate(glm::vec3 axis, float angle) {
+	SetForward(glm::vec3(glm::rotate(glm::mat4(), angle, axis) * glm::vec4(forward, 1.0f)));
+}
+
 void Transform::RotateAround(glm::vec3 target, glm::vec3 axis, float angle) {
 	glm::vec4 camFocusVector = glm::vec4(glm::normalize(position - target), 1.0f);
 	position = glm::vec3(glm::rotate(glm::mat4(), angle, axis) * camFocusVector) + target;
