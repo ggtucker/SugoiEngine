@@ -155,7 +155,7 @@ Chunk* ChunkManager::GetChunk(int x, int y, int z) {
 
 void ChunkManager::CreateNewChunk(int x, int y, int z) {
 	ChunkCoordKey key(x, y, z);
-	std::cout << "Create chunk: " << key.x << " " << key.y << " " << key.z << std::endl;
+	//std::cout << "Create chunk: " << key.x << " " << key.y << " " << key.z << std::endl;
 
 	Chunk* chunk = new Chunk(m_renderer, this);
 	chunk->SetGrid(x, y, z);
@@ -173,7 +173,7 @@ void ChunkManager::CreateNewChunk(int x, int y, int z) {
 
 void ChunkManager::UnloadChunk(Chunk* chunk) {
 	ChunkCoordKey key(chunk->GetGridX(), chunk->GetGridY(), chunk->GetGridZ());
-	std::cout << "Unload chunk: " << key.x << " " << key.y << " " << key.z << std::endl;
+	//std::cout << "Unload chunk: " << key.x << " " << key.y << " " << key.z << std::endl;
 
 	// Remove from map
 	m_chunkMapMutex.lock();

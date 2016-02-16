@@ -28,7 +28,8 @@ int main() {
 	settings.windowHeight = 600;
 	settings.movementSpeed = 3.0f;
 	settings.mouseSensitivity = 0.001f;
-
+	settings.minCameraDistance = 3.0f;
+	settings.maxCameraDistance = 30.0f;
 
 	SugoiGame* game = SugoiGame::GetInstance();
 	game->Create(settings);

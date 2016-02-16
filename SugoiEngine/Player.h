@@ -13,11 +13,14 @@ public:
 	void Update(float deltaTime);
 	void Render();
 
+	void DebugPrintBlockPosition();
 	void UpdateGridPosition();
 	void UpdatePhysics(float deltaTime);
 	bool CheckCollision(glm::vec3 position, glm::vec3 previousPosition, glm::vec3* normal, glm::vec3* deltaPos);
 
 	// Player accessors and mutators
+	glm::ivec3 GetGrid() { return m_grid; }
+	glm::vec3 GetBottomPosition() { return m_transform.position - m_transform.up * m_halfHeight; }
 	glm::vec3 GetPosition() { return m_transform.position; }
 	glm::vec3 GetForward() { return m_transform.forward; }
 	glm::vec3 GetRight() { return m_transform.right; }
@@ -43,6 +46,8 @@ private:
 
 	// Mesh
 	int m_meshId;
+	float m_radius;
+	float m_halfHeight;
 
 	// Chunk location
 	glm::vec3 m_grid;
@@ -51,10 +56,6 @@ private:
 	// Player physics
 	glm::vec3 m_velocity;
 	glm::vec3 m_gravityDirection;
-
-	// Previous frame's position
-	glm::vec3 m_previousPosition;
-	glm::vec3 m_positionDelta;
 
 	void createDebugMesh();
 };

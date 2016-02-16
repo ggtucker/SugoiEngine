@@ -236,7 +236,7 @@ void Chunk::Render() {
 	if (meshToUse != -1) {
 		m_renderer->PushMatrix();
 			glm::vec3 pos = GetPosition();
-			m_renderer->Translate(pos.x, pos.y, pos.z);
+			m_renderer->Translate(pos.x, pos.y + Chunk::HALF_RENDER_SIZE, pos.z);
 			m_renderer->RenderMesh(meshToUse);
 		m_renderer->PopMatrix();
 	}
@@ -355,13 +355,13 @@ void Chunk::SetNeedsRebuild(bool rebuild, bool rebuildNeighbors) {
 
 bool Chunk::operator<(const Chunk &w) const
 {
-	glm::vec3 playerPos = m_chunkManager->GetPlayer()->GetPosition();
-	int playerX = playerPos.x / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
-	int playerY = playerPos.y / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
-	int playerZ = playerPos.z / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
+	glm::vec3 cameraPos = m_renderer->GetCamera().GetPosition();
+	int cameraX = cameraPos.x / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
+	int cameraY = cameraPos.y / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
+	int cameraZ = cameraPos.z / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE);
 	
-	int distance = abs(playerX - m_grid.x) + abs(playerY - m_grid.y) + abs(playerZ - m_grid.z);
-	int wDistance = abs(playerX - w.GetGridX()) + abs(playerY - w.GetGridY()) + abs(playerZ - w.GetGridZ());
+	int distance = abs(cameraX - m_grid.x) + abs(cameraY - m_grid.y) + abs(cameraZ - m_grid.z);
+	int wDistance = abs(cameraX - w.GetGridX()) + abs(cameraY - w.GetGridY()) + abs(cameraZ - w.GetGridZ());
 
 	return(distance < wDistance);
 }

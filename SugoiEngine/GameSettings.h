@@ -5,4 +5,6 @@ struct GameSettings {
 	int windowHeight;
 	float movementSpeed;
 	float mouseSensitivity;
+	float minCameraDistance;
+	float maxCameraDistance;
 };

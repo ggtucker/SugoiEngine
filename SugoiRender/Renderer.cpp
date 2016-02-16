@@ -247,8 +247,8 @@ void Renderer::AddCubeToMesh(
 }
 
 bool Renderer::CubeInFrustum(glm::vec3 center, float x, float y, float z) {
-	sm::Collision result = camera.CubeInFrustum(center, x, y, z);
-	return result != sm::Collision::Outside;
+	sm::CollisionResult result = camera.CubeInFrustum(center, x, y, z);
+	return result != sm::CollisionResult::Outside;
 }
 
 

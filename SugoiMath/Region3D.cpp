@@ -2,20 +2,22 @@
 
 namespace sm {
 
-Collision Region3D::PointInRegion(glm::vec3 point) {
+CollisionResult Region3D::PointInRegion(glm::vec3 point) {
 
 	for (int i = 0; i < NumPlanes(); ++i) {
-		float distance = GetPlane(i).GetDistance(point);
+		Plane3D plane = GetPlane(i);
+		float distance = plane.GetDistance(point);
+
 		if (distance < 0.0f) {
-			return Collision::Outside;
+			return CollisionResult::Outside;
 		}
 	}
 	
-	return Collision::Inside;
+	return CollisionResult::Inside;
 }
 
-Collision Region3D::CubeInRegion(glm::vec3 center, glm::vec3 halfSize) {
-	Collision result = Collision::Inside;
+CollisionResult Region3D::CubeInRegion(glm::vec3 center, glm::vec3 halfSize) {
+	CollisionResult result = CollisionResult::Inside;
 
 	float x = halfSize.x;
 	float y = halfSize.y;
@@ -67,11 +69,11 @@ Collision Region3D::CubeInRegion(glm::vec3 center, glm::vec3 halfSize) {
 
 		// If all corners are outside the region
 		if (!in) {
-			return Collision::Outside;
+			return CollisionResult::Outside;
 		}
 		// If some corners are outside and others are inside	
 		else if (out) {
-			result = Collision::Intersect;
+			result = CollisionResult::Intersect;
 		}
 	}
 

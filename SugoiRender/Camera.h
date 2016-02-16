@@ -36,7 +36,7 @@ public:
 	GLfloat GetZoom() const { return m_zoom; }
 
 	// Frustum
-	sm::Collision CubeInFrustum(glm::vec3 center, float x, float y, float z);
+	sm::CollisionResult CubeInFrustum(glm::vec3 center, float x, float y, float z);
 
 	void SetTransform(const Transform& transform) { m_transform = transform; }
 	void SetPosition(glm::vec3 position) { m_transform.position = position; }

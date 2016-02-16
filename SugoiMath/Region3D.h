@@ -5,7 +5,7 @@
 
 namespace sm {
 
-enum Collision {
+enum CollisionResult {
 	Outside = 0,
 	Intersect,
 	Inside
@@ -20,8 +20,8 @@ public:
 	Plane3D& GetPlane(unsigned int index) { return m_planes[index]; }
 	unsigned int NumPlanes() { return m_planes.size(); }
 
-	Collision PointInRegion(glm::vec3 point);
-	Collision CubeInRegion(glm::vec3 center, glm::vec3 halfSize);
+	CollisionResult PointInRegion(glm::vec3 point);
+	CollisionResult CubeInRegion(glm::vec3 center, glm::vec3 halfSize);
 
 private:
 	std::vector<Plane3D> m_planes;

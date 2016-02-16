@@ -47,7 +47,7 @@ Camera& Camera::operator-=(const glm::vec3& delta) {
     return *this;
 }
 
-sm::Collision Camera::CubeInFrustum(glm::vec3 center, float x, float y, float z) {
+sm::CollisionResult Camera::CubeInFrustum(glm::vec3 center, float x, float y, float z) {
 	return m_frustum.CubeInRegion(center, glm::vec3(x, y, z));
 }
 

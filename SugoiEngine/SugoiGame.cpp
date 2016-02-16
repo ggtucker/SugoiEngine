@@ -132,46 +132,44 @@ void SugoiGame::UpdateCamera() {
 }
 
 void SugoiGame::KeyPressed(int keyCode, bool alt, bool control, bool shift, bool system) {
-	std::cout << "Key pressed: " << keyCode << std::endl;
 	
 }
 
 void SugoiGame::KeyReleased(int keyCode, bool alt, bool control, bool shift, bool system) {
-	std::cout << "Key released: " << keyCode << std::endl;
 	if (keyCode == GLFW_KEY_ESCAPE) {
 		m_window->Close();
 	}
 	else if (keyCode == GLFW_KEY_SPACE) {
-		m_player->Jump(7.0f);
+		m_player->Jump(5.0f);
 	}
 }
 
 void SugoiGame::MouseLeftPressed() {
-	std::cout << "Left mouse pressed" << std::endl;
 }
 
 void SugoiGame::MouseLeftReleased() {
-	std::cout << "Left mouse released" << std::endl;
 }
 
 void SugoiGame::MouseRightPressed() {
-	std::cout << "Right mouse pressed" << std::endl;
 }
 
 void SugoiGame::MouseRightReleased() {
-	std::cout << "Right mouse released" << std::endl;
 }
 
 void SugoiGame::MouseMiddlePressed() {
-	std::cout << "Middle mouse pressed" << std::endl;
 }
 
 void SugoiGame::MouseMiddleReleased() {
-	std::cout << "Middle mouse released" << std::endl;
 }
 
 void SugoiGame::MouseScroll(float x, float y) {
 	m_cameraDistance -= y;
+	if (m_cameraDistance <= m_settings.minCameraDistance) {
+		m_cameraDistance = m_settings.minCameraDistance;
+	}
+	if (m_cameraDistance >= m_settings.maxCameraDistance) {
+		m_cameraDistance = m_settings.maxCameraDistance;
+	}
 }
 
 void SugoiGame::MouseMoved(float x, float y) {
@@ -186,6 +184,6 @@ void SugoiGame::MouseMoved(float x, float y) {
 	sr::Camera& camera = m_renderer->GetCamera();
 	glm::vec3 target = Player::PLAYER_CENTER_OFFSET + m_player->GetPosition();
 
-	camera.RotateAround(target, pitchDelta, yawDelta);
+	camera.RotateAround(target, pitchDelta, -yawDelta);
 	m_player->SetForward(camera.GetForward());
 }
