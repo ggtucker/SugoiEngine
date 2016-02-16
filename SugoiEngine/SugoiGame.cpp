@@ -25,12 +25,12 @@ void SugoiGame::Create(GameSettings settings) {
 
 	m_renderer->LoadTexture(&textureId, "Player.png", "Texture");
 	m_player = new Player(m_renderer, m_chunkManager, textureId);
+	m_cameraDistance = 7.0f;
+	m_renderer->GetCamera().SetDistanceFromPoint(m_player->GetPosition(), m_cameraDistance);
+
 	m_chunkManager->SetPlayer(m_player);
 
 	m_chunkManager->CreateNewChunk(0, 0, 0);
-
-	m_cameraDistance = 10.0f;
-	m_renderer->GetCamera().SetDistanceFromPoint(m_player->GetPosition(), m_cameraDistance);
 
 	m_lastTime = glfwGetTime();
 }
@@ -140,6 +140,9 @@ void SugoiGame::KeyReleased(int keyCode, bool alt, bool control, bool shift, boo
 	std::cout << "Key released: " << keyCode << std::endl;
 	if (keyCode == GLFW_KEY_ESCAPE) {
 		m_window->Close();
+	}
+	else if (keyCode == GLFW_KEY_SPACE) {
+		m_player->Jump(7.0f);
 	}
 }
 

@@ -9,7 +9,7 @@ Transform::Transform() :
 
 void Transform::SetForward(glm::vec3 direction) {
 	forward = glm::normalize(direction);
-	right = glm::normalize(glm::cross(forward, up));
+	right = glm::normalize(glm::cross(forward, glm::vec3(0.0f, 1.0f, 0.0f)));
 	up = glm::normalize(glm::cross(right, forward));
 }
 

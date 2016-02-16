@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm\glm.hpp>
+#include <SugoiMath\Region3D.h>
 
 enum BlockType {
 	BLOCK_DEFAULT = 0,
@@ -29,6 +30,8 @@ public:
 	static glm::vec2 GetBottomLeftUV(BlockType type);
 	static glm::vec2 GetTopRightUV(BlockType type);
 	static glm::vec2 GetBottomRightUV(BlockType type);
+
+	static sm::Region3D GetCollideRegion();
 
 	/* PUBLIC MEMBERS */
 	static const int TEXTURE_MAP_LENGTH = 256;

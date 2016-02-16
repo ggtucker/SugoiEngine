@@ -87,6 +87,7 @@ public:
 
 	// Active
 	bool GetActive(int x, int y, int z);
+	glm::vec3 GetBlockPosition(int x, int y, int z);
 
 	// Flags
 	void UpdateWallFlags();

@@ -143,6 +143,14 @@ bool Chunk::GetActive(int x, int y, int z) {
 	return m_blocks[x][y][z].IsActive();
 }
 
+glm::vec3 Chunk::GetBlockPosition(int x, int y, int z) {
+	glm::vec3 position = GetPosition();
+	return glm::vec3(
+		position.x + x * Chunk::BLOCK_RENDER_SIZE,
+		position.y + y * Chunk::BLOCK_RENDER_SIZE,
+		position.z + z * Chunk::BLOCK_RENDER_SIZE);
+}
+
 void Chunk::UpdateWallFlags() {
 
 	int x_minus = 0;
@@ -378,8 +386,8 @@ glm::vec3 Chunk::GetWorldCenter(int x, int y, int z) {
 }
 
 int Chunk::GetChunkCoord(float c) {
-	int c_coord = (int)(c / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE));
-	return c_coord >= 0.0f ? c_coord : c_coord - 1;
+	int c_coord = (int)((c + Chunk::HALF_RENDER_SIZE) / (Chunk::CHUNK_SIZE * Chunk::BLOCK_RENDER_SIZE));
+	return c <= -Chunk::HALF_RENDER_SIZE ? c_coord - 1 : c_coord;
 }
 
 glm::ivec3 Chunk::GetChunkPosition(float x, float y, float z) {
@@ -387,21 +395,20 @@ glm::ivec3 Chunk::GetChunkPosition(float x, float y, float z) {
 }
 
 glm::ivec3 Chunk::GetBlockPosition(float x, float y, float z) {
-	glm::vec3 blockWorldPos = glm::ivec3(x, y, z);
 
 	glm::ivec3 blockPos = glm::ivec3(
-		(int)(glm::abs(blockWorldPos.x) / Chunk::BLOCK_RENDER_SIZE) % Chunk::CHUNK_SIZE,
-		(int)(glm::abs(blockWorldPos.y) / Chunk::BLOCK_RENDER_SIZE) % Chunk::CHUNK_SIZE,
-		(int)(glm::abs(blockWorldPos.z) / Chunk::BLOCK_RENDER_SIZE) % Chunk::CHUNK_SIZE);
+		(int)((glm::abs(x) + Chunk::HALF_RENDER_SIZE) / Chunk::BLOCK_RENDER_SIZE) % Chunk::CHUNK_SIZE,
+		(int)((glm::abs(y) + Chunk::HALF_RENDER_SIZE) / Chunk::BLOCK_RENDER_SIZE) % Chunk::CHUNK_SIZE,
+		(int)((glm::abs(z) + Chunk::HALF_RENDER_SIZE) / Chunk::BLOCK_RENDER_SIZE) % Chunk::CHUNK_SIZE);
 
-	if (blockWorldPos.x < 0.0f) {
-		blockPos.x = Chunk::CHUNK_SIZE - 1 - blockPos.x;
+	if (x < 0.0f && blockPos.x != 0) {
+		blockPos.x = Chunk::CHUNK_SIZE - blockPos.x;
 	}
-	if (blockWorldPos.y < 0.0f) {
-		blockPos.y = Chunk::CHUNK_SIZE - 1 - blockPos.y;
+	if (y < 0.0f && blockPos.y != 0) {
+		blockPos.y = Chunk::CHUNK_SIZE - blockPos.y;
 	}
-	if (blockWorldPos.z < 0.0f) {
-		blockPos.z = Chunk::CHUNK_SIZE - 1 - blockPos.z;
+	if (z < 0.0f && blockPos.z != 0) {
+		blockPos.z = Chunk::CHUNK_SIZE - blockPos.z;
 	}
 	return blockPos;
 }

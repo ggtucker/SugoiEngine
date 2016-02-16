@@ -5,25 +5,17 @@ Camera::Camera() : Camera(glm::vec3()) {}
 
 Camera::Camera(const Camera& other) :
 	m_transform{ other.m_transform },
-	m_worldUp{ other.m_worldUp },
 	m_zoom{ other.m_zoom },
 	m_aspect{ other.m_aspect },
 	m_near{ other.m_near },
-	m_far{ other.m_far },
-	m_pitch{ other.m_pitch },
-	m_yaw{ other.m_yaw } {}
+	m_far{ other.m_far } {}
 
 Camera::Camera(const glm::vec3& pos) :
-	m_worldUp{ 0.0f, 1.0f, 0.0f },
 	m_zoom{ ZOOM },
 	m_aspect{ ASPECT },
 	m_near{ NEAR },
-	m_far{ FAR },
-	m_pitch{ 0.0f },
-	m_yaw{ -90.0f }
+	m_far{ FAR }
 {
-	m_transform.position = glm::vec3(0.0f, 50.0f, 0.0f);
-	LookAt(m_transform.position + m_transform.forward);
 }
 
 Camera& Camera::operator=(const Camera& other) {
@@ -55,100 +47,8 @@ Camera& Camera::operator-=(const glm::vec3& delta) {
     return *this;
 }
 
-FrustumResult Camera::CubeInFrustum(glm::vec3 center, float x, float y, float z) {
-	FrustumResult result = FrustumResult::Inside;
-
-	for (int i = 0; i < m_planes.size(); ++i)
-	{
-		// Reset counters for corners in and out
-		int out = 0;
-		int in = 0;
-
-		if (m_planes[i].GetDistance(center + glm::vec3(-x, -y, -z)) < 0)
-		{
-			out++;
-		}
-		else
-		{
-			in++;
-		}
-
-		if (m_planes[i].GetDistance(center + glm::vec3(x, -y, -z)) < 0)
-		{
-			out++;
-		}
-		else
-		{
-			in++;
-		}
-
-		if (m_planes[i].GetDistance(center + glm::vec3(-x, -y, z)) < 0)
-		{
-			out++;
-		}
-		else
-		{
-			in++;
-		}
-
-		if (m_planes[i].GetDistance(center + glm::vec3(x, -y, z)) < 0)
-		{
-			out++;
-		}
-		else
-		{
-			in++;
-		}
-
-		if (m_planes[i].GetDistance(center + glm::vec3(-x, y, -z)) < 0)
-		{
-			out++;
-		}
-		else
-		{
-			in++;
-		}
-
-		if (m_planes[i].GetDistance(center + glm::vec3(x, y, -z)) < 0)
-		{
-			out++;
-		}
-		else
-		{
-			in++;
-		}
-
-		if (m_planes[i].GetDistance(center + glm::vec3(-x, y, z)) < 0)
-		{
-			out++;
-		}
-		else
-		{
-			in++;
-		}
-
-		if (m_planes[i].GetDistance(center + glm::vec3(x, y, z)) < 0)
-		{
-			out++;
-		}
-		else
-		{
-			in++;
-		}
-
-		// If all corners are out
-		if (!in)
-		{
-			return FrustumResult::Outside;
-		}
-		// If some corners are out and others are in	
-		else if (out)
-		{
-			result = FrustumResult::Intersect;
-		}
-	}
-
-	return result;
+sm::Collision Camera::CubeInFrustum(glm::vec3 center, float x, float y, float z) {
+	return m_frustum.CubeInRegion(center, glm::vec3(x, y, z));
 }
 
 void Camera::SetDistanceFromPoint(glm::vec3 target, GLfloat dist) {
@@ -178,20 +78,6 @@ void Camera::SetZoom(GLfloat zoom) {
     }
 }
 
-void Camera::SetPitch(GLfloat pitch) {
-	m_pitch = pitch;
-	if (m_pitch > 89.0f) {
-		m_pitch = 89.0f;
-	}
-	else if (m_pitch < -89.0f) {
-		m_pitch = -89.0f;
-	}
-}
-
-void Camera::SetYaw(GLfloat yaw) {
-	m_yaw = yaw;
-}
-
 void Camera::SetAspectRatio(GLfloat aspect) {
 	m_aspect = aspect;
 }
@@ -202,19 +88,6 @@ void Camera::SetNearPlane(GLfloat near) {
 
 void Camera::SetFarPlane(GLfloat far) {
 	m_far = far;
-}
-
-void Camera::updateVectors() {
-    glm::vec3 tempFront;
-    tempFront.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
-    tempFront.y = sin(glm::radians(m_pitch));
-    tempFront.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
-
-    m_transform.forward = glm::normalize(tempFront);
-	m_transform.right = glm::normalize(glm::cross(m_transform.forward, m_worldUp));
-	m_transform.up = glm::normalize(glm::cross(m_transform.right, m_transform.forward));
-
-	updateFrustum();
 }
 
 void Camera::updateFrustum() {
@@ -238,12 +111,13 @@ void Camera::updateFrustum() {
 	glm::vec3 farBottomLeft = fc - m_transform.up * farHeight - m_transform.right * farWidth;
 	glm::vec3 farBottomRight = fc - m_transform.up * farHeight + m_transform.right * farWidth;
 
-	m_planes[FRUSTOM_TOP] = sm::Plane3D(nearTopRight, nearTopLeft, farTopLeft);
-	m_planes[FRUSTOM_BOTTOM] = sm::Plane3D(nearBottomLeft, nearBottomRight, farBottomRight);
-	m_planes[FRUSTOM_LEFT] = sm::Plane3D(nearTopLeft, nearBottomLeft, farBottomLeft);
-	m_planes[FRUSTOM_RIGHT] = sm::Plane3D(nearBottomRight, nearTopRight, farBottomRight);
-	m_planes[FRUSTOM_NEAR] = sm::Plane3D(nearTopLeft, nearTopRight, nearBottomRight);
-	m_planes[FRUSTOM_FAR] = sm::Plane3D(farTopRight, farTopLeft, farBottomLeft);
+	m_frustum.Clear();
+	m_frustum.AddPlane(sm::Plane3D(nearTopRight, nearTopLeft, farTopLeft)); // Top
+	m_frustum.AddPlane(sm::Plane3D(nearBottomLeft, nearBottomRight, farBottomRight)); // Bottom
+	m_frustum.AddPlane(sm::Plane3D(nearTopLeft, nearBottomLeft, farBottomLeft)); // Left
+	m_frustum.AddPlane(sm::Plane3D(nearBottomRight, nearTopRight, farBottomRight)); // Right
+	m_frustum.AddPlane(sm::Plane3D(nearTopLeft, nearTopRight, nearBottomRight)); // Near
+	m_frustum.AddPlane(sm::Plane3D(farTopRight, farTopLeft, farBottomLeft)); // Far
 }
 
 }

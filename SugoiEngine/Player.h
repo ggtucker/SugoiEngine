@@ -25,6 +25,7 @@ public:
 	void SetForward(glm::vec3 forward);
 
 	// Movement
+	void Jump(float jumpVelocity);
 	void Move(float speed);
 	void MoveAbsolute(glm::vec3 direction, float speed);
 
@@ -39,7 +40,6 @@ private:
 	// Transform
 	Transform m_transform;
 	bool m_canJump;
-	float m_radius;
 
 	// Mesh
 	int m_meshId;

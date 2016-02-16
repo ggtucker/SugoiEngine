@@ -7,7 +7,6 @@ Player::Player(sr::Renderer* renderer, ChunkManager* chunkManager, int textureId
 	m_chunkManager{ chunkManager },
 	m_textureId{ textureId },
 	m_canJump{ false },
-	m_radius{ (1.0f / 14.0f) },
 	m_meshId{ -1 },
 	m_cachedChunk{ nullptr },
 	m_gravityDirection{ 0.0f, -1.0f, 0.0f } {
@@ -45,62 +44,65 @@ void Player::UpdateGridPosition() {
 
 void Player::UpdatePhysics(float deltaTime) {
 
+	m_positionDelta = glm::vec3();
+
 	glm::vec3 acceleration = (m_gravityDirection * 9.81f);
 	m_velocity += acceleration * deltaTime;
 
 	// Ensure we don't go through any blocks by dividing position delta
 	// until it is less than the block size.
 	glm::vec3 posDelta = m_velocity * deltaTime;
-	int numDivisions = 1;
+	int numSteps = 1;
 	while (glm::length(posDelta) >= Chunk::BLOCK_RENDER_SIZE) {
-		++numDivisions;
-		posDelta = m_velocity * (deltaTime / numDivisions);
+		++numSteps;
+		posDelta = m_velocity * (deltaTime / numSteps);
 	}
 
 	glm::vec3 normal;
-	int numStepsBeforeCollision = numDivisions;
-	for (int i = 0; i < numDivisions; ++i) {
-		float deltaTimeToUse = (deltaTime / numDivisions) * (i+1);
-		glm::vec3 position = m_transform.position + m_velocity * deltaTimeToUse;
-		if (CheckCollision(position, m_previousPosition, &normal, &posDelta)) {
+	for (int step = 1; step <= numSteps; ++step) {
+
+		float deltaTimeToUse = (deltaTime / numSteps) * step;
+
+		glm::vec3 posToCheck = m_transform.position + m_velocity * deltaTimeToUse;
+		if (CheckCollision(posToCheck, m_previousPosition, &normal, &posDelta)) {
 			m_velocity = glm::vec3();
 			m_canJump = true;
+			break;
 		}
-		else if (numStepsBeforeCollision == 0) {
-			numStepsBeforeCollision = i;
-		}
+
+		// No collision
+		m_positionDelta += posDelta;
+		m_transform.position += posDelta;
 	}
 
-	if (numStepsBeforeCollision > 0) {
-		float deltaTimeToUse = ((deltaTime / numDivisions) * numStepsBeforeCollision);
-		m_positionDelta = m_velocity * deltaTimeToUse;
-		m_transform.position += m_velocity * deltaTimeToUse;
-
-		m_previousPosition = m_transform.position;
-	}
-
+	m_previousPosition = m_transform.position;
 }
 
 bool Player::CheckCollision(glm::vec3 position, glm::vec3 previousPosition, glm::vec3* normal, glm::vec3* deltaPos) {
 
+	sm::Region3D region = Block::GetCollideRegion();
+
 	bool collision = false;
 
-	int numChecks = 1 + (int)(m_radius / (Chunk::BLOCK_RENDER_SIZE));
+	float playerRadius = 0.2f;
+
+	int numChecks = 1 + (int)(playerRadius / (Chunk::BLOCK_RENDER_SIZE));
 
 	for (int x = -numChecks; x <= numChecks; x++) {
 		for (int y = -numChecks; y <= numChecks; y++) {
 			for (int z = -numChecks; z <= numChecks; z++) {
 
-				glm::vec3 blockWorldPos = position + glm::vec3(
+				glm::vec3 blockApproxWorldPos = position + glm::vec3(
 					x * Chunk::BLOCK_RENDER_SIZE,
 					y * Chunk::BLOCK_RENDER_SIZE,
 					z * Chunk::BLOCK_RENDER_SIZE);
 
-				Chunk* blockChunk = m_chunkManager->GetChunkFromWorldPosition(blockWorldPos.x, blockWorldPos.y, blockWorldPos.z);
-				glm::ivec3 blockPos = Chunk::GetBlockPosition(blockWorldPos.x, blockWorldPos.y, blockWorldPos.z);
+				Chunk* blockChunk = m_chunkManager->GetChunkFromWorldPosition(blockApproxWorldPos.x, blockApproxWorldPos.y, blockApproxWorldPos.z);
+				glm::ivec3 blockPos = Chunk::GetBlockPosition(blockApproxWorldPos.x, blockApproxWorldPos.y, blockApproxWorldPos.z);
 
-				if (x == 0 && y == 0 && z == 0) {
-					std::cout << "Block: " << blockPos.x << " " << blockPos.y << " " << blockPos.z << std::endl;
+				if (blockChunk && x == 0 && y == -1 && z == 0) {
+					std::cout << "[" << blockPos.x << " " << blockPos.y << " " << blockPos.z << "] ";
+					std::cout << blockChunk->GetGridX() << " " << blockChunk->GetGridY() << " " << blockChunk->GetGridZ() << std::endl;
 				}
 
 				bool active = !blockChunk ? false : blockChunk->GetActive(blockPos.x, blockPos.y, blockPos.z);
@@ -111,36 +113,28 @@ bool Player::CheckCollision(glm::vec3 position, glm::vec3 previousPosition, glm:
 					}
 				}
 				else {
-					sm::Plane3D planes[6];
-					planes[0] = sm::Plane3D(glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(Chunk::BLOCK_RENDER_SIZE, 0.0f, 0.0f));
-					planes[1] = sm::Plane3D(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(-Chunk::BLOCK_RENDER_SIZE, 0.0f, 0.0f));
-					planes[2] = sm::Plane3D(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, Chunk::BLOCK_RENDER_SIZE, 0.0f));
-					planes[3] = sm::Plane3D(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, -Chunk::BLOCK_RENDER_SIZE, 0.0f));
-					planes[4] = sm::Plane3D(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, Chunk::BLOCK_RENDER_SIZE));
-					planes[5] = sm::Plane3D(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, -Chunk::BLOCK_RENDER_SIZE));
+					glm::vec3 blockWorldPos = blockChunk->GetBlockPosition(blockPos.x, blockPos.y, blockPos.z);
 
-					bool insideCache[6];
+					int numPlanesInside = 0;
 
-					for (int i = 0; i < 6; ++i) {
-						glm::vec3 pointToCheck = blockWorldPos - previousPosition;
-						float distance = planes[i].GetDistance(pointToCheck);
-						insideCache[i] = (distance >= -m_radius); // Previous position was intersecting or inside block
-					}
+					for (int i = 0; i < region.NumPlanes(); ++i) {
+						// Determine whether previous position was inside region
+						float lastDistance = region.GetPlane(i).GetDistance(blockWorldPos - previousPosition);
+						bool lastPositionInside = (lastDistance >= 0.0f);
 
-					int inside = 0;
+						// Determine whether new position is inside region
+						float distance = region.GetPlane(i).GetDistance(blockWorldPos - position);
+						bool positionInside = (distance >= 0.0f);
 
-					for (int i = 0; i < 6; ++i) {
-						glm::vec3 pointToCheck = blockWorldPos - position;
-						float distance = planes[i].GetDistance(pointToCheck);
-						if (distance >= -m_radius) { // New position is intersecting or inside block
-							++inside;
-							if (!insideCache[i]) {
-								*normal += planes[i].m_normal;
+						if (positionInside) {
+							++numPlanesInside;
+							if (!lastPositionInside) {
+								*normal += region.GetPlane(i).m_normal;
 							}
 						}
 					}
 
-					if (inside == 6) {
+					if (numPlanesInside == 6) {
 						if (glm::length(*normal) <= 1.0f)
 						{
 							if (glm::length(*normal) > 0.0f)
@@ -176,6 +170,13 @@ void Player::Render() {
 			m_renderer->RenderMesh(m_meshId);
 		m_renderer->PopMatrix();
 	}
+}
+
+void Player::Jump(float jumpVelocity) {
+	if (!m_canJump) return;
+
+	m_canJump = false;
+	m_velocity += m_transform.up * jumpVelocity;
 }
 
 void Player::Move(float speed) {

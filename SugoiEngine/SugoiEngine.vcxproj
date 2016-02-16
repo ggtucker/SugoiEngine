@@ -164,6 +164,9 @@
     <ClCompile Include="SugoiGame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SugoiMath\SugoiMath.vcxproj">
+      <Project>{800de66a-99c4-483a-9c01-ea7fe9f282b6}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\SugoiRender\SugoiRender.vcxproj">
       <Project>{3e82103f-c25c-41f6-ad5a-75c71b37eb7c}</Project>
     </ProjectReference>
