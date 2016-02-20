@@ -9,7 +9,7 @@ namespace sr {
     public:
 
         ShaderManager () : m_shaderRootDirectory("../Resources/Shaders/") {
-            m_shaders.reserve(10);
+            m_shaders.reserve(e_shaderCount);
         };
         ~ShaderManager () {};
 

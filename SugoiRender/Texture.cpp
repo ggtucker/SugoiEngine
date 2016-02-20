@@ -127,6 +127,12 @@ void Texture::Load(const unsigned char* image, unsigned int w, unsigned int h) {
 }
 
 void Texture::LoadCubeMap (std::vector<const GLchar*>&& faces) {
+   
+    if (IsLoaded()) {
+        Clear();
+    }
+
+
     glGenTextures(1, &id);
     glActiveTexture(GL_TEXTURE0);
 

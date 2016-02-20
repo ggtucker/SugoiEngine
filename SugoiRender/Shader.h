@@ -12,7 +12,9 @@ namespace sr {
 enum EShaderType {
     e_shaderInvalid = -1,
     e_shaderDefault,
-    e_shaderCubeMap
+    e_shaderCubeMap,
+    e_shaderLast,
+    e_shaderCount = e_shaderLast - e_shaderDefault
 };
 class Shader {
 

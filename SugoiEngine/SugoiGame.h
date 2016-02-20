@@ -6,6 +6,7 @@
 #include "ChunkManager.h"
 #include "Player.h"
 #include "GameSettings.h"
+#include <SugoiRender/SkyboxManager.h>
 
 class SugoiGame {
 public:
@@ -40,6 +41,7 @@ private:
 	sr::Renderer* m_renderer;
 	ChunkManager* m_chunkManager;
 	Player* m_player;
+    sr::SkyboxManager* m_skyboxManager; //TEMPORARY UNTIL WE ARCHITECT
 
 	float m_cameraDistance;
 

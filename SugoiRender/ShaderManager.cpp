@@ -14,8 +14,11 @@ void ShaderManager::BuildDefaultShaders () {
     Shader skybox("../Resources/Shaders/Skybox/SkyboxVertexShader.vert",
                       "../Resources/Shaders/Skybox/SkyboxFragmentShader.frag");
     skybox.SetShaderType(e_shaderCubeMap);
+    // Order is important here but it shouldnt be
     m_shaders.push_back(cube);
     m_shaders.push_back(skybox);
+
+    SetActiveShader(e_shaderDefault);
 
     std::cout << "Shader build completed." << std::endl;
 }

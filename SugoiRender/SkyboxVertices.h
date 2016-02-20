@@ -4,7 +4,7 @@
 const int numSkyboxVerts = 108;
 
 GLfloat skyboxVertices[] = {
-    // Positions          
+    // Positions in normalized device coordinates
     -1.0f,  1.0f, -1.0f,
     -1.0f, -1.0f, -1.0f,
     1.0f, -1.0f, -1.0f,

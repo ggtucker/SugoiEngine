@@ -1,4 +1,7 @@
 #include "SugoiGame.h"
+#include "SugoiRender/SkyboxManager.h"
+#include "SugoiRender/Skybox.h"
+
 
 SugoiGame* SugoiGame::c_instance = nullptr;
 
@@ -15,8 +18,7 @@ void SugoiGame::Create(GameSettings settings) {
 	m_window->SetMouseCursorVisible(false);
 	m_window->SetPosition(700, 200);
 
-	sr::Shader shader("shader.vert", "shader.frag");
-	m_renderer = new sr::Renderer(shader);
+	m_renderer = new sr::Renderer();
 
 	int textureId;
 	m_renderer->LoadTexture(&textureId, "textures.png", "Texture");
@@ -31,6 +33,9 @@ void SugoiGame::Create(GameSettings settings) {
 
 	m_cameraDistance = 10.0f;
 	m_renderer->GetCamera().SetDistanceFromPoint(m_player->GetPosition(), m_cameraDistance);
+
+    m_skyboxManager = new sr::SkyboxManager(m_renderer);
+    m_skyboxManager->AddSkybox(new sr::Skybox("CloudyLightSkybox"));
 
 	m_lastTime = glfwGetTime();
 }
@@ -117,6 +122,8 @@ void SugoiGame::Update() {
 void SugoiGame::Render() {
 
 	m_renderer->Clear(0.2f, 0.3f, 0.3f, 1.0f);
+
+    m_skyboxManager->RenderActiveSkybox();
 
 	m_chunkManager->Render();
 

@@ -7,7 +7,7 @@
 
 namespace sr {
 
-    std::string Renderer::TextureDirectory = "Resources/Textures/";
+    std::string Renderer::TextureDirectory = "../Resources/Textures/";
 
 Renderer::Renderer() : Renderer(Shader(), Camera()) {}
 

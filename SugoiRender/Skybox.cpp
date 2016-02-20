@@ -20,12 +20,12 @@ Skybox::~Skybox () {
 void Skybox::SetAndLoadSkybox () {
     std::string root = SkyboxDirectory + m_skyboxName;
 
-    std::string front = root + "/front.tga";
-    std::string back = root + "/back.tga";
-    std::string top = root + "/top.tga";
-    std::string bottom = root + "/bottom.tga";
-    std::string left = root + "/left.tga";
-    std::string right = root + "/right.tga";
+    std::string front = root + "/front.png";
+    std::string back = root + "/back.png";
+    std::string top = root + "/top.png";
+    std::string bottom = root + "/bottom.png";
+    std::string left = root + "/left.png";
+    std::string right = root + "/right.png"; //TODO: Make this take more than just png
 
     std::vector<const GLchar*> faceTextures = { front.c_str(), 
                                                 back.c_str(), 

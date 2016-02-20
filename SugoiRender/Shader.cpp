@@ -6,7 +6,9 @@
 
 namespace sr {
 
-Shader::Shader() {}
+Shader::Shader() 
+    : m_shaderType(e_shaderInvalid)
+{}
 
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
 	LoadShaderFiles(vertexPath, fragmentPath);

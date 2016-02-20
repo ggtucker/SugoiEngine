@@ -3,7 +3,7 @@
 using namespace sr;
 
 SkyboxManager::SkyboxManager (Renderer* renderer) 
-    : m_activeSkybox(0), m_renderer(renderer)
+    : m_activeSkybox(-1), m_renderer(renderer)
 {
 
 }
@@ -17,6 +17,7 @@ SkyboxManager::~SkyboxManager () {
 void SkyboxManager::AddSkybox (Skybox* toAdd) {
     toAdd->SetRenderer(m_renderer);
     toAdd->SetAndLoadSkybox();
+    m_activeSkybox++;
     m_skyboxes.push_back(toAdd);
 }
 
