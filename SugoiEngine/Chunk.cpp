@@ -139,6 +139,15 @@ ChunkCoordKeyList Chunk::GetMissingNeighbors() {
 	return missing;
 }
 
+bool Chunk::Destroy(int x, int y, int z) {
+	if (GetActive(x, y, z)) {
+		m_blocks[x][y][z].SetActive(false);
+		RebuildMesh();
+		return true;
+	}
+	return false;
+}
+
 bool Chunk::GetActive(int x, int y, int z) {
 	return m_blocks[x][y][z].IsActive();
 }

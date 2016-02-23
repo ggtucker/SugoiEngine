@@ -11,6 +11,11 @@ enum CollisionResult {
 	Inside
 };
 
+struct Collision {
+	CollisionResult result;
+	std::vector<bool> insidePlane;
+};
+
 class Region3D {
 public:
 
@@ -21,6 +26,7 @@ public:
 	unsigned int NumPlanes() { return m_planes.size(); }
 
 	CollisionResult PointInRegion(glm::vec3 point);
+	Collision SphereInRegion(glm::vec3 center, float radius);
 	CollisionResult CubeInRegion(glm::vec3 center, glm::vec3 halfSize);
 
 private:

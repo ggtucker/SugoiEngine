@@ -26,7 +26,7 @@ public:
 	void KeyPressed(int keyCode, bool alt, bool control, bool shift, bool system);
 	void KeyReleased(int keyCode, bool alt, bool control, bool shift, bool system);
 	void MouseLeftPressed();
-	void MouseLeftReleased();
+	void MouseLeftReleased(double x, double y);
 	void MouseRightPressed();
 	void MouseRightReleased();
 	void MouseMiddlePressed();
@@ -41,7 +41,7 @@ private:
 	ChunkManager* m_chunkManager;
 	Player* m_player;
 
-	float m_cameraDistance;
+	//float m_cameraDistance;
 
 	float m_lastTime;
 	float m_deltaTime;

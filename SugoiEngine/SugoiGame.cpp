@@ -23,10 +23,10 @@ void SugoiGame::Create(GameSettings settings) {
 
 	m_chunkManager = new ChunkManager(m_renderer, textureId);
 
-	m_renderer->LoadTexture(&textureId, "Player.png", "Texture");
-	m_player = new Player(m_renderer, m_chunkManager, textureId);
-	m_cameraDistance = 7.0f;
-	m_renderer->GetCamera().SetDistanceFromPoint(m_player->GetPosition(), m_cameraDistance);
+	//m_renderer->LoadTexture(&textureId, "Player.png", "Texture");
+	m_player = new Player(m_renderer, m_chunkManager, m_settings.walkSpeed, m_settings.runSpeed);
+	//m_cameraDistance = 7.0f;
+	//m_renderer->GetCamera().SetDistanceFromPoint(m_player->GetPosition(), m_cameraDistance);
 
 	m_chunkManager->SetPlayer(m_player);
 
@@ -81,7 +81,7 @@ void SugoiGame::PollEvents() {
 
 		case sr::Event::MOUSE_RELEASED:
 			if (event.mouseClicked.mouseCode == GLFW_MOUSE_BUTTON_1) {
-				MouseLeftReleased();
+				MouseLeftReleased(event.mouseClicked.x, event.mouseClicked.y);
 			}
 			else if (event.mouseClicked.mouseCode == GLFW_MOUSE_BUTTON_2) {
 				MouseRightReleased();
@@ -107,15 +107,6 @@ void SugoiGame::Update() {
 	m_deltaTime = currentTime - m_lastTime;
 	m_lastTime = currentTime;
 
-	if (sr::Keyboard::IsKeyPressed(GLFW_KEY_W)) {
-		if (sr::Keyboard::IsKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-			m_player->Move(m_settings.runSpeed * m_deltaTime);
-		}
-		else {
-			m_player->Move(m_settings.movementSpeed * m_deltaTime);
-		}
-	}
-
 	m_chunkManager->Update();
 	m_player->Update(m_deltaTime);
 	UpdateCamera();
@@ -127,7 +118,7 @@ void SugoiGame::Render() {
 
 	m_chunkManager->Render();
 
-	m_player->Render();
+	//m_player->Render();
 
 	m_window->SwapBuffers();
 }
@@ -135,21 +126,13 @@ void SugoiGame::Render() {
 void SugoiGame::UpdateCamera() {
 
 	sr::Camera& camera = m_renderer->GetCamera();
-	glm::vec3 target = Player::PLAYER_CENTER_OFFSET + m_player->GetPosition();
 	Transform transform = m_player->GetTransform();
 
-	if (sr::Keyboard::IsKeyPressed(GLFW_KEY_A)) {
-		transform.Rotate(transform.up, 0.005f);
-		m_player->SetForward(transform.forward);
-		camera.RotateAround(target, 0.0f, 0.005f);
-	}
-	else if (sr::Keyboard::IsKeyPressed(GLFW_KEY_D)) {
-		transform.Rotate(transform.up, -0.005f);
-		m_player->SetForward(transform.forward);
-		camera.RotateAround(target, 0.0f, -0.005f);
-	}
+	
 
-	camera.SetDistanceFromPoint(target, m_cameraDistance);
+	transform.position.y += m_player->GetHeight();
+	camera.SetTransform(transform);
+	//camera.SetDistanceFromPoint(target, m_cameraDistance);
 }
 
 void SugoiGame::KeyPressed(int keyCode, bool alt, bool control, bool shift, bool system) {
@@ -169,8 +152,13 @@ void SugoiGame::MouseLeftPressed() {
 	m_leftMousePressed = true;
 }
 
-void SugoiGame::MouseLeftReleased() {
+void SugoiGame::MouseLeftReleased(double x, double y) {
 	m_leftMousePressed = false;
+	m_player->DestroyBlock();
+	m_renderer->PushMatrix();
+		glm::vec3 mouseWorldPos = m_renderer->UnProject(glm::vec3(x, y, 0.0f), glm::vec4(0.0f, 0.0f, m_window->GetWidth(), m_window->GetHeight()));
+	m_renderer->PopMatrix();
+	std::cout << mouseWorldPos.x << " " << mouseWorldPos.y << " " << mouseWorldPos.z << std::endl;
 }
 
 void SugoiGame::MouseRightPressed() {
@@ -188,13 +176,13 @@ void SugoiGame::MouseMiddleReleased() {
 }
 
 void SugoiGame::MouseScroll(float x, float y) {
-	m_cameraDistance -= y;
+	/*m_cameraDistance -= y;
 	if (m_cameraDistance <= m_settings.minCameraDistance) {
 		m_cameraDistance = m_settings.minCameraDistance;
 	}
 	if (m_cameraDistance >= m_settings.maxCameraDistance) {
 		m_cameraDistance = m_settings.maxCameraDistance;
-	}
+	}*/
 }
 
 void SugoiGame::MouseMoved(float x, float y) {
@@ -206,14 +194,5 @@ void SugoiGame::MouseMoved(float x, float y) {
 	yawDelta *= m_settings.mouseSensitivity;
 	pitchDelta *= m_settings.mouseSensitivity;
 	
-	sr::Camera& camera = m_renderer->GetCamera();
-	glm::vec3 target = Player::PLAYER_CENTER_OFFSET + m_player->GetPosition();
-
-	if (m_leftMousePressed) {
-		camera.RotateAround(target, pitchDelta, -yawDelta);
-	}
-	if (m_rightMousePressed) {
-		camera.RotateAround(target, pitchDelta, -yawDelta);
-		m_player->SetForward(camera.GetForward());
-	}
+	m_player->Rotate(-pitchDelta, -yawDelta);
 }

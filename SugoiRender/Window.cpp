@@ -118,6 +118,8 @@ void Window::mouse_button_callback(GLFWwindow* window, int button, int action, i
     Event mouseEvent;
     mouseEvent.mouseClicked.mouseCode = button;
 
+	glfwGetCursorPos(window, &mouseEvent.mouseClicked.x, &mouseEvent.mouseClicked.y);
+
     if(action == GLFW_PRESS) {
         mouseEvent.type = Event::MOUSE_PRESSED;
 		eventQueue.Push(mouseEvent);

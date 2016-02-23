@@ -87,6 +87,10 @@ void Renderer::PopMatrix() {
 	}
 }
 
+glm::vec3 Renderer::UnProject(glm::vec3 position, glm::vec4 viewport) {
+	return glm::unProject(position, camera.GetViewMatrix() * model.top(), camera.GetProjectionMatrix(), viewport);
+}
+
 void Renderer::Translate(GLfloat x, GLfloat y, GLfloat z) {
 	model.top() = glm::translate(model.top(), glm::vec3(x, y, z));
 }

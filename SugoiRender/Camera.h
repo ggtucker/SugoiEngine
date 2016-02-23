@@ -47,6 +47,9 @@ public:
 	void SetDistanceFromPoint(glm::vec3 target, GLfloat dist);
     void SetZoom(GLfloat zoom);
 
+	// Unproject
+	glm::vec3 unProject(glm::vec3 position);
+
 	// Mutable projection options
 	void SetAspectRatio(GLfloat aspect);
 	void SetNearPlane(GLfloat near);

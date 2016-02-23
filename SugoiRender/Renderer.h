@@ -70,6 +70,9 @@ public:
 	void PushMatrix();
 	void PopMatrix();
 
+	// Unproject
+	glm::vec3 UnProject(glm::vec3 position, glm::vec4 viewport);
+
 	// Matrix transformations
 	void Translate(GLfloat x, GLfloat y, GLfloat z);
 	void Scale(GLfloat x, GLfloat y, GLfloat z);

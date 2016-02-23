@@ -28,4 +28,8 @@ public:
 	glm::vec3 forward;
 	glm::vec3 right;
 	glm::vec3 up;
+
+	/* PUBLIC STATIC MEMBERS */
+
+	static const glm::vec3 WORLD_UP;
 };

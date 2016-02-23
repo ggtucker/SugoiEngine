@@ -12,8 +12,30 @@ CollisionResult Region3D::PointInRegion(glm::vec3 point) {
 			return CollisionResult::Outside;
 		}
 	}
-	
+
 	return CollisionResult::Inside;
+}
+
+Collision Region3D::SphereInRegion(glm::vec3 center, float radius) {
+
+	Collision collision;
+	collision.result = CollisionResult::Inside;
+
+	for (int i = 0; i < NumPlanes(); ++i) {
+		Plane3D plane = GetPlane(i);
+		float distance = plane.GetDistance(center);
+
+		if (distance < -radius) {
+			collision.result = CollisionResult::Outside;
+			collision.insidePlane.push_back(false);
+		}
+		else {
+			collision.insidePlane.push_back(true);
+		}
+
+	}
+
+	return collision;
 }
 
 CollisionResult Region3D::CubeInRegion(glm::vec3 center, glm::vec3 halfSize) {

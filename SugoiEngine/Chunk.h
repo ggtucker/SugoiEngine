@@ -86,6 +86,7 @@ public:
 	ChunkCoordKeyList GetMissingNeighbors();
 
 	// Active
+	bool Destroy(int x, int y, int z);
 	bool GetActive(int x, int y, int z);
 	glm::vec3 GetBlockPosition(int x, int y, int z);
 

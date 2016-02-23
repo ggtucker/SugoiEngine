@@ -57,7 +57,7 @@ void ChunkManager::UpdateChunksThread() {
 		// STEP 2: FIND CHUNKS TO ADD (OR UNLOAD IF THEY'RE TOO FAR)
 
 		int numAddedChunks = 0;
-		const int MAX_NUM_CHUNKS_ADD = 20;
+		const int MAX_NUM_CHUNKS_ADD = 10;
 		std::sort(updateList.begin(), updateList.end(), Chunk::ClosestToCamera);
 		for (unsigned int i = 0; i < updateList.size(); ++i) {
 

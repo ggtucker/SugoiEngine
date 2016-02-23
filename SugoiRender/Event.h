@@ -34,6 +34,8 @@ public:
 
     struct MouseClickedEvent {
         int mouseCode;
+		double x;
+		double y;
     };
 
     struct MouseMovedEvent {

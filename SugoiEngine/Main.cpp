@@ -26,7 +26,7 @@ int main() {
 	GameSettings settings;
 	settings.windowWidth = 800;
 	settings.windowHeight = 600;
-	settings.movementSpeed = 3.0f;
+	settings.walkSpeed = 3.0f;
 	settings.runSpeed = 6.0f;
 	settings.mouseSensitivity = 0.001f;
 	settings.minCameraDistance = 3.0f;

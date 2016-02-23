@@ -3,7 +3,7 @@
 struct GameSettings {
 	int windowWidth;
 	int windowHeight;
-	float movementSpeed;
+	float walkSpeed;
 	float runSpeed;
 	float mouseSensitivity;
 	float minCameraDistance;
