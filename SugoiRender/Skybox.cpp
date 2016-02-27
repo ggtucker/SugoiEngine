@@ -1,6 +1,7 @@
 
 #include "Skybox.h"
 #include "Renderer.h"
+#include "SkyboxManager.h"
 
 using namespace sr;
 
@@ -37,6 +38,12 @@ void Skybox::SetAndLoadSkybox () {
 
     m_textureId = m_renderer->LoadCubeMapTexture(std::move(faceTextures));
 
+    if (m_textureId == SUGOI_ERROR)
+    {
+        printf("ERROR IN SKYBOX TEXTURE LOADING\n");
+        assert(false);
+    }
+
     // TODO, THIS NEEDS CUBEMAP SUPPORT
 }
 
@@ -49,16 +56,19 @@ void Skybox::Render () {
     float x = -(width*0.5f);
     float y = -(height*0.5f);
     float z = -(length*0.5f);
+    SUGOI_TODO("Make all Renderable Objects manager their own shader type");
 
 
-    m_renderer->BindTexture(m_textureId);
+    glDepthMask(GL_FALSE);
+    EShaderType oldType = m_renderer->GetActiveShaderType();
+    m_renderer->SetActiveShader(e_shaderCubeMap);
+    m_renderer->UseActiveShader();
+    
 
-   glDepthMask(GL_FALSE);
-
-   // Set view and projection matrix
-  // glBindVertexArray(skyboxVAO);
-   glBindTexture(GL_TEXTURE_CUBE_MAP, m_textureId);
+   m_renderer->BindTexture(m_textureId, GL_TEXTURE_CUBE_MAP);
    glDrawArrays(GL_TRIANGLES, 0, 36);
    glBindVertexArray(0);
    glDepthMask(GL_TRUE);
+
+   m_renderer->SetActiveShader(oldType);
 }

@@ -32,6 +32,10 @@ void ShaderManager::SetActiveShader (EShaderType type) {
     }
 }
 
+void ShaderManager::UseActiveShader () {
+    m_shaders[m_activeShaderIndex].Use();
+}
+
 const Shader& ShaderManager::GetShaderByEnum (EShaderType e) {
     for (auto& s : m_shaders) {
         if (s.ShaderType() == e) {

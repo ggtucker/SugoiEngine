@@ -23,6 +23,8 @@ namespace sr {
 
         void SetActiveShader (EShaderType type);
 
+        void UseActiveShader ();
+
         const Shader& GetActiveShader () { return m_shaders[m_activeShaderIndex]; }
 
     private:

@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "ShaderManager.h"
+#include "SugoiEngine/SugoiDefines.h"
 
 namespace sr {
 
@@ -54,6 +55,7 @@ public:
 	// Texture
 	void LoadTexture(GLint* textureId, const GLchar* imagePath, const std::string& name);
 	void BindTexture(GLint textureId);
+    void BindTexture(GLint textureId, GLint openGLTextureType);
 	void BindTextureUnit(GLint textureId, GLint textureIndex);
 	void BindTextureToShader(GLint textureId, GLint textureIndex, EShaderType type = e_shaderDefault);
 
@@ -105,7 +107,10 @@ public:
     // Temporary
     static std::string TextureDirectory;
 
+    const EShaderType GetActiveShaderType () { return m_shaderManager.GetActiveShader().ShaderType(); }
     void SetActiveShader (EShaderType type) { m_shaderManager.SetActiveShader(type); }
+
+    void UseActiveShader ();
 
 private:
     ShaderManager m_shaderManager;

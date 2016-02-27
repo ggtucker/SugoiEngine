@@ -13,10 +13,11 @@ namespace sr {
         void AddSkybox (Skybox* box);
 
         void RenderActiveSkybox ();
+        GLint& GetVBO () { return m_meshId; }
 
     private:
         int m_activeSkybox;
-        GLint m_vbo;
+        GLint m_meshId;
         Renderer* m_renderer;
         std::vector<Skybox*> m_skyboxes;
 

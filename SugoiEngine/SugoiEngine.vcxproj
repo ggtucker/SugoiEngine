@@ -174,9 +174,11 @@
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkManager.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="SugoiDefines.h" />
     <ClInclude Include="SugoiGame.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="TypeDefs.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.frag" />

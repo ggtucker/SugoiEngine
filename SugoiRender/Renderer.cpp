@@ -48,6 +48,10 @@ void Renderer::BindTexture(GLint textureId) {
 	texturePool[textureId].Bind();
 }
 
+void Renderer::BindTexture(GLint textureId, GLint openGLTextureType) {
+    texturePool[textureId].Bind(openGLTextureType);
+}
+
 void Renderer::BindTextureUnit(GLint textureId, GLint textureIndex) {
 	glActiveTexture(GL_TEXTURE0 + textureIndex);
 	BindTexture(textureId);
@@ -124,6 +128,7 @@ void Renderer::CreateMesh(GLint* meshId) {
 
 void Renderer::CreateSkyboxMesh (GLint* meshId) {
     CreateMesh(meshId);
+    Mesh& mesh = meshPool[*meshId];
 
     for (int i = 0; i < numSkyboxVerts; ++i) {
         glm::vec3 pos (skyboxVertices[i], skyboxVertices[i + 1], skyboxVertices[i + 2]);
@@ -131,7 +136,13 @@ void Renderer::CreateSkyboxMesh (GLint* meshId) {
         glm::vec2 texCoord;
         
 
-        meshPool[*meshId].AddVertex(pos, norm, texCoord);
+        int errorCode = mesh.AddVertex(pos, norm, texCoord);
+        if (errorCode == -1)
+        {
+            // TODO Add logging
+            printf("ERROR IN VERTEX ADDITION/n");
+            assert(false);
+        }
     }
 }
 
@@ -290,6 +301,10 @@ void Renderer::SetRenderModeContext (ERenderMode mode) {
         glPolygonMode(GL_BACK, GL_FILL);
         break;
     };
+}
+
+void Renderer::UseActiveShader () {
+    m_shaderManager.UseActiveShader();
 }
 
 }

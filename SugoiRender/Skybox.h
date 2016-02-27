@@ -10,7 +10,7 @@
 #include <gl/glew.h>
 namespace sr {
     class Renderer;
-
+    class SkyboxManager;
     class Skybox {
 
     public:
@@ -32,10 +32,12 @@ namespace sr {
         void SetAndLoadSkybox ();
 
         void SetRenderer (Renderer* renderer) { m_renderer = renderer; }
+        void SetOwner (SkyboxManager* manager) { m_manager = manager; }
         void Render ();
         static std::string SkyboxDirectory;
     private:
         Renderer* m_renderer;
+        SkyboxManager* m_manager;
         GLint     m_textureId;
         std::string m_skyboxName;
     };
