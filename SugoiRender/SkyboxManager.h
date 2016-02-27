@@ -16,6 +16,7 @@ namespace sr {
 
     private:
         int m_activeSkybox;
+        GLint m_vbo;
         Renderer* m_renderer;
         std::vector<Skybox*> m_skyboxes;
 

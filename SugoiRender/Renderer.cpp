@@ -125,9 +125,14 @@ void Renderer::CreateMesh(GLint* meshId) {
 void Renderer::CreateSkyboxMesh (GLint* meshId) {
     CreateMesh(meshId);
 
-   // for (int i = 0; i < numSkyboxVerts; ++i) {
-   //     meshPool[mesh
-   // }
+    for (int i = 0; i < numSkyboxVerts; ++i) {
+        glm::vec3 pos (skyboxVertices[i], skyboxVertices[i + 1], skyboxVertices[i + 2]);
+        glm::vec3 norm;
+        glm::vec2 texCoord;
+        
+
+        meshPool[*meshId].AddVertex(pos, norm, texCoord);
+    }
 }
 
 void Renderer::DeleteMesh(GLint meshId) {

@@ -1,11 +1,13 @@
 #include "SkyboxManager.h"
 #include <cassert>
+#include <SugoiRender/Renderer.h>
 using namespace sr;
 
 SkyboxManager::SkyboxManager (Renderer* renderer) 
     : m_activeSkybox(-1), m_renderer(renderer)
 {
-
+    
+    m_renderer->CreateSkyboxMesh(&m_vbo);
 }
 
 SkyboxManager::~SkyboxManager () {

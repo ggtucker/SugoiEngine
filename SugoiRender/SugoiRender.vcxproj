@@ -63,6 +63,7 @@
       </FunctionLevelLinking>
       <WholeProgramOptimization>
       </WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
