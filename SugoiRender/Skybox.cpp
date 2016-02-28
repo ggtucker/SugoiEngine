@@ -49,6 +49,10 @@ void Skybox::SetAndLoadSkybox () {
 }
 
 void Skybox::Render () {
+
+    // WARNING: Abandon hope, all ye who enter here, for there is intense code coupling.
+    // We need to figure out our render pipeline for more than one type of render.  This is hacky af.
+
     SUGOI_TODO("Make all Renderable Objects manager their own shader type");
 
     glDepthMask(GL_FALSE);
