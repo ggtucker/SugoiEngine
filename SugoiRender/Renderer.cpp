@@ -130,7 +130,8 @@ void Renderer::CreateSkyboxMesh (GLint* meshId) {
     CreateMesh(meshId);
     Mesh& mesh = meshPool[*meshId];
 
-    for (int i = 0; i < numSkyboxVerts/3; i += 3) {
+    int numVerts = numSkyboxVerts / 3;
+    for (int i = 0; i < numVerts; i += 3) {
         glm::vec3 pos (skyboxVertices[i], skyboxVertices[i + 1], skyboxVertices[i + 2]);
         mesh.AddVertex(pos, glm::vec3(), glm::vec2());
     }

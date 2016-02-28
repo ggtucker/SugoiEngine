@@ -44,11 +44,14 @@ GLuint Mesh::BuildOnlyVerts () {
     glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
     glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &this->vertices[0], GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, false, sizeof(Vertex), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, true, sizeof(Vertex), (GLvoid*)0);
 
     glBindVertexArray(0);
 
+    check_gl_error();
+
+    finalized = true;
     return 0;
 
 }
@@ -106,7 +109,7 @@ void Mesh::Build() {
 
 	check_gl_error();
 
-	finalized = true;
+    finalized = true;
 }
 
 void Mesh::Render() {
