@@ -73,12 +73,13 @@ void Chunk::Load() {
 
 	// Generate chunk, i.e. load from file
 	for (int x = 0; x < CHUNK_SIZE; ++x) {
-		for (int y = 0; y < CHUNK_SIZE; ++y) {
-			for (int z = 0; z < CHUNK_SIZE; ++z) {
+		for (int z = 0; z < CHUNK_SIZE; ++z) {
+
+			float height = m_chunkManager->GetNoiseValue(m_grid.x, m_grid.z, x, z);
+
+			for (int y = 0; y < height; ++y) {
 				m_blocks[x][y][z] = Block((BlockType)randomBlock());
-				if (m_grid.y != 0) {
-					m_blocks[x][y][z].SetActive(false);
-				}
+				m_blocks[x][y][z].SetActive(true);
 			}
 		}
 	}

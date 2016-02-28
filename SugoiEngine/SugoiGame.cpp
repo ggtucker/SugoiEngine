@@ -15,8 +15,7 @@ void SugoiGame::Create(GameSettings settings) {
 	m_window->SetMouseCursorVisible(false);
 	m_window->SetPosition(700, 200);
 
-	sr::Shader shader("../Resources/Shaders/Cube/shader.vert", "../Resources/Shaders/Cube/shader.frag");
-	m_renderer = new sr::Renderer(shader);
+	m_renderer = new sr::Renderer();
 
 	int textureId;
 	m_renderer->LoadTexture(&textureId, "textures.png", "Texture");
@@ -119,6 +118,8 @@ void SugoiGame::Render() {
 	m_chunkManager->Render();
 
 	//m_player->Render();
+
+	//m_renderer->DrawLine(glm::vec2(), glm::vec2(), 0.0f);
 
 	m_window->SwapBuffers();
 }

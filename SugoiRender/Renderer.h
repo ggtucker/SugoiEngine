@@ -44,9 +44,6 @@ namespace sr {
 class Renderer {
 public:
 	Renderer();
-	explicit Renderer(const Shader& shader);
-	explicit Renderer(const Camera& camera);
-	Renderer(const Shader& shader, const Camera& camera);
 
 	void Clear(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 	void SetWireframe(bool active);
@@ -80,6 +77,8 @@ public:
 	void RotateX(GLfloat degrees);
 	void RotateY(GLfloat degrees);
 	void RotateZ(GLfloat degrees);
+
+	void DrawLine(glm::vec2 p1, glm::vec2 p2, float width);
 
 	// Mesh
 	void RenderMesh(GLuint meshId);

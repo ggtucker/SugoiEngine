@@ -22,6 +22,9 @@
     <Filter Include="Resource Files\Shaders\Skybox">
       <UniqueIdentifier>{5f91b965-0a7c-4fc1-bcb9-22e08ae5c9fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\Primitive">
+      <UniqueIdentifier>{57ad1cff-fdfc-4359-a6f6-42e311631d94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -75,6 +78,12 @@
     </None>
     <None Include="..\Resources\Shaders\Skybox\SkyboxVertexShader.vert">
       <Filter>Resource Files\Shaders\Skybox</Filter>
+    </None>
+    <None Include="..\Resources\Shaders\Primitive\PrimitiveLineShader.frag">
+      <Filter>Resource Files\Shaders\Primitive</Filter>
+    </None>
+    <None Include="..\Resources\Shaders\Primitive\PrimitiveLineShader.vert">
+      <Filter>Resource Files\Shaders\Primitive</Filter>
     </None>
   </ItemGroup>
 </Project>

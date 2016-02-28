@@ -14,8 +14,15 @@ void ShaderManager::BuildDefaultShaders () {
     Shader skybox("../Resources/Shaders/Skybox/SkyboxVertexShader.vert",
                       "../Resources/Shaders/Skybox/SkyboxFragmentShader.frag");
     skybox.SetShaderType(e_shaderCubeMap);
+	Shader primitiveLine("../Resources/Shaders/Primitive/PrimitiveLineShader.vert",
+						"../Resources/Shaders/Primitive/PrimitiveLineShader.frag");
+	primitiveLine.SetShaderType(e_shaderPrimitiveLine);
+
     m_shaders.push_back(cube);
     m_shaders.push_back(skybox);
+	m_shaders.push_back(primitiveLine);
+
+	m_activeShaderIndex = 0;
 
     std::cout << "Shader build completed." << std::endl;
 }

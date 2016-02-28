@@ -9,16 +9,8 @@ namespace sr {
 
     std::string Renderer::TextureDirectory = "Resources/Textures/";
 
-Renderer::Renderer() : Renderer(Shader(), Camera()) {}
-
-Renderer::Renderer(const Shader& shader) : Renderer(shader, Camera()) {}
-
-Renderer::Renderer(const Camera& camera) : Renderer(Shader(), camera) {}
-
-Renderer::Renderer(const Shader& shader, const Camera& camera) : camera{ camera } {
+Renderer::Renderer() {
     m_shaderManager.BuildDefaultShaders();
-    if (shader.ShaderType() != e_shaderInvalid)
-        m_shaderManager.AddShader(shader);
 
 	model.push(glm::mat4());
 	glEnable(GL_DEPTH_TEST);
@@ -115,7 +107,49 @@ void Renderer::RotateZ(GLfloat degrees) {
 	model.top() = glm::rotate(model.top(), degrees, glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
+void Renderer::DrawLine(glm::vec2 p1, glm::vec2 p2, float width) {
+	m_shaderManager.SetActiveShader(e_shaderPrimitiveLine);
+	const Shader& shader = m_shaderManager.GetActiveShader();
+	shader.Use();
+
+	GLfloat vertices[] =
+	{
+		10.0f, 120.0f, 0.0f,
+		200.0f, 120.0f, 0.0f,
+		200.0f, 130.0f, 0.0f,
+	};
+
+	GLuint vao, vbo;
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+
+	glBindVertexArray(vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	check_gl_error();
+	glDrawArrays(GL_LINES, 0, 2);
+	check_gl_error();
+	glDisableVertexAttribArray(0);
+	check_gl_error();
+	
+
+	glBindVertexArray(0);
+
+	glDeleteBuffers(1, &vao);
+
+	glDeleteBuffers(1, &vbo);
+
+	check_gl_error();
+
+}
+
 void Renderer::RenderMesh(GLuint meshId) {
+	m_shaderManager.SetActiveShader(e_shaderDefault);
     const Shader& shader = m_shaderManager.GetActiveShader();
     shader.Use();
 	UpdateMVP(shader);

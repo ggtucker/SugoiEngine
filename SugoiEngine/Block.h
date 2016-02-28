@@ -17,8 +17,8 @@ enum BlockType {
 class Block {
 public:
 	/* PUBLIC FUNCTIONS */
-	Block() : m_active{ true }, m_blockType{ BLOCK_DEFAULT } {}
-	Block(BlockType type) : m_active{ true }, m_blockType{ type } {}
+	Block() : m_active{ false }, m_blockType{ BLOCK_DEFAULT } {}
+	Block(BlockType type) : m_active{ false }, m_blockType{ type } {}
 	~Block() {}
 
 	bool IsActive() { return m_active; }
