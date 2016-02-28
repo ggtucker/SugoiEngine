@@ -7,7 +7,7 @@ SkyboxManager::SkyboxManager (Renderer* renderer)
     : m_activeSkybox(-1), m_renderer(renderer)
 {
 
-    m_renderer->CreateMesh(&m_meshId);
+    m_renderer->CreateSkyboxMesh(&m_meshId);
     m_renderer->AddCubeToMesh(
         m_meshId, glm::vec3(), glm::vec3(1.f, 1.0f, 1.f),
         glm::vec2(0.0f, 0.0f), glm::vec2(1.1f, 1.1f),

@@ -2,6 +2,7 @@
 #include "Skybox.h"
 #include "Renderer.h"
 #include "SkyboxManager.h"
+#include "SugoiEngine/SugoiGame.h"
 
 using namespace sr;
 
@@ -48,22 +49,29 @@ void Skybox::SetAndLoadSkybox () {
 }
 
 void Skybox::Render () {
-    float width = 1000.0f;
-    float height = 1000.0f;
-    float length = 1000.0f;
-
-    // Center the Skybox around the given x,y,z position
-    float x = -(width*0.5f);
-    float y = -(height*0.5f);
-    float z = -(length*0.5f);
     SUGOI_TODO("Make all Renderable Objects manager their own shader type");
 
-
     glDepthMask(GL_FALSE);
-    EShaderType oldType = m_renderer->GetActiveShaderType();
+
+    Camera& camera = m_renderer->GetCamera();
+
+    GameSettings& settings = SugoiGame::GetSettings();
+
+    EShaderType oldType = m_renderer->GetActiveShader().ShaderType();
     m_renderer->SetActiveShader(e_shaderCubeMap);
-    m_renderer->UseActiveShader();
+    const Shader& skyboxShader = m_renderer->GetActiveShader();
+    skyboxShader.Use();
+
+    glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));	// Remove any translation component of the view matrix
+    glm::mat4 projection = glm::perspective(camera.GetZoom(), (float) settings.windowWidth / (float)settings.windowHeight, 0.1f, 100.0f);
+    glUniformMatrix4fv(glGetUniformLocation(skyboxShader.GetProgram(), "view"), 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(glGetUniformLocation(skyboxShader.GetProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+    const Mesh& mesh = m_renderer->GetMesh(m_manager->GetMeshId());
     
+    glBindVertexArray(mesh.GetVAO());
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i(glGetUniformLocation(skyboxShader.GetProgram(), "skybox"), 0);
 
    m_renderer->BindTexture(m_textureId, GL_TEXTURE_CUBE_MAP);
    glDrawArrays(GL_TRIANGLES, 0, 36);

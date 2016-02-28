@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include "ShaderManager.h"
 #include "SugoiEngine/SugoiDefines.h"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace sr {
 
@@ -88,6 +89,9 @@ public:
 	void FinishMesh(GLint meshId);
 	void ClearMesh(GLint meshId);
 	void GetMeshInfo(GLint meshId, int* numVerts, int* numTriangles);
+
+    Mesh& GetMesh(GLint meshId) { return meshPool[meshId]; };
+
 	GLuint AddVertexToMesh(GLuint meshId, const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoords);
 	void AddTriangleToMesh(GLuint meshId, GLuint v1, GLuint v2, GLuint v3);
 
@@ -107,7 +111,7 @@ public:
     // Temporary
     static std::string TextureDirectory;
 
-    const EShaderType GetActiveShaderType () { return m_shaderManager.GetActiveShader().ShaderType(); }
+    const Shader& GetActiveShader () { return m_shaderManager.GetActiveShader(); }
     void SetActiveShader (EShaderType type) { m_shaderManager.SetActiveShader(type); }
 
     void UseActiveShader ();

@@ -32,6 +32,27 @@ void Mesh::AddTriangle(GLuint v1, GLuint v2, GLuint v3) {
 	}
 }
 
+GLuint Mesh::BuildOnlyVerts () {
+    // This is too strict, verts are only required.
+    if (this->vertices.empty()) {
+        return -1;
+    }
+    glGenVertexArrays(1, &this->VAO);
+    glGenBuffers(1, &this->VBO);
+    glBindVertexArray(this->VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+    glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &this->vertices[0], GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, false, sizeof(Vertex), (GLvoid*)0);
+
+    glBindVertexArray(0);
+
+    return 0;
+
+}
+
 void Mesh::Clear() {
 	finalized = false;
 	this->vertices.clear();
@@ -50,7 +71,8 @@ void Mesh::Clear() {
 }
 
 void Mesh::Build() {
-	if (this->vertices.empty() || this->indices.empty()) {
+    // This is too strict, verts are only required.
+	if (this->vertices.empty()) {
 		return;
 	}
 

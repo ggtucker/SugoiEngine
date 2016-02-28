@@ -35,6 +35,8 @@ public:
 	void MouseScroll(float x, float y);
 	void MouseMoved(float x, float y);
 
+    static GameSettings& GetSettings() { return c_instance->m_settings; }
+
 private:
 	GameSettings m_settings;
 	sr::Window* m_window;

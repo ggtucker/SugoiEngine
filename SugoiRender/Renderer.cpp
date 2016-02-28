@@ -130,20 +130,11 @@ void Renderer::CreateSkyboxMesh (GLint* meshId) {
     CreateMesh(meshId);
     Mesh& mesh = meshPool[*meshId];
 
-    for (int i = 0; i < numSkyboxVerts; ++i) {
+    for (int i = 0; i < numSkyboxVerts/3; i += 3) {
         glm::vec3 pos (skyboxVertices[i], skyboxVertices[i + 1], skyboxVertices[i + 2]);
-        glm::vec3 norm;
-        glm::vec2 texCoord;
-        
-
-        int errorCode = mesh.AddVertex(pos, norm, texCoord);
-        if (errorCode == -1)
-        {
-            // TODO Add logging
-            printf("ERROR IN VERTEX ADDITION/n");
-            assert(false);
-        }
+        mesh.AddVertex(pos, glm::vec3(), glm::vec2());
     }
+    mesh.BuildOnlyVerts();
 }
 
 void Renderer::DeleteMesh(GLint meshId) {
