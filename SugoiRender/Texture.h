@@ -11,7 +11,7 @@ public:
 	Texture(const Texture& other);
 	Texture(Texture&& other);
     Texture(const GLchar* imagePath, const std::string& name);
-    Texture (std::vector<const GLchar*>&& faces);
+    Texture (std::vector<const GLchar*>&& faces, const std::string& name);
 	~Texture();
 
 	Texture& operator=(const Texture& other);
@@ -19,8 +19,7 @@ public:
 
 	void Bind(GLint textureEnum = GL_TEXTURE_2D) const;
 	void Unbind(GLint textureEnum = GL_TEXTURE_2D) const;
-	void Bind(GLuint textureNum) const;
-	void Unbind(GLuint textureNum) const;
+	void SetActive(GLuint textureNum) const;
 
 	void Clear();
 	void Load(const GLchar* imagePath);

@@ -22,7 +22,7 @@ void SugoiGame::Create(GameSettings settings) {
 
 	int textureId;
 	m_renderer->LoadTexture(&textureId, "textures.png", "Texture");
-	m_renderer->BindTextureToShader(textureId, 0);
+	m_renderer->BindTextureToShader(GL_TEXTURE_2D, textureId, 0);
 
 	m_chunkManager = new ChunkManager(m_renderer, textureId);
 

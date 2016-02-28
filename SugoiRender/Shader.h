@@ -24,7 +24,7 @@ public:
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
 	void LoadShaderFiles(const GLchar* vertexPath, const GLchar* fragmentPath);
 
-	void BindTexture(const sr::Texture& tex, int index) const;
+	void BindTexture(const sr::Texture& tex, GLint textureEnum, int index) const;
 
 	GLuint GetProgram() const;
 	void Use() const;

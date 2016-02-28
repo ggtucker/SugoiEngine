@@ -58,11 +58,11 @@ public:
 	void BindTexture(GLint textureId);
     void BindTexture(GLint textureId, GLint openGLTextureType);
 	void BindTextureUnit(GLint textureId, GLint textureIndex);
-	void BindTextureToShader(GLint textureId, GLint textureIndex, EShaderType type = e_shaderDefault);
+	void BindTextureToShader(GLint openGLTextureType, GLint textureId, GLint textureIndex, EShaderType shaderType = e_shaderDefault);
 
     // Cube Maps
     // TODO this should be refactored to take a CubeMap type or a vector
-    GLint LoadCubeMapTexture (std::vector<const GLchar*>&& faces);
+    GLint LoadCubeMapTexture (std::vector<const GLchar*>&& faces, const std::string& name);
 
    //void BindCubeMapTexture (unsigned int id);
    //void EmptyCubeMapTextureIndex (unsigned int textureIndex);

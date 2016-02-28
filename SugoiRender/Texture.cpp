@@ -23,7 +23,7 @@ Texture::Texture(const GLchar* imagePath, const std::string& name) : id{ INVALID
 	Load(imagePath);
 }
 
-Texture::Texture (std::vector<const GLchar*>&& faces) {
+Texture::Texture(std::vector<const GLchar*>&& faces, const std::string& name) : name{ name } {
     LoadCubeMap(std::move(faces));
 }
 
@@ -42,7 +42,7 @@ Texture& Texture::operator=(const Texture& other) {
 		return *this;
 	}
 	unsigned char* image = new unsigned char[other.width*other.height << 2];
-	other.Bind();
+	other.Bind(0);
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 	Load(image, other.width, other.height);
 	delete[] image;
@@ -64,24 +64,15 @@ Texture& Texture::operator=(Texture&& other) {
 
 void Texture::Bind(GLint textureEnum) const {
 	glBindTexture(textureEnum, this->id);
-	check_gl_error();
 }
 
 void Texture::Unbind(GLint textureEnum) const {
 	glBindTexture(textureEnum, NULL);
-	check_gl_error();
 }
 
-void Texture::Bind(GLuint textureNum) const {
+void Texture::SetActive(GLuint textureNum) const {
 	assert(textureNum < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 	glActiveTexture(GL_TEXTURE0 + textureNum);
-	Bind();
-}
-
-void Texture::Unbind(GLuint textureNum) const {
-	assert(textureNum < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
-	glActiveTexture(GL_TEXTURE0 + textureNum);
-	Unbind();
 }
 
 void Texture::Clear() {
@@ -146,6 +137,7 @@ void Texture::LoadCubeMap (std::vector<const GLchar*>&& faces) {
             GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB,
             width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
         );
+		SOIL_free_image_data(image);
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

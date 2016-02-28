@@ -37,7 +37,8 @@ void Skybox::SetAndLoadSkybox () {
                                                 right.c_str() };
     assert(m_renderer);
 
-    m_textureId = m_renderer->LoadCubeMapTexture(std::move(faceTextures));
+    m_textureId = m_renderer->LoadCubeMapTexture(std::move(faceTextures), "skybox");
+	m_renderer->BindTextureToShader(GL_TEXTURE_CUBE_MAP, m_textureId, 0, e_shaderCubeMap);
 
     if (m_textureId == SUGOI_ERROR)
     {
@@ -74,13 +75,10 @@ void Skybox::Render () {
     const Mesh& mesh = m_renderer->GetMesh(m_manager->GetMeshId());
     
     glBindVertexArray(mesh.GetVAO());
-    glActiveTexture(GL_TEXTURE0);
-    glUniform1i(glGetUniformLocation(skyboxShader.GetProgram(), "skybox"), 0);
+	m_renderer->BindTexture(m_textureId, GL_TEXTURE_CUBE_MAP);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+	glDepthMask(GL_TRUE);
 
-   m_renderer->BindTexture(m_textureId, GL_TEXTURE_CUBE_MAP);
-   glDrawArrays(GL_TRIANGLES, 0, 36);
-   glBindVertexArray(0);
-   glDepthMask(GL_TRUE);
-
-   m_renderer->SetActiveShader(oldType);
+	m_renderer->SetActiveShader(oldType);
 }

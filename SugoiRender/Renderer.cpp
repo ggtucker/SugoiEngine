@@ -45,11 +45,13 @@ void Renderer::LoadTexture(GLint* textureId, const GLchar* imagePath, const std:
 }
 
 void Renderer::BindTexture(GLint textureId) {
+	texturePool[textureId].SetActive(0);
 	texturePool[textureId].Bind();
 }
 
 void Renderer::BindTexture(GLint textureId, GLint openGLTextureType) {
-    texturePool[textureId].Bind(openGLTextureType);
+	texturePool[textureId].SetActive(0);
+	texturePool[textureId].Bind(openGLTextureType);
 }
 
 void Renderer::BindTextureUnit(GLint textureId, GLint textureIndex) {
@@ -57,8 +59,9 @@ void Renderer::BindTextureUnit(GLint textureId, GLint textureIndex) {
 	BindTexture(textureId);
 }
 
-void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex, EShaderType type) {
-	m_shaderManager.GetShaderByEnum(type).BindTexture(texturePool[textureId], textureIndex);
+void Renderer::BindTextureToShader(GLint openGLTextureType, GLint textureId, GLint textureIndex, EShaderType shaderType) {
+	const sr::Shader& shader = m_shaderManager.GetShaderByEnum(shaderType);
+	shader.BindTexture(texturePool[textureId], openGLTextureType, textureIndex);
 	check_gl_error();
 }
 
@@ -66,8 +69,8 @@ void Renderer::BindTextureToShader(GLint textureId, GLint textureIndex, EShaderT
 * Cube Maps
 **********************/
 
-GLint Renderer::LoadCubeMapTexture (std::vector<const GLchar*>&& faces) {
-    return texturePool.create(std::move(faces));
+GLint Renderer::LoadCubeMapTexture (std::vector<const GLchar*>&& faces, const std::string& name) {
+    return texturePool.create(std::move(faces), name);
 }
 
 void Renderer::UpdateMVP (const Shader& shader) {
