@@ -49,8 +49,8 @@ void Window::Create(GLuint width, GLuint height, const GLchar* title, GLboolean 
     glewExperimental = GL_TRUE;
 
     // Initialize GLEW to setup the OpenGL Function pointers
-	GLenum initSuccess = glewInit();
-	assert(initSuccess == GLEW_OK);
+	GLenum glewInitSuccess = glewInit();
+	assert(glewInitSuccess == GLEW_OK);
 
     // Define the viewport dimensions
     glViewport(0, 0, width, height);

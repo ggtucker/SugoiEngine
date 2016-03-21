@@ -4,7 +4,6 @@
 #include <vector>
 #include <thread>
 #include <SugoiRender\Renderer.h>
-#include <noise/noise.h>
 #include "Chunk.h"
 
 class Player;
@@ -22,8 +21,6 @@ public:
 	Player* GetPlayer() { return m_player; }
 	void SetPlayer(Player* player) { m_player = player; }
 
-	float GetNoiseValue(int chunkX, int chunkZ, int blockX, int blockZ);
-
 	Chunk* GetChunk(int x, int y, int z);
 	void CreateNewChunk(int x, int y, int z);
 	void UnloadChunk(Chunk* chunk);
@@ -37,9 +34,6 @@ private:
 	sr::Renderer* m_renderer;
 	Player* m_player;
 	std::map<ChunkCoordKey, Chunk*> m_chunkMap;
-
-	// Height map
-	noise::utils::NoiseMap m_heightMap;
 
 	// Texture map
 	int m_textureId;

@@ -13,14 +13,6 @@ ChunkManager::ChunkManager(sr::Renderer* renderer, int textureId) :
 		m_stepLockEnabled{ false },
 		m_updateStepLock{ true } {
 
-	module::Perlin myModule;
-	utils::NoiseMapBuilderPlane heightMapBuilder;
-	heightMapBuilder.SetSourceModule(myModule);
-	heightMapBuilder.SetDestNoiseMap(m_heightMap);
-	heightMapBuilder.SetDestSize(32, 32);
-	heightMapBuilder.SetBounds(0, 16, 0, 16);
-	heightMapBuilder.Build();
-
 	m_updateChunksThread = new std::thread(_UpdateChunksThread, this);
 }
 
@@ -144,11 +136,6 @@ void ChunkManager::UpdateChunksThread() {
 	}
 
 	m_updateThreadFinished = true;
-}
-
-float ChunkManager::GetNoiseValue(int chunkX, int chunkZ, int blockX, int blockZ) {
-	float height = (m_heightMap.GetValue(blockX, blockZ) + 1.0f) / 2.0f * Chunk::CHUNK_SIZE / 4.0f;
-	return 12.0f + std::min(height, 4.0f);
 }
 
 Chunk* ChunkManager::GetChunk(int x, int y, int z) {
